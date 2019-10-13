@@ -1,3 +1,4 @@
+import 'package:call_analyzer/analysis/home/analysis_home.dart';
 import 'package:call_analyzer/call_log/services/call_log_parser_service.dart';
 import 'package:call_analyzer/call_log/services/call_log_service.dart';
 import 'package:call_analyzer/config.dart';
@@ -85,7 +86,7 @@ class _MyAppState extends State<MyApp> {
     Future.wait<dynamic>([
       GetIt.instance<ContactService>().init(),
       GetIt.instance<CallLogService>().init()
-    ]).then((List answers) => _setPageToDisplay(Center(child: Text('done'))));
+    ]).then((List answers) => _setPageToDisplay(AnalysisHome()));
   }
 
   _setPageToDisplay(Widget page) {
