@@ -39,10 +39,10 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: appTitle,
       theme: getAppTheme(context),
-      home: new Material(
-        child: new Container(
+      home: Material(
+        child: Container(
             child: _pageToDisplay,
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -55,12 +55,12 @@ class _MyAppState extends State<MyApp> {
 
   _determinePageToDisplay() async {
     if (!(await _permissionService.hasRequiredPermissions())) {
-      _setPageToDisplay(new PermissionRequest(
+      _setPageToDisplay(PermissionRequest(
         grantedPermissions: await _permissionService.getGrantedPermissions(),
-        onAllPermissionsGranted: () => _setPageToDisplay(new SplashScreen()),
+        onAllPermissionsGranted: () => _setPageToDisplay(SplashScreen()),
       ));
     } else {
-      _setPageToDisplay(new SplashScreen());
+      _setPageToDisplay(SplashScreen());
     }
 
     Future.wait([]).then((List answers) {});

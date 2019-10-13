@@ -33,7 +33,7 @@ class _PermissionRequestState extends State<PermissionRequest> {
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Expanded(
@@ -84,9 +84,9 @@ class _PermissionRequestState extends State<PermissionRequest> {
           Step(
               title: Row(
                 children: <Widget>[
-                  new Padding(
+                  Padding(
                     padding: EdgeInsets.only(right: defaultPadding),
-                    child: new Icon(
+                    child: Icon(
                       permissionDetails.icon,
                       color: Colors.grey[200],
                     ),
