@@ -5,3 +5,5 @@ final ThemeData appTheme = ThemeData(
 );
 
 const String appTitle = 'Call Analyzer';
+
+const double defaultPadding = 8.0;
