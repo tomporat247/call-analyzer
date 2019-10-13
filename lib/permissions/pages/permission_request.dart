@@ -40,25 +40,25 @@ class _PermissionRequestState extends State<PermissionRequest> {
         Expanded(
           flex: 1,
           child: Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: EdgeInsets.only(
-                  left: 4 * defaultPadding, top: 4 * defaultPadding),
-              child: Text(
-                'Grant Required\nPermissions',
-                style: TextStyle(
-                  fontSize: 34,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
+            alignment: Alignment.center,
+            child: Text(
+              'Grant Required Permissions',
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  shadows: [
+                    Shadow(
+                      blurRadius: 3.0,
+                      color: Colors.cyan[900],
+                      offset: Offset(-4.0, 4.0),
+                    ),
+                  ]),
             ),
           ),
         ),
         Expanded(
-          flex: 5,
-          child: SingleChildScrollView(
-            child: _getStepper(),
-          ),
+          flex: 7,
+          child: _getStepper(),
         ),
       ],
     );
