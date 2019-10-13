@@ -32,7 +32,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     _pageToDisplay = Container();
-    _determinePageToDisplay();
+    _determineInitialPageToDisplay();
     super.initState();
   }
 
@@ -55,7 +55,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  _determinePageToDisplay() async {
+  _determineInitialPageToDisplay() async {
     if (await _permissionService.hasRequiredPermissions()) {
       _loadCallLogsAndContacts();
     } else {
