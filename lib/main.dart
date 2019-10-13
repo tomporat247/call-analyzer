@@ -54,16 +54,22 @@ class _MyAppState extends State<MyApp> {
   }
 
   _determinePageToDisplay() async {
-    if (!(await _permissionService.hasRequiredPermissions())) {
-      _setPageToDisplay(PermissionRequest(
-        grantedPermissions: await _permissionService.getGrantedPermissions(),
-        onAllPermissionsGranted: () => _setPageToDisplay(SplashScreen()),
-      ));
+    if (await _permissionService.hasRequiredPermissions()) {
+      _loadCallLogsAndContacts();
     } else {
-      _setPageToDisplay(SplashScreen());
+      _requestPermissions();
     }
+  }
 
-    Future.wait([]).then((List answers) {});
+  _requestPermissions() async {
+    _setPageToDisplay(PermissionRequest(
+      grantedPermissions: await _permissionService.getGrantedPermissions(),
+      onAllPermissionsGranted: () => _loadCallLogsAndContacts(),
+    ));
+  }
+
+  _loadCallLogsAndContacts() {
+    _setPageToDisplay(SplashScreen());
   }
 
   _setPageToDisplay(Widget page) {
