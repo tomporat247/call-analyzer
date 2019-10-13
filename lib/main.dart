@@ -1,4 +1,5 @@
 import 'package:call_analyzer/config.dart';
+import 'package:call_analyzer/contacts/services/contact_service.dart';
 import 'package:call_analyzer/permissions/pages/permission_request.dart';
 import 'package:call_analyzer/permissions/services/permission_service.dart';
 import 'package:call_analyzer/splash_screen/splash_screen.dart';
@@ -11,7 +12,8 @@ void main() {
 }
 
 _registerServices() {
-  GetIt.instance.registerSingleton<PermissionService>(PermissionService());
+  GetIt.instance.registerSingleton(PermissionService());
+  GetIt.instance.registerSingleton(ContactService());
 }
 
 class MyApp extends StatefulWidget {
@@ -70,6 +72,9 @@ class _MyAppState extends State<MyApp> {
 
   _loadCallLogsAndContacts() {
     _setPageToDisplay(SplashScreen());
+    Future.wait([GetIt.instance<ContactService>().loadAllContacts()])
+        .then((List answers) =>
+        _setPageToDisplay(Center(child: Text('done'))));
   }
 
   _setPageToDisplay(Widget page) {
