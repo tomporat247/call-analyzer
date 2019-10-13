@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 
-final ThemeData appTheme = ThemeData(
-  primarySwatch: Colors.blue,
-);
+ThemeData getAppTheme(context) {
+  return ThemeData(
+    primarySwatch: Colors.blue,
+    textTheme: Theme.of(context).textTheme.apply(
+          bodyColor: Colors.white,
+          displayColor: Colors.white,
+        ),
+  );
+}
 
 const String appTitle = 'Call Analyzer';
 

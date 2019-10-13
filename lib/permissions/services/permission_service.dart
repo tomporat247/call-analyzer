@@ -8,17 +8,17 @@ class PermissionService {
 
   List<PermissionDetails> get requiredPermissionDetails => [
         PermissionDetails(
-            permission: PermissionGroup.contacts,
+            permissionGroup: PermissionGroup.contacts,
             name: 'Contacts',
             icon: FontAwesomeIcons.addressBook,
             description:
                 'Allow this app to reveice all your contacts and call logs for statistic analysis'),
         PermissionDetails(
-            permission: PermissionGroup.storage,
+            permissionGroup: PermissionGroup.storage,
             icon: FontAwesomeIcons.archive,
             name: 'Storage',
             description:
-                'Allow this app to access device storage to quickly load call logs and'),
+                'Allow this app to access device storage to quickly load call logs'),
       ];
 
   PermissionService() {
@@ -50,7 +50,9 @@ class PermissionService {
         PermissionStatus.granted;
   }
 
-  Future<void> requestPermission(PermissionGroup permission) async {
-    await _permissionHandler.requestPermissions([permission]);
+  Future<bool> requestPermission(PermissionGroup permission) async {
+    return (await _permissionHandler
+            .requestPermissions([permission]))[permission] ==
+        PermissionStatus.granted;
   }
 }

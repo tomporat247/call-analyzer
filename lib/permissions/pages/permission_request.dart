@@ -7,8 +7,10 @@ import 'package:permission_handler/permission_handler.dart';
 
 class PermissionRequest extends StatefulWidget {
   final List<PermissionGroup> grantedPermissions;
+  final Function onAllPermissionsGranted;
 
-  PermissionRequest({@required this.grantedPermissions});
+  PermissionRequest(
+      {@required this.grantedPermissions, this.onAllPermissionsGranted});
 
   @override
   _PermissionRequestState createState() => _PermissionRequestState();
@@ -19,23 +21,17 @@ class _PermissionRequestState extends State<PermissionRequest> {
     Colors.blue[700],
     Colors.lightBlue[300]
   ];
+  PermissionService _permissionService;
   List<PermissionDetails> _permissions;
-  Map<PermissionGroup, StepState> _permissionToStatus;
   int _currentStep;
+  Set<PermissionGroup> _grantedPermissions;
 
   @override
   void initState() {
-    _permissions =
-        GetIt.instance<PermissionService>().requiredPermissionDetails;
-    _currentStep = 0;
-    _permissionToStatus = new Map();
-
-    _permissions.forEach((permissionDetails) =>
-        _permissionToStatus[permissionDetails.permission] =
-            widget.grantedPermissions.contains(permissionDetails.permission)
-                ? StepState.complete
-                : StepState.indexed);
-
+    _grantedPermissions = widget.grantedPermissions.toSet();
+    _permissionService = GetIt.instance<PermissionService>();
+    _setupPermissions();
+    _currentStep = _grantedPermissions.length;
     super.initState();
   }
 
@@ -55,12 +51,17 @@ class _PermissionRequestState extends State<PermissionRequest> {
           children: <Widget>[
             Expanded(
               flex: 1,
-              child: Center(
-                child: Text(
-                  'Grant Call Analyzer the required permissions',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontStyle: FontStyle.italic,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      left: 4 * defaultPadding, top: 4 * defaultPadding),
+                  child: Text(
+                    'Grant Required\nPermissions',
+                    style: TextStyle(
+                      fontSize: 34,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ),
               ),
@@ -68,30 +69,77 @@ class _PermissionRequestState extends State<PermissionRequest> {
             Expanded(
               flex: 5,
               child: SingleChildScrollView(
-                child: Stepper(
-                  currentStep: _currentStep,
-                  steps: [
-                    for (PermissionDetails permissionDetails in _permissions)
-                      Step(
-                        title: Row(
-                          children: <Widget>[
-                            new Padding(
-                              padding: EdgeInsets.only(right: defaultPadding),
-                              child: new Icon(permissionDetails.icon),
-                            ),
-                            Text('${permissionDetails.name} Permission')
-                          ],
-                        ),
-                        content: Text(permissionDetails.description),
-                        state: _permissionToStatus[permissionDetails.permission]
-                      )
-                  ],
-                ),
+                child: _getStepper(),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  _setupPermissions() {
+    _permissions = _permissionService.requiredPermissionDetails;
+    _grantedPermissions.forEach((permission) {
+      PermissionDetails permissionDetails =
+          _permissions.firstWhere((perm) => perm.permissionGroup == permission);
+      _permissions.remove(permissionDetails);
+      _permissions.insert(0, permissionDetails);
+    });
+  }
+
+  Stepper _getStepper() {
+    return Stepper(
+      currentStep: _currentStep,
+      onStepContinue: () =>
+          _requestPermission(_permissions[_currentStep].permissionGroup),
+      onStepTapped: (index) => _updateCurrentStep(index),
+      steps: [
+        for (PermissionDetails permissionDetails in _permissions)
+          Step(
+              title: Row(
+                children: <Widget>[
+                  new Padding(
+                    padding: EdgeInsets.only(right: defaultPadding),
+                    child: new Icon(
+                      permissionDetails.icon,
+                      color: Colors.grey[200],
+                    ),
+                  ),
+                  Text('${permissionDetails.name} Permission')
+                ],
+              ),
+              content: Text(permissionDetails.description),
+              state: _grantedPermissions.contains(permissionDetails.permissionGroup)
+                  ? StepState.complete
+                  : StepState.indexed)
+      ],
+    );
+  }
+
+  _requestPermission(PermissionGroup permissionGroup) {
+    _permissionService
+        .requestPermission(permissionGroup)
+        .then((permissionGranted) {
+      if (permissionGranted) {
+        _addToGrantedPermissions(permissionGroup);
+        _updateCurrentStep(_currentStep + 1);
+      }
+    });
+  }
+
+  _updateCurrentStep(int stepIndex) {
+    setState(() {
+      _currentStep = stepIndex % _permissions.length;
+    });
+  }
+
+  _addToGrantedPermissions(PermissionGroup permissionGroup) {
+    setState(() {
+      _grantedPermissions.add(permissionGroup);
+      if (_grantedPermissions.length == _permissions.length) {
+        widget.onAllPermissionsGranted();
+      }
+    });
   }
 }

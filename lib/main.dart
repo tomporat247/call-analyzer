@@ -4,7 +4,6 @@ import 'package:call_analyzer/permissions/services/permission_service.dart';
 import 'package:call_analyzer/splash_screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   _registerServices();
@@ -35,25 +34,27 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: appTitle,
-      theme: appTheme,
+      theme: getAppTheme(context),
       home: _pageToDisplay,
     );
   }
 
   _determinePageToDisplay() async {
     if (!(await _permissionService.hasRequiredPermissions())) {
-      List<PermissionGroup> grantedPermissions =
-          await _permissionService.getGrantedPermissions();
-      setState(() {
-        _pageToDisplay =
-            new PermissionRequest(grantedPermissions: grantedPermissions);
-      });
+      _setPageToDisplay(new PermissionRequest(
+        grantedPermissions: await _permissionService.getGrantedPermissions(),
+        onAllPermissionsGranted: () => _setPageToDisplay(new SplashScreen()),
+      ));
     } else {
-      setState(() {
-        _pageToDisplay = new SplashScreen();
-      });
+      _setPageToDisplay(new SplashScreen());
     }
 
     Future.wait([]).then((List answers) {});
+  }
+
+  _setPageToDisplay(Widget page) {
+    setState(() {
+      _pageToDisplay = page;
+    });
   }
 }
