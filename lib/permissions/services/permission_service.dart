@@ -6,24 +6,36 @@ class PermissionService {
   PermissionHandler _permissionHandler;
   List<PermissionGroup> _requiredPermissions;
 
+  // TODO: Make the storage permission optional
+
   List<PermissionDetails> get requiredPermissionDetails => [
+        PermissionDetails(
+            permissionGroup: PermissionGroup.phone,
+            icon: FontAwesomeIcons.phoneAlt,
+            name: 'Call Logs',
+            description:
+                'Allow this app to access device call logs to view and analuze your calls'),
         PermissionDetails(
             permissionGroup: PermissionGroup.contacts,
             name: 'Contacts',
             icon: FontAwesomeIcons.addressBook,
             description:
-                'Allow this app to reveice all your contacts and call logs for statistic analysis'),
+                'Allow this app to access your contacts to view and compare your calls with them'),
         PermissionDetails(
             permissionGroup: PermissionGroup.storage,
             icon: FontAwesomeIcons.archive,
             name: 'Storage',
             description:
-                'Allow this app to access device storage to quickly load call logs'),
+                'Allow this app to access device storage to store all call logs and quickly load them'),
       ];
 
   PermissionService() {
     _permissionHandler = PermissionHandler();
-    _requiredPermissions = [PermissionGroup.contacts, PermissionGroup.storage];
+    _requiredPermissions = [
+      PermissionGroup.phone,
+      PermissionGroup.contacts,
+      PermissionGroup.storage,
+    ];
   }
 
   Future<bool> hasRequiredPermissions() async {

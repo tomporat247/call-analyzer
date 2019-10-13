@@ -5,8 +5,8 @@ class ContactService {
 
   List<Contact> get contacts => _contacts;
 
-  Future<void> loadAllContacts() async {
-    // TODO: set withThumbnails to false if it's too slow
-    _contacts = (await ContactsService.getContacts()).toList();
+  Future<void> init() async {
+    _contacts =
+        (await ContactsService.getContacts(withThumbnails: false)).toList();
   }
 }

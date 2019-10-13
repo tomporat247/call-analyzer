@@ -1,8 +1,11 @@
+import 'package:call_analyzer/call_log/services/call_log_parser_service.dart';
+import 'package:call_analyzer/call_log/services/call_log_service.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/contacts/services/contact_service.dart';
 import 'package:call_analyzer/permissions/pages/permission_request.dart';
 import 'package:call_analyzer/permissions/services/permission_service.dart';
 import 'package:call_analyzer/splash_screen/splash_screen.dart';
+import 'package:call_analyzer/storage/services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -14,6 +17,8 @@ void main() {
 _registerServices() {
   GetIt.instance.registerSingleton(PermissionService());
   GetIt.instance.registerSingleton(ContactService());
+  GetIt.instance.registerSingleton(
+      CallLogService(StorageService(), CallLogParserService()));
 }
 
 class MyApp extends StatefulWidget {
@@ -77,8 +82,10 @@ class _MyAppState extends State<MyApp> {
 
   _loadCallLogsAndContacts() {
     _setPageToDisplay(SplashScreen());
-    Future.wait([GetIt.instance<ContactService>().loadAllContacts()])
-        .then((List answers) => _setPageToDisplay(Center(child: Text('done'))));
+    Future.wait<dynamic>([
+      GetIt.instance<ContactService>().init(),
+      GetIt.instance<CallLogService>().init()
+    ]).then((List answers) => _setPageToDisplay(Center(child: Text('done'))));
   }
 
   _setPageToDisplay(Widget page) {
