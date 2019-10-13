@@ -17,10 +17,6 @@ class PermissionRequest extends StatefulWidget {
 }
 
 class _PermissionRequestState extends State<PermissionRequest> {
-  final List<Color> backgroundColors = [
-    Colors.blue[700],
-    Colors.lightBlue[300]
-  ];
   PermissionService _permissionService;
   List<PermissionDetails> _permissions;
   int _currentStep;
@@ -37,44 +33,33 @@ class _PermissionRequestState extends State<PermissionRequest> {
 
   @override
   Widget build(BuildContext context) {
-    return new Material(
-      child: new Container(
-        decoration: new BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: backgroundColors,
-          ),
-        ),
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                      left: 4 * defaultPadding, top: 4 * defaultPadding),
-                  child: Text(
-                    'Grant Required\nPermissions',
-                    style: TextStyle(
-                      fontSize: 34,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
+    return new Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          flex: 1,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                  left: 4 * defaultPadding, top: 4 * defaultPadding),
+              child: Text(
+                'Grant Required\nPermissions',
+                style: TextStyle(
+                  fontSize: 34,
+                  fontStyle: FontStyle.italic,
                 ),
               ),
             ),
-            Expanded(
-              flex: 5,
-              child: SingleChildScrollView(
-                child: _getStepper(),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+        Expanded(
+          flex: 5,
+          child: SingleChildScrollView(
+            child: _getStepper(),
+          ),
+        ),
+      ],
     );
   }
 

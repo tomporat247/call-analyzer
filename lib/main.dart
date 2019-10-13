@@ -20,6 +20,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final List<Color> backgroundColors = [
+    Colors.blue[700],
+    Colors.lightBlue[300]
+  ];
   Widget _pageToDisplay;
   PermissionService _permissionService = GetIt.instance<PermissionService>();
 
@@ -35,7 +39,17 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: appTitle,
       theme: getAppTheme(context),
-      home: _pageToDisplay,
+      home: new Material(
+        child: new Container(
+            child: _pageToDisplay,
+            decoration: new BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: backgroundColors,
+              ),
+            )),
+      ),
     );
   }
 
