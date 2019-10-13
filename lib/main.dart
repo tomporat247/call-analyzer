@@ -43,14 +43,19 @@ class _MyAppState extends State<MyApp> {
       theme: getAppTheme(context),
       home: Material(
         child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: backgroundColors,
+            ),
+          ),
+          child: AnimatedSwitcher(
             child: _pageToDisplay,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: backgroundColors,
-              ),
-            )),
+            duration: Duration(seconds: 1),
+            switchInCurve: Curves.easeInOut,
+          ),
+        ),
       ),
     );
   }
@@ -73,8 +78,7 @@ class _MyAppState extends State<MyApp> {
   _loadCallLogsAndContacts() {
     _setPageToDisplay(SplashScreen());
     Future.wait([GetIt.instance<ContactService>().loadAllContacts()])
-        .then((List answers) =>
-        _setPageToDisplay(Center(child: Text('done'))));
+        .then((List answers) => _setPageToDisplay(Center(child: Text('done'))));
   }
 
   _setPageToDisplay(Widget page) {

@@ -2,6 +2,7 @@ import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/permissions/models/permission_details.dart';
 import 'package:call_analyzer/permissions/services/permission_service.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -79,6 +80,20 @@ class _PermissionRequestState extends State<PermissionRequest> {
       onStepContinue: () =>
           _requestPermission(_permissions[_currentStep].permissionGroup),
       onStepTapped: (index) => _updateCurrentStep(index),
+      controlsBuilder: (BuildContext context,
+              {VoidCallback onStepContinue, VoidCallback onStepCancel}) =>
+          Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(top: 2 * defaultPadding),
+            child: RaisedButton.icon(
+                onPressed: onStepContinue,
+                icon: Icon(FontAwesomeIcons.checkCircle),
+                label: Text('Allow')),
+          )
+        ],
+      ),
       steps: [
         for (PermissionDetails permissionDetails in _permissions)
           Step(
@@ -95,7 +110,8 @@ class _PermissionRequestState extends State<PermissionRequest> {
                 ],
               ),
               content: Text(permissionDetails.description),
-              state: _grantedPermissions.contains(permissionDetails.permissionGroup)
+              state: _grantedPermissions
+                      .contains(permissionDetails.permissionGroup)
                   ? StepState.complete
                   : StepState.indexed)
       ],
