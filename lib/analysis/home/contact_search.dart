@@ -39,8 +39,9 @@ class ContactSearch extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
-    return null;
+    return Center(
+      child: Text('Selected: $query'),
+    );
   }
 
   @override
@@ -59,6 +60,7 @@ class ContactSearch extends SearchDelegate<String> {
             contact.displayName.toLowerCase().indexOf(query.toLowerCase());
         int boldEndIndex = boldStartIndex + query.length;
         return ListTile(
+          onTap: () => showResults(context),
           leading: _getContactImage(contact),
           title: RichText(
             text: TextSpan(style: TextStyle(color: Colors.black), children: [
