@@ -55,9 +55,21 @@ class ContactSearch extends SearchDelegate<String> {
     return ListView.builder(
       itemBuilder: (BuildContext context, int index) {
         Contact contact = suggestedContacts[index];
+        int boldStartIndex =
+            contact.displayName.toLowerCase().indexOf(query.toLowerCase());
+        int boldEndIndex = boldStartIndex + query.length;
         return ListTile(
           leading: _getContactImage(contact),
-          title: Text(contact.displayName),
+          title: RichText(
+            text: TextSpan(style: TextStyle(color: Colors.black), children: [
+              TextSpan(text: contact.displayName.substring(0, boldStartIndex)),
+              TextSpan(
+                  text: contact.displayName
+                      .substring(boldStartIndex, boldEndIndex),
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              TextSpan(text: contact.displayName.substring(boldEndIndex)),
+            ]),
+          ),
         );
       },
       itemCount: suggestedContacts.length,
@@ -75,7 +87,7 @@ class ContactSearch extends SearchDelegate<String> {
                 return avatar == null
                     ? Icon(FontAwesomeIcons.user)
                     : CircleAvatar(
-                        child: Image.memory(avatar),
+                        backgroundImage: MemoryImage(avatar),
                       );
               } else {
                 return CircularProgressIndicator();
