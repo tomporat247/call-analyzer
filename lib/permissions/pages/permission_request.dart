@@ -63,6 +63,7 @@ class _PermissionRequestState extends State<PermissionRequest> {
             padding: EdgeInsets.symmetric(horizontal: 4 * defaultPadding),
             child: LiquidLinearProgressIndicator(
               value: _grantedPermissions.length / _permissions.length,
+              // TODO: Change withAlpha to withOpacity
               backgroundColor: Colors.white.withAlpha((0.1 * 255).round()),
               borderColor: Colors.transparent,
               borderWidth: 0,

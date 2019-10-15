@@ -1,16 +1,23 @@
 import 'package:call_analyzer/analysis/models/SortOption.dart';
+import 'package:call_analyzer/contacts/services/contact_service.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
 
 class AnalysisService {
+  final int topContactsAmount = 8;
+  final ContactService _contactService;
   List<Contact> _contacts;
   List<CallLogEntry> _callLogs;
   Map<Contact, List<CallLogEntry>> _contactToCallLogs;
   Map<Contact, int> _contactToCallDurationInSeconds;
   Map<Contact, int> _contactToCallAmount;
 
-  init(List<Contact> contacts, List<CallLogEntry> callLogs) {
+  List<Contact> get contacts => _contacts;
+
+  AnalysisService(this._contactService);
+
+  init(List<Contact> contacts, List<CallLogEntry> callLogs) async {
     _contactToCallDurationInSeconds = new Map<Contact, int>();
     _contactToCallLogs = new Map<Contact, List<CallLogEntry>>();
     _contactToCallAmount = new Map<Contact, int>();
@@ -26,6 +33,29 @@ class AnalysisService {
 
     _contacts.forEach((Contact contact) =>
         _contactToCallAmount[contact] = _getTotalCallAmountWith(contact));
+  }
+
+  Future<Contact> getContactWithImage(Contact contact) async {
+    if (contact.avatar.isEmpty) {
+      Contact contactWithImage =
+          await _contactService.getContactWithImage(contact);
+      _updateContact(contactWithImage);
+      return contact;
+    } else {
+      return contact;
+    }
+  }
+
+  Future<List<Contact>> getTopContacts(int amount) async {
+    return (await _getSortedContacts(SortOption.CALL_DURATION))
+        .take(amount)
+        .toList();
+  }
+
+  _updateContact(Contact contactToUpdate) {
+    int index = _contacts.indexWhere(
+        (Contact contact) => contact.identifier == contactToUpdate.identifier);
+    _contacts[index].avatar = contactToUpdate.avatar;
   }
 
   Future<List<Contact>> _getSortedContacts(SortOption sortOption) {
@@ -44,7 +74,8 @@ class AnalysisService {
 
   Future<List<Contact>> _sortContactsByCallDuration(
       List<Contact> contacts) async {
-    return asyncSort(contacts, (Contact c) => _contactToCallDurationInSeconds[c]);
+    return asyncSort(
+        contacts, (Contact c) => _contactToCallDurationInSeconds[c]);
   }
 
   Future<List<Contact>> _sortContactsByCallAmount(

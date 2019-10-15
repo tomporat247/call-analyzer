@@ -19,7 +19,7 @@ void main() {
 
 _registerServices() {
   GetIt.instance.registerSingleton(PermissionService());
-  GetIt.instance.registerSingleton(AnalysisService());
+  GetIt.instance.registerSingleton(AnalysisService(ContactService()));
 }
 
 class MyApp extends StatefulWidget {
@@ -28,7 +28,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final List<Color> backgroundColors = [Color(0xff1a9c91), Color(0xff0c4661)];
   Widget _pageToDisplay;
   PermissionService _permissionService = GetIt.instance<PermissionService>();
 
@@ -85,7 +84,7 @@ class _MyAppState extends State<MyApp> {
       CallLogService(StorageService(), CallLogParserService())
           .getUpdatedCallLogs()
     ]);
-    GetIt.instance<AnalysisService>().init(answers[0], answers[1]);
+    await GetIt.instance<AnalysisService>().init(answers[0], answers[1]);
     _setPageToDisplay(AnalysisHome());
   }
 
