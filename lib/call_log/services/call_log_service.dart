@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:call_analyzer/call_log/services/call_log_parser_service.dart';
-import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/storage/services/storage_service.dart';
 import 'package:call_log/call_log.dart';
 
@@ -19,16 +18,8 @@ class CallLogService {
     } else {
       callLogs = await _getAllDeviceCallLogs();
     }
-    _formatCallLogs(callLogs);
     await _updateCallLogFile(callLogs);
     return callLogs;
-  }
-
-  _formatCallLogs(List<CallLogEntry> callLogs) {
-    callLogs.forEach((CallLogEntry callLog) {
-      callLog.number = formatPhoneNumber(callLog.number);
-      callLog.formattedNumber = formatPhoneNumber(callLog.formattedNumber);
-    });
   }
 
   Future<List<CallLogEntry>> _getCallLogsFromAllSources() async {

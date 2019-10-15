@@ -1,0 +1,5 @@
+enum SortOption {
+  CALL_DURATION,
+  CALL_AMOUNT,
+  ALPHABETICAL
+}

@@ -1,5 +1,4 @@
 import 'package:call_analyzer/analysis/home/analysis_home.dart';
-import 'package:call_analyzer/analysis/home/services/analysis_service.dart';
 import 'package:call_analyzer/call_log/services/call_log_parser_service.dart';
 import 'package:call_analyzer/call_log/services/call_log_service.dart';
 import 'package:call_analyzer/config.dart';
@@ -10,6 +9,8 @@ import 'package:call_analyzer/splash_screen/splash_screen.dart';
 import 'package:call_analyzer/storage/services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+
+import 'analysis/services/analysis_service.dart';
 
 void main() {
   _registerServices();
