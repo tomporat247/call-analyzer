@@ -28,10 +28,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final List<Color> backgroundColors = [
-    Colors.lightBlue[300],
-    Colors.blue[700]
-  ];
+  final List<Color> backgroundColors = [Color(0xff1a9c91), Color(0xff0c4661)];
   Widget _pageToDisplay;
   PermissionService _permissionService = GetIt.instance<PermissionService>();
 
