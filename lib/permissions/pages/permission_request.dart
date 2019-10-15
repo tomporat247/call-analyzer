@@ -32,6 +32,8 @@ class _PermissionRequestState extends State<PermissionRequest> {
     super.initState();
   }
 
+  // TODO: Add a progress indicator
+
   @override
   Widget build(BuildContext context) {
     return Column(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// TODO: Set button color to green and theme as Bit's
 ThemeData getAppTheme(context) {
   return ThemeData(
     primarySwatch: Colors.blue,
