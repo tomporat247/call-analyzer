@@ -1,4 +1,5 @@
 import 'package:call_analyzer/analysis/home/analysis_home.dart';
+import 'package:call_analyzer/analysis/home/services/analysis_service.dart';
 import 'package:call_analyzer/call_log/services/call_log_parser_service.dart';
 import 'package:call_analyzer/call_log/services/call_log_service.dart';
 import 'package:call_analyzer/config.dart';
@@ -17,9 +18,7 @@ void main() {
 
 _registerServices() {
   GetIt.instance.registerSingleton(PermissionService());
-  GetIt.instance.registerSingleton(ContactService());
-  GetIt.instance.registerSingleton(
-      CallLogService(StorageService(), CallLogParserService()));
+  GetIt.instance.registerSingleton(AnalysisService());
 }
 
 class MyApp extends StatefulWidget {
@@ -78,12 +77,15 @@ class _MyAppState extends State<MyApp> {
     ));
   }
 
-  _loadCallLogsAndContacts() {
+  _loadCallLogsAndContacts() async {
     _setPageToDisplay(SplashScreen());
-    Future.wait<dynamic>([
-      GetIt.instance<ContactService>().init(),
-      GetIt.instance<CallLogService>().init()
-    ]).then((List answers) => _setPageToDisplay(AnalysisHome()));
+    List answers = await Future.wait([
+      ContactService().getContacts(),
+      CallLogService(StorageService(), CallLogParserService())
+          .getUpdatedCallLogs()
+    ]);
+    GetIt.instance<AnalysisService>().init(answers[0], answers[1]);
+    _setPageToDisplay(AnalysisHome());
   }
 
   _setPageToDisplay(Widget page) {

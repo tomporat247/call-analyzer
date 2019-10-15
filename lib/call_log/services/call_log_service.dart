@@ -1,26 +1,34 @@
 import 'dart:convert';
 
 import 'package:call_analyzer/call_log/services/call_log_parser_service.dart';
+import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/storage/services/storage_service.dart';
 import 'package:call_log/call_log.dart';
 
 class CallLogService {
   final StorageService _storageService;
   final CallLogParserService _parserService;
-  List<CallLogEntry> _callLogs;
   final String callLogFileName = 'callLogs.json';
-
-  List<CallLogEntry> get callLogs => _callLogs;
 
   CallLogService(this._storageService, this._parserService);
 
-  Future<void> init() async {
+  Future<List<CallLogEntry>> getUpdatedCallLogs() async {
+    List<CallLogEntry> callLogs;
     if (await _storageService.fileExists(callLogFileName)) {
-      _callLogs = await _getCallLogsFromAllSources();
+      callLogs = await _getCallLogsFromAllSources();
     } else {
-      _callLogs = await _getAllDeviceCallLogs();
+      callLogs = await _getAllDeviceCallLogs();
     }
-    _updateCallLogFile();
+    _formatCallLogs(callLogs);
+    await _updateCallLogFile(callLogs);
+    return callLogs;
+  }
+
+  _formatCallLogs(List<CallLogEntry> callLogs) {
+    callLogs.forEach((CallLogEntry callLog) {
+      callLog.number = formatPhoneNumber(callLog.number);
+      callLog.formattedNumber = formatPhoneNumber(callLog.formattedNumber);
+    });
   }
 
   Future<List<CallLogEntry>> _getCallLogsFromAllSources() async {
@@ -51,8 +59,10 @@ class CallLogService {
         .toList();
   }
 
-  Future<void> _updateCallLogFile() async {
-    await _storageService.writeToFile(callLogFileName,
-        json.encode(_callLogs, toEncodable: _parserService.callLogEntryToMap));
+  Future<void> _updateCallLogFile(List<CallLogEntry> allCallLogs) async {
+    await _storageService.writeToFile(
+        callLogFileName,
+        json.encode(allCallLogs,
+            toEncodable: _parserService.callLogEntryToMap));
   }
 }
