@@ -1,3 +1,4 @@
+import 'package:call_analyzer/analysis/contacts/contact_profile.dart';
 import 'package:call_analyzer/analysis/home/contact_search.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:contacts_service/contacts_service.dart';
@@ -40,7 +41,7 @@ class AnalysisHome extends StatelessWidget {
                     showSearch(context: context, delegate: ContactSearch())
                         .then((Contact contact) {
                   if (contact != null) {
-                    _openContactPageFor(contact);
+                    _openContactPageFor(contact, context);
                   }
                 }),
               ),
@@ -73,5 +74,8 @@ class AnalysisHome extends StatelessWidget {
     );
   }
 
-  _openContactPageFor(Contact contact) {}
+  _openContactPageFor(Contact contact, BuildContext context) {
+    Navigator.of(context).push(
+        new MaterialPageRoute(builder: (context) => ContactProfile(contact)));
+  }
 }
