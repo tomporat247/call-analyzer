@@ -11,7 +11,6 @@ class AnalysisService {
   List<CallLogEntry> _callLogs;
   Map<Contact, List<CallLogEntry>> _contactToCallLogs;
   Map<Contact, int> _contactToCallDurationInSeconds;
-  Map<Contact, int> _contactToCallAmount;
 
   List<Contact> get contacts => _contacts;
 
@@ -20,7 +19,6 @@ class AnalysisService {
   init(List<Contact> contacts, List<CallLogEntry> callLogs) async {
     _contactToCallDurationInSeconds = new Map<Contact, int>();
     _contactToCallLogs = new Map<Contact, List<CallLogEntry>>();
-    _contactToCallAmount = new Map<Contact, int>();
     _callLogs = callLogs;
     _contacts = contacts;
 
@@ -30,9 +28,18 @@ class AnalysisService {
     _contacts.forEach((Contact contact) =>
         _contactToCallDurationInSeconds[contact] =
             _getTotalCallDurationWith(contact).inSeconds);
+  }
 
-    _contacts.forEach((Contact contact) =>
-        _contactToCallAmount[contact] = _getTotalCallAmountWith(contact));
+  DateTime getFirstCallDate() {
+    return DateTime.fromMillisecondsSinceEpoch(_callLogs.last.timestamp);
+  }
+
+  Duration getTotalCallDurationFor(Contact contact) {
+    return Duration(seconds: _contactToCallDurationInSeconds[contact]);
+  }
+
+  List<CallLogEntry> getCallLogsFor(Contact contact) {
+    return _contactToCallLogs[contact];
   }
 
   Future<Contact> getContactWithImage(Contact contact) async {
@@ -80,7 +87,7 @@ class AnalysisService {
 
   Future<List<Contact>> _sortContactsByCallAmount(
       List<Contact> contacts) async {
-    return asyncSort(contacts, (Contact c) => _contactToCallAmount[c]);
+    return asyncSort(contacts, (Contact c) => _contactToCallLogs[c].length);
   }
 
   Future<List<Contact>> _sortContactsByName(List<Contact> contacts) async {
@@ -95,21 +102,15 @@ class AnalysisService {
             0, (int curr, CallLogEntry callLog) => curr + callLog.duration));
   }
 
-  int _getTotalCallAmountWith(Contact contact) {
-    return _contactToCallLogs[contact].length;
-  }
-
-  List<CallLogEntry> _getAllCallLogsForContact(Contact contact,
-      [CallType callType]) {
+  List<CallLogEntry> _getAllCallLogsForContact(Contact contact) {
     return _callLogs
-        .where((CallLogEntry callLog) =>
-            (callType == null || callType == callLog.callType) &&
-            (contact.displayName == callLog.name ||
-                _contactHasPhoneNumber(contact, callLog.number) ||
-                _contactHasPhoneNumber(contact, callLog.formattedNumber)))
+        .where((CallLogEntry callLog) => (contact.displayName == callLog.name ||
+            _contactHasPhoneNumber(contact, callLog.number) ||
+            _contactHasPhoneNumber(contact, callLog.formattedNumber)))
         .toList();
   }
 
+  // TODO: Verify that this works
   bool _contactHasPhoneNumber(Contact contact, String callLogPhone) {
     return contact.phones
         .map((phone) => formatPhoneNumber(phone.value))

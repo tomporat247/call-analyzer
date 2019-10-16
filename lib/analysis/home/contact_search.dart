@@ -4,6 +4,8 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+// TODO: Search string color is white and can't be seen
+
 class ContactSearch extends SearchDelegate<Contact> {
   AnalysisService _analysisService;
   List<Contact> _topContacts;

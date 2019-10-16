@@ -27,8 +27,9 @@ class CallLogService {
     DateTime lastModified =
         await _storageService.getLastModified(callLogFileName);
     List<List<CallLogEntry>> callLogsFromAllSources = await Future.wait(
-        [_getCallLogsFromFile(), _getDeviceCallLogsFromDate(lastModified)]);
-    callLogsFromAllSources.forEach((calls) => callLogs.addAll(calls));
+        [_getDeviceCallLogsFromDate(lastModified), _getCallLogsFromFile()]);
+    callLogsFromAllSources.forEach((calls) =>
+        callLogs.addAll(calls));
     return callLogs;
   }
 
