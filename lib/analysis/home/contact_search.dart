@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
-class ContactSearch extends SearchDelegate<String> {
+class ContactSearch extends SearchDelegate<Contact> {
   AnalysisService _analysisService;
   List<Contact> _topContacts;
 
@@ -39,9 +39,7 @@ class ContactSearch extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    return Center(
-      child: Text('Selected: $query'),
-    );
+    return Container();
   }
 
   @override
@@ -60,7 +58,7 @@ class ContactSearch extends SearchDelegate<String> {
             contact.displayName.toLowerCase().indexOf(query.toLowerCase());
         int boldEndIndex = boldStartIndex + query.length;
         return ListTile(
-          onTap: () => showResults(context),
+          onTap: () => close(context, contact),
           leading: _getContactImage(contact),
           title: RichText(
             text: TextSpan(style: TextStyle(color: Colors.black), children: [
@@ -79,22 +77,33 @@ class ContactSearch extends SearchDelegate<String> {
   }
 
   Widget _getContactImage(Contact contact) {
-    return contact.avatar == null
-        ? Icon(FontAwesomeIcons.user)
-        : FutureBuilder(
-            future: _analysisService.getContactWithImage(contact),
-            builder: (BuildContext context, AsyncSnapshot<Contact> snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                var avatar = snapshot.data.avatar;
-                return avatar == null
-                    ? Icon(FontAwesomeIcons.user)
-                    : CircleAvatar(
-                        backgroundImage: MemoryImage(avatar),
-                      );
-              } else {
-                return CircularProgressIndicator();
-              }
-            },
-          );
+    return FutureBuilder(
+      future: _analysisService.getContactWithImage(contact),
+      builder: (BuildContext context, AsyncSnapshot<Contact> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return snapshot.data?.avatar != null
+              ? _getContactWithActualImageWidget(snapshot.data)
+              : _getContactWithDefaultImage();
+        } else {
+          return _getContactWithDefaultImage();
+        }
+      },
+    );
+  }
+
+  CircleAvatar _getContactWithActualImageWidget(Contact contact) {
+    return CircleAvatar(
+      backgroundImage: MemoryImage(contact.avatar),
+    );
+  }
+
+  CircleAvatar _getContactWithDefaultImage() {
+    return CircleAvatar(
+      child: Icon(
+        FontAwesomeIcons.user,
+        color: Colors.black,
+      ),
+      backgroundColor: Colors.grey[200],
+    );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:call_analyzer/analysis/home/contact_search.dart';
 import 'package:call_analyzer/config.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -36,7 +37,12 @@ class AnalysisHome extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.search),
                 onPressed: () =>
-                    showSearch(context: context, delegate: ContactSearch()),
+                    showSearch(context: context, delegate: ContactSearch())
+                        .then((Contact contact) {
+                  if (contact != null) {
+                    _openContactPageFor(contact);
+                  }
+                }),
               ),
               _getPopupMenu(),
             ],
@@ -52,15 +58,20 @@ class AnalysisHome extends StatelessWidget {
   }
 
   Widget _getPopupMenu() {
+    List<String> options = ['Settings'];
+
     return PopupMenuButton<String>(
       tooltip: 'Settings',
       onSelected: (String option) => print('selected $option'),
       itemBuilder: (BuildContext context) => [
-        PopupMenuItem<String>(
-          value: 'Settings',
-          child: Text('Settings'),
-        )
+        for (String option in options)
+          PopupMenuItem<String>(
+            value: option,
+            child: Text(option),
+          )
       ],
     );
   }
+
+  _openContactPageFor(Contact contact) {}
 }
