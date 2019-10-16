@@ -1,7 +1,7 @@
 import 'package:call_analyzer/analysis/services/analysis_service.dart';
+import 'package:call_analyzer/analysis/widgets/contact_image.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
 class ContactSearch extends SearchDelegate<Contact> {
@@ -57,9 +57,10 @@ class ContactSearch extends SearchDelegate<Contact> {
         int boldStartIndex =
             contact.displayName.toLowerCase().indexOf(query.toLowerCase());
         int boldEndIndex = boldStartIndex + query.length;
+
         return ListTile(
           onTap: () => close(context, contact),
-          leading: _getContactImage(contact),
+          leading: ContactImage(contact),
           title: RichText(
             text: TextSpan(style: TextStyle(color: Colors.black), children: [
               TextSpan(text: contact.displayName.substring(0, boldStartIndex)),
@@ -73,37 +74,6 @@ class ContactSearch extends SearchDelegate<Contact> {
         );
       },
       itemCount: suggestedContacts.length,
-    );
-  }
-
-  Widget _getContactImage(Contact contact) {
-    return FutureBuilder(
-      future: _analysisService.getContactWithImage(contact),
-      builder: (BuildContext context, AsyncSnapshot<Contact> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return snapshot.data?.avatar != null
-              ? _getContactWithActualImageWidget(snapshot.data)
-              : _getContactWithDefaultImage();
-        } else {
-          return _getContactWithDefaultImage();
-        }
-      },
-    );
-  }
-
-  CircleAvatar _getContactWithActualImageWidget(Contact contact) {
-    return CircleAvatar(
-      backgroundImage: MemoryImage(contact.avatar),
-    );
-  }
-
-  CircleAvatar _getContactWithDefaultImage() {
-    return CircleAvatar(
-      child: Icon(
-        FontAwesomeIcons.user,
-        color: Colors.black,
-      ),
-      backgroundColor: Colors.grey[200],
     );
   }
 }

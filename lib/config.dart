@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // TODO: Change button color
 ThemeData getAppTheme(context) {
   return ThemeData(
+    fontFamily: 'product',
     primarySwatch: Colors.blue,
 // TODO: Get correct text color(app vs permissions)
 //    textTheme: Theme.of(context).textTheme.apply(

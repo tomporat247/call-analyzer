@@ -3,7 +3,7 @@ import 'package:call_analyzer/call_log/services/call_log_parser_service.dart';
 import 'package:call_analyzer/call_log/services/call_log_service.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/contacts/services/contact_service.dart';
-import 'package:call_analyzer/permissions/pages/permission_request.dart';
+import 'package:call_analyzer/permissions/permission_request.dart';
 import 'package:call_analyzer/permissions/services/permission_service.dart';
 import 'package:call_analyzer/splash_screen/splash_screen.dart';
 import 'package:call_analyzer/storage/services/storage_service.dart';
