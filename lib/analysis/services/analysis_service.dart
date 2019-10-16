@@ -22,6 +22,7 @@ class AnalysisService {
     _callLogs = callLogs;
     _contacts = contacts;
 
+    // TODO: Figure out how to run these in compute
     _contacts.forEach((Contact contact) =>
         _contactToCallLogs[contact] = _getAllCallLogsForContact(contact));
 
