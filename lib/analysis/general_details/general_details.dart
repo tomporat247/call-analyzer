@@ -3,6 +3,7 @@ import 'package:call_analyzer/analysis/services/analysis_service.dart';
 import 'package:call_analyzer/analysis/widgets/time_series_chart_wrapper.dart';
 import 'package:call_analyzer/analysis/widgets/pie_chart_wrapper.dart';
 import 'package:call_analyzer/analysis/widgets/slide_show.dart';
+import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
@@ -21,6 +22,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   List<ChartData<num>> _totalCallsChartData;
   List<ChartData<num>> _topCallDurationData;
   List<ChartData<DateTime>> _totalCallsWithDate;
+  int _selectedYearForCallPerMonth;
 
   @override
   initState() {
@@ -32,12 +34,25 @@ class _GeneralDetailsState extends State<GeneralDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return SlideShow(<Widget>[
-      PieChartWrapper(_totalCallsChartData, 'Total Calls - $_totalCallAmount'),
-      PieChartWrapper(_topCallDurationData,
-          'Total Call Duration  - ${stringifyDuration(_totalCallDuration)}'),
-      TimeSeriesChartWrapper([_totalCallsWithDate], 'Calls Per Month'),
-    ]);
+    return SlideShow(
+      <Widget>[
+        PieChartWrapper(
+            _totalCallsChartData, 'Total Calls - $_totalCallAmount'),
+        PieChartWrapper(_topCallDurationData,
+            'Total Call Duration  - ${stringifyDuration(_totalCallDuration)}'),
+        // TODO: Figure out how to show this without freezing the app
+//        _getCallPerMonthTimeSeriesChart(),
+      ],
+      onPageSwitch: _onPageSwitch,
+    );
+  }
+
+  _onPageSwitch(int prevIndex, int currIndex) {
+    if (prevIndex == 2) {
+      setState(() {
+        _selectedYearForCallPerMonth = null;
+      });
+    }
   }
 
   _setupTotalCallData() {
@@ -134,5 +149,53 @@ class _GeneralDetailsState extends State<GeneralDetails> {
     _totalCallsWithDate.add(ChartData<DateTime>(
         '', '', callsThisMonth, Colors.white,
         pos: DateTime(currentDateTime.year, currentDateTime.month, 1)));
+  }
+
+  _getCallPerMonthTimeSeriesChart() {
+    int firstYear = DateTime.fromMillisecondsSinceEpoch(
+            _analysisService.callLogs.last.timestamp)
+        .year;
+    int lastYear = DateTime.fromMillisecondsSinceEpoch(
+            _analysisService.callLogs.first.timestamp)
+        .year;
+    List<int> years = new List<int>.generate(
+        lastYear - firstYear + 1, (int i) => firstYear + i);
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          flex: 1,
+          child: Wrap(
+            children: <Widget>[
+              for (int year in years)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: defaultPadding),
+                  child: ChoiceChip(
+                    label: Text(year.toString()),
+                    selected: _selectedYearForCallPerMonth == year,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        _selectedYearForCallPerMonth = selected ? year : null;
+                      });
+                    },
+                  ),
+                )
+            ],
+          ),
+        ),
+        Expanded(
+          flex: 6,
+          child: TimeSeriesChartWrapper([
+            _selectedYearForCallPerMonth == null
+                ? []
+                : _totalCallsWithDate
+                    .where((ChartData<DateTime> data) =>
+                        data.pos.year == _selectedYearForCallPerMonth)
+                    .toList()
+          ], 'Calls Per Month'),
+        )
+      ],
+    );
   }
 }
