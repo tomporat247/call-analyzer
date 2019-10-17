@@ -19,7 +19,7 @@ class ContactProfile extends StatefulWidget {
 }
 
 class _ContactProfileState extends State<ContactProfile> {
-  final double _avatarRadius = 60.0;
+  final double _avatarRadius = 50.0;
   final AnalysisService _analysisService = GetIt.instance<AnalysisService>();
   Contact _contact;
   List<CallLogEntry> _callLogs;
