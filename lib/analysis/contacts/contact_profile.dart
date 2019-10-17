@@ -68,7 +68,7 @@ class _ContactProfileState extends State<ContactProfile> {
                     _contact.displayName,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16.0,
+                      fontSize: normalFontSize + 2,
                     ),
                   ),
                   // TODO: Make this scrollable

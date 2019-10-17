@@ -46,7 +46,8 @@ class _PermissionRequestState extends State<PermissionRequest> {
             alignment: Alignment.center,
             child: Text(
               'Grant Required Permissions',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontSize: normalFontSize + 10, fontWeight: FontWeight.bold),
             ),
           ),
         ),

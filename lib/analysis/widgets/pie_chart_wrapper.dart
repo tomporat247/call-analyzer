@@ -37,16 +37,15 @@ class PieChartWrapper extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Expanded(
-              flex: 1,
-              child: Center(
-                child: Text(
-                  _id,
-                  style: TextStyle(
-                    fontStyle: FontStyle.italic,
-                    color: Colors.white,
-                  ),
-                ),
-              )),
+            flex: 2,
+            child: Center(
+              child: Text(
+                _id,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: normalFontSize + 2),
+              ),
+            ),
+          ),
           Expanded(
               flex: 10,
               child: new charts.PieChart(_dataSeries,
@@ -54,15 +53,12 @@ class PieChartWrapper extends StatelessWidget {
                   animate: true,
                   defaultRenderer: _getDefaultRenderer(context))),
           Expanded(
-              flex: 4,
+              flex: 3,
               child: Padding(
-                  padding: EdgeInsets.only(
-                      left: defaultPadding,
-                      right: defaultPadding,
-                      bottom: 2 * defaultPadding),
+                  padding: EdgeInsets.symmetric(horizontal: defaultPadding),
                   child: SingleChildScrollView(
                       child: Wrap(
-                    direction: Axis.horizontal,
+                    direction: Axis.vertical,
                     children: _getLegend(_dataSeries[0].data),
                   ))))
         ],
@@ -103,10 +99,10 @@ class PieChartWrapper extends StatelessWidget {
                     labelPosition: charts.ArcLabelPosition.auto,
                     insideLabelStyleSpec: charts.TextStyleSpec(
                         color: fromNormalColorToChartColor(textColor),
-                        fontSize: 12),
+                        fontSize: (normalFontSize - 2).floor()),
                     outsideLabelStyleSpec: charts.TextStyleSpec(
                         color: fromNormalColorToChartColor(textColor),
-                        fontSize: 12))
+                        fontSize: (normalFontSize - 2).floor()))
               ]
             : null);
   }

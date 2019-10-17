@@ -14,7 +14,7 @@ class SplashScreen extends StatelessWidget {
         Expanded(
           flex: 2,
           child: Padding(
-            padding: EdgeInsets.all(defaultPadding * 2),
+            padding: EdgeInsets.all(4 * defaultPadding),
             child: FlareActor(
               animationFile,
               alignment: Alignment.center,
@@ -25,16 +25,7 @@ class SplashScreen extends StatelessWidget {
         ),
         Expanded(
           flex: 1,
-          child: Center(
-            child: Text(
-              'Loading call logs and contacts',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
-                fontSize: 16,
-              ),
-            ),
-          ),
+          child: Container(),
         ),
       ],
     );

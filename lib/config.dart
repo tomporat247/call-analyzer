@@ -8,6 +8,8 @@ ThemeData getAppTheme(context) {
   );
 }
 
+final double normalFontSize = 14.0;
+
 Color getAccentColor(context) {
   return getAppTheme(context).accentColor;
 }
