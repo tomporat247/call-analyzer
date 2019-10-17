@@ -8,7 +8,14 @@ ThemeData getAppTheme(context) {
   );
 }
 
-final List<Color> backgroundColors = [Color(0xff1a9c91), Color(0xff0c4661)];
+Color getAccentColor(context) {
+  return getAppTheme(context).accentColor;
+}
+
+final LinearGradient appGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Colors.teal[600], Colors.deepPurple[600]]);
 
 const String appTitle = 'Call Analyzer';
 

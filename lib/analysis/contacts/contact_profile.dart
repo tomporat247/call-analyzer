@@ -167,10 +167,7 @@ class _ContactProfileState extends State<ContactProfile> {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(_cardBorderRadius),
-          gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Colors.teal[600], Colors.deepPurple[600]])),
+          gradient: appGradient),
       child: Card(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(_cardBorderRadius)),

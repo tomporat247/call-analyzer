@@ -5,9 +5,13 @@ class GeneralDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SlideShow(<Widget>[
-      Container(color: Colors.teal),
-      Container(color: Colors.green),
-      Container(color: Colors.blue),
+      Text('AAA'),
+      Text('ABB'),
+      Text('CCc'),
     ]);
+  }
+
+  Widget _getTotalCallsChart() {
+    return Center();
   }
 }

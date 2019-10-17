@@ -1,9 +1,12 @@
+import 'package:call_analyzer/config.dart';
 import 'package:flutter/material.dart';
 
 class SlideShow extends StatefulWidget {
   final List<Widget> slides;
+  final bool withOffset;
+  final bool withAppGradient;
 
-  SlideShow(this.slides);
+  SlideShow(this.slides, {this.withOffset = true, this.withAppGradient = true});
 
   @override
   _SlideShowState createState() => _SlideShowState();
@@ -11,7 +14,7 @@ class SlideShow extends StatefulWidget {
 
 class _SlideShowState extends State<SlideShow> {
   final PageController _pageController = PageController(viewportFraction: 0.8);
-  final double _slideBorderRadius = 20.0;
+  final double _slideBorderRadius = 30.0;
   int _currentPageIndex;
 
   @override
@@ -22,11 +25,16 @@ class _SlideShowState extends State<SlideShow> {
   }
 
   @override
+  dispose() {
+    _pageController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PageView.builder(
       controller: _pageController,
       scrollDirection: Axis.vertical,
-
       itemCount: widget.slides.length,
       itemBuilder: (BuildContext context, int pageIndex) {
         bool active = _currentPageIndex == pageIndex;
@@ -48,7 +56,7 @@ class _SlideShowState extends State<SlideShow> {
 
   Widget _buildSlide(Widget slide, bool active) {
     final double blur = active ? 30 : 0;
-    final double offset = active ? 20 : 0;
+    final double offset = active && widget.withOffset ? 20 : 0;
     final double sides = active ? 60 : 100;
 
     return AnimatedContainer(
@@ -57,6 +65,7 @@ class _SlideShowState extends State<SlideShow> {
       margin: EdgeInsets.only(left: sides, right: sides, bottom: 50),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(_slideBorderRadius),
+          gradient: widget.withAppGradient ? appGradient : null,
           boxShadow: [
             BoxShadow(
                 color: Colors.black87,
