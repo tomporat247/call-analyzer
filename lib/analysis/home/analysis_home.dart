@@ -59,6 +59,7 @@ class AnalysisHome extends StatelessWidget {
   }
 
   Widget _getPopupMenu() {
+    // TODO: Allow re setting permissions from popup menu
     List<String> options = ['Settings'];
 
     return PopupMenuButton<String>(

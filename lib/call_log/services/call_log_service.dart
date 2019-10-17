@@ -1,24 +1,35 @@
 import 'dart:convert';
 
 import 'package:call_analyzer/call_log/services/call_log_parser_service.dart';
+import 'package:call_analyzer/permissions/services/permission_service.dart';
 import 'package:call_analyzer/storage/services/storage_service.dart';
 import 'package:call_log/call_log.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CallLogService {
   final StorageService _storageService;
   final CallLogParserService _parserService;
+  final PermissionService _permissionService;
   final String callLogFileName = 'callLogs.json';
 
-  CallLogService(this._storageService, this._parserService);
+  CallLogService(
+      this._storageService, this._parserService, this._permissionService);
 
   Future<List<CallLogEntry>> getUpdatedCallLogs() async {
     List<CallLogEntry> callLogs;
-    if (await _storageService.fileExists(callLogFileName)) {
+    bool storagePermissionGranted =
+        await _permissionService.hasPermission(PermissionGroup.storage);
+    bool fileExists = storagePermissionGranted &&
+        await _storageService.fileExists(callLogFileName);
+
+    if (storagePermissionGranted && fileExists) {
       callLogs = await _getCallLogsFromAllSources();
     } else {
       callLogs = await _getAllDeviceCallLogs();
     }
-    await _updateCallLogFile(callLogs);
+    if (storagePermissionGranted) {
+      await _updateCallLogFile(callLogs);
+    }
     return callLogs;
   }
 
@@ -28,8 +39,7 @@ class CallLogService {
         await _storageService.getLastModified(callLogFileName);
     List<List<CallLogEntry>> callLogsFromAllSources = await Future.wait(
         [_getDeviceCallLogsFromDate(lastModified), _getCallLogsFromFile()]);
-    callLogsFromAllSources.forEach((calls) =>
-        callLogs.addAll(calls));
+    callLogsFromAllSources.forEach((calls) => callLogs.addAll(calls));
     return callLogs;
   }
 

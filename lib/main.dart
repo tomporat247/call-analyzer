@@ -81,7 +81,8 @@ class _MyAppState extends State<MyApp> {
     _setPageToDisplay(SplashScreen());
     List answers = await Future.wait([
       ContactService().getContacts(),
-      CallLogService(StorageService(), CallLogParserService())
+      CallLogService(
+              StorageService(), CallLogParserService(), _permissionService)
           .getUpdatedCallLogs()
     ]);
     await GetIt.instance<AnalysisService>().init(answers[0], answers[1]);

@@ -6,10 +6,12 @@ class PermissionDetails {
   final String name;
   final String description;
   final IconData icon;
+  final bool isOptional;
 
   PermissionDetails(
       {@required this.permissionGroup,
       @required this.name,
       @required this.description,
-      @required this.icon});
+      @required this.icon,
+      @required this.isOptional});
 }

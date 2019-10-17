@@ -23,10 +23,12 @@ class _PermissionRequestState extends State<PermissionRequest> {
   List<PermissionDetails> _permissions;
   int _currentStep;
   Set<PermissionGroup> _grantedPermissions;
+  Set<PermissionGroup> _deniedPermissions;
 
   @override
   void initState() {
     _grantedPermissions = widget.grantedPermissions.toSet();
+    _deniedPermissions = new Set<PermissionGroup>();
     _permissionService = GetIt.instance<PermissionService>();
     _setupPermissions();
     _currentStep = _grantedPermissions.length;
@@ -63,8 +65,7 @@ class _PermissionRequestState extends State<PermissionRequest> {
             padding: EdgeInsets.symmetric(horizontal: 4 * defaultPadding),
             child: LiquidLinearProgressIndicator(
               value: _grantedPermissions.length / _permissions.length,
-              // TODO: Change withAlpha to withOpacity
-              backgroundColor: Colors.white.withAlpha((0.1 * 255).round()),
+              backgroundColor: Colors.white.withOpacity(0.1),
               borderColor: Colors.transparent,
               borderWidth: 0,
               borderRadius: 16.0,
@@ -94,43 +95,67 @@ class _PermissionRequestState extends State<PermissionRequest> {
       currentStep: _currentStep,
       onStepContinue: () =>
           _requestPermission(_permissions[_currentStep].permissionGroup),
+      onStepCancel: () {
+        PermissionDetails permissionDetails = _permissions[_currentStep];
+        if (permissionDetails.isOptional) {
+          _denyPermission(permissionDetails.permissionGroup);
+        }
+      },
       onStepTapped: (index) => _updateCurrentStep(index),
       controlsBuilder: (BuildContext context,
               {VoidCallback onStepContinue, VoidCallback onStepCancel}) =>
-          Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(top: 2 * defaultPadding),
-            child: RaisedButton.icon(
-                onPressed: onStepContinue,
-                icon: Icon(FontAwesomeIcons.checkCircle),
-                label: Text('Allow')),
-          )
-        ],
+        padding: EdgeInsets.only(top: 2 * defaultPadding),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(right: 2 * defaultPadding),
+              child: RaisedButton.icon(
+                  onPressed: onStepContinue,
+                  icon: Icon(FontAwesomeIcons.checkCircle),
+                  label: Text('Allow')),
+            ),
+            Padding(
+              padding: EdgeInsets.only(right: 2 * defaultPadding),
+              child: RaisedButton.icon(
+                  onPressed: onStepCancel,
+                  icon: Icon(FontAwesomeIcons.timesCircle),
+                  label: Text('Deny')),
+            ),
+          ],
+        ),
       ),
       steps: [
         for (PermissionDetails permissionDetails in _permissions)
           Step(
-              title: Row(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(right: defaultPadding),
-                    child: Icon(
-                      permissionDetails.icon,
-                      color: Colors.grey[200],
-                    ),
+            title: Row(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(right: defaultPadding),
+                  child: Icon(
+                    permissionDetails.icon,
+                    color: Colors.grey[200],
                   ),
-                  Text('${permissionDetails.name} Permission')
-                ],
-              ),
-              content: Text(permissionDetails.description),
-              state: _grantedPermissions
-                      .contains(permissionDetails.permissionGroup)
-                  ? StepState.complete
-                  : StepState.indexed)
+                ),
+                Text(
+                    '${permissionDetails.name} Permission ${!permissionDetails.isOptional ? '' : ' (optional)'}')
+              ],
+            ),
+            content: Text(permissionDetails.description),
+            state: _getStepStateFor(permissionDetails.permissionGroup),
+          )
       ],
     );
+  }
+
+  StepState _getStepStateFor(PermissionGroup permissionGroup) {
+    if (_grantedPermissions.contains(permissionGroup)) {
+      return StepState.complete;
+    } else if (_deniedPermissions.contains(permissionGroup)) {
+      return StepState.error;
+    }
+    return StepState.indexed;
   }
 
   _requestPermission(PermissionGroup permissionGroup) {
@@ -144,6 +169,13 @@ class _PermissionRequestState extends State<PermissionRequest> {
     });
   }
 
+  _denyPermission(PermissionGroup permissionGroup) {
+    setState(() {
+      _deniedPermissions.add(permissionGroup);
+      _tryExit();
+    });
+  }
+
   _updateCurrentStep(int stepIndex) {
     setState(() {
       _currentStep = stepIndex % _permissions.length;
@@ -153,9 +185,14 @@ class _PermissionRequestState extends State<PermissionRequest> {
   _addToGrantedPermissions(PermissionGroup permissionGroup) {
     setState(() {
       _grantedPermissions.add(permissionGroup);
-      if (_grantedPermissions.length == _permissions.length) {
-        widget.onAllPermissionsGranted();
-      }
+      _tryExit();
     });
+  }
+
+  _tryExit() {
+    if (_grantedPermissions.length + _deniedPermissions.length ==
+        _permissions.length) {
+      widget.onAllPermissionsGranted();
+    }
   }
 }
