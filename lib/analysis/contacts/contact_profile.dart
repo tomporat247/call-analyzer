@@ -33,6 +33,8 @@ class _ContactProfileState extends State<ContactProfile> {
   double _averageCallsPerDay;
   Duration _averageCallDurationInSecondsPerDay;
 
+  // TODO: Add a graph of all calls with user (x axis is the time, y is calls per day in one color and call duration per day in another color)
+
   @override
   void initState() {
     _contact = widget._contact;
@@ -45,13 +47,6 @@ class _ContactProfileState extends State<ContactProfile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-//      decoration: BoxDecoration(
-//        gradient: LinearGradient(
-//          begin: Alignment.topLeft,
-//          end: Alignment.bottomRight,
-//          colors: backgroundColors,
-//        ),
-//      ),
       child: Scaffold(
         appBar: AppBar(
           title: Text('Contact Information'),
@@ -171,17 +166,14 @@ class _ContactProfileState extends State<ContactProfile> {
   Widget wrapInCard(List<Widget> data) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(_cardBorderRadius),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Colors.teal[600], Colors.deepPurple[600]]
-        )
-      ),
+          borderRadius: BorderRadius.circular(_cardBorderRadius),
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.teal[600], Colors.deepPurple[600]])),
       child: Card(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_cardBorderRadius)
-        ),
+            borderRadius: BorderRadius.circular(_cardBorderRadius)),
         color: Colors.transparent,
 //        elevation: 16.0,
         child: Column(

@@ -12,26 +12,14 @@ class AnalysisHome extends StatelessWidget {
         length: 3,
         child: Scaffold(
           appBar: AppBar(
+            title: Text(appTitle),
             bottom: TabBar(
               tabs: <Widget>[
-                Tab(
-                    icon: Tooltip(
-                  message: 'Me',
-                  child: Icon(FontAwesomeIcons.chartArea),
-                )),
-                Tab(
-                    icon: Tooltip(
-                  message: 'Top',
-                  child: Icon(FontAwesomeIcons.medal),
-                )),
-                Tab(
-                    icon: Tooltip(
-                  message: 'Contacts',
-                  child: Icon(FontAwesomeIcons.userFriends),
-                )),
+                Tab(text: 'Me', icon: Icon(FontAwesomeIcons.chartArea)),
+                Tab(text: 'Top', icon: Icon(FontAwesomeIcons.medal)),
+                Tab(text: 'Contacts', icon: Icon(FontAwesomeIcons.userFriends)),
               ],
             ),
-            title: Text(appTitle),
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.search),

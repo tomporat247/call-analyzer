@@ -44,19 +44,10 @@ class _MyAppState extends State<MyApp> {
       title: appTitle,
       theme: getAppTheme(context),
       home: Material(
-        child: Container(
-//          decoration: BoxDecoration(
-//            gradient: LinearGradient(
-//              begin: Alignment.topLeft,
-//              end: Alignment.bottomRight,
-//              colors: backgroundColors,
-//            ),
-//          ),
-          child: AnimatedSwitcher(
-            child: _pageToDisplay,
-            duration: Duration(seconds: 1),
-            switchInCurve: Curves.easeInOut,
-          ),
+        child: AnimatedSwitcher(
+          child: _pageToDisplay,
+          duration: Duration(seconds: 1),
+          switchInCurve: Curves.easeInOut,
         ),
       ),
     );
