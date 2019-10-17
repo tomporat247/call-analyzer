@@ -17,6 +17,7 @@ class GeneralDetails extends StatefulWidget {
 
 class _GeneralDetailsState extends State<GeneralDetails> {
   final AnalysisService _analysisService = GetIt.instance<AnalysisService>();
+  final int topContactAmount = 10;
   int _totalCallAmount;
   Duration _totalCallDuration;
   List<ChartData<num>> _totalCallsChartData;
@@ -96,7 +97,8 @@ class _GeneralDetailsState extends State<GeneralDetails> {
     ];
     _totalCallDuration = _analysisService.getTotalCallDuration();
     _topCallDurationData = new List<ChartData<num>>();
-    List<Contact> topContacts = await _analysisService.getTopContacts();
+    List<Contact> topContacts =
+        await _analysisService.getTopContacts(amount: topContactAmount);
     setState(() {
       double sum = 0;
       topContacts.forEach((Contact contact) {

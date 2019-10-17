@@ -76,9 +76,12 @@ class AnalysisService {
   }
 
   Future<List<Contact>> getTopContacts(
-      {SortOption sortOption: SortOption.CALL_DURATION,
-      int amount = 10}) async {
-    return (await _getSortedContacts(sortOption)).take(amount).toList();
+      {SortOption sortOption: SortOption.CALL_DURATION, int amount}) async {
+    List<Contact> contacts = await _getSortedContacts(sortOption);
+    if (amount != null) {
+      contacts = contacts.take(amount).toList();
+    }
+    return contacts;
   }
 
   _updateContact(Contact contactToUpdate) {
