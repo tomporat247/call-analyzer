@@ -20,6 +20,7 @@ class ContactProfile extends StatefulWidget {
 
 class _ContactProfileState extends State<ContactProfile> {
   final double _avatarRadius = 50.0;
+  final double _cardBorderRadius = 12.0;
   final AnalysisService _analysisService = GetIt.instance<AnalysisService>();
   Contact _contact;
   List<CallLogEntry> _callLogs;
@@ -60,28 +61,28 @@ class _ContactProfileState extends State<ContactProfile> {
           children: <Widget>[
             Expanded(
               flex: 1,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    ContactImage(
-                      _contact,
-                      radius: _avatarRadius,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  ContactImage(
+                    _contact,
+                    radius: _avatarRadius,
+                  ),
+                  Text(
+                    _contact.displayName,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.0,
                     ),
-                    Text(
-                      _contact.displayName,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    ...[
-                      for (Item phoneItem in _contact.phones)
-                        Text('${phoneItem.label[0].toUpperCase()}'
-                            '${phoneItem.label.substring(1).toLowerCase()}: ${_contact.phones.toList()[0].value}')
-                    ]
-                  ],
-                ),
+                  ),
+                  // TODO: Make this scrollable
+                  ...[
+                    for (Item phoneItem in _contact.phones)
+                      Text('${phoneItem.label[0].toUpperCase()}'
+                          '${phoneItem.label.substring(1).toLowerCase()}: ${_contact.phones.toList()[0].value}')
+                  ]
+                ],
               ),
             ),
             Expanded(
@@ -167,13 +168,26 @@ class _ContactProfileState extends State<ContactProfile> {
     ];
   }
 
-  Card wrapInCard(List<Widget> data) {
-    return Card(
-//      color: Colors.teal,
-      elevation: 16.0,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: data,
+  Widget wrapInCard(List<Widget> data) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(_cardBorderRadius),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.teal[600], Colors.deepPurple[600]]
+        )
+      ),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(_cardBorderRadius)
+        ),
+        color: Colors.transparent,
+//        elevation: 16.0,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: data,
+        ),
       ),
     );
   }

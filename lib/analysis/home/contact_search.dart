@@ -1,5 +1,6 @@
 import 'package:call_analyzer/analysis/services/analysis_service.dart';
 import 'package:call_analyzer/analysis/widgets/contact_image.dart';
+import 'package:call_analyzer/config.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -64,12 +65,12 @@ class ContactSearch extends SearchDelegate<Contact> {
           onTap: () => close(context, contact),
           leading: ContactImage(contact),
           title: RichText(
-            text: TextSpan(style: TextStyle(color: Colors.black), children: [
+            text: TextSpan(children: [
               TextSpan(text: contact.displayName.substring(0, boldStartIndex)),
               TextSpan(
                   text: contact.displayName
                       .substring(boldStartIndex, boldEndIndex),
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: getAppTheme(context).accentColor)),
               TextSpan(text: contact.displayName.substring(boldEndIndex)),
             ]),
           ),
