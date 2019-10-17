@@ -20,3 +20,5 @@ final LinearGradient appGradient = LinearGradient(
 const String appTitle = 'Call Analyzer';
 
 const double defaultPadding = 8.0;
+
+const Duration defaultChartAnimationDuration = Duration(milliseconds: 800);

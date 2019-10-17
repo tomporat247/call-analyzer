@@ -15,7 +15,7 @@ class ContactSearch extends SearchDelegate<Contact> {
     _analysisService = GetIt.instance<AnalysisService>();
     _topContacts = new List<Contact>();
     _analysisService
-        .getTopContacts(_analysisService.topContactsAmount)
+        .getTopContacts()
         .then((List<Contact> topContacts) => _topContacts = topContacts);
   }
 

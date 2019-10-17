@@ -13,7 +13,7 @@ class SlideShow extends StatefulWidget {
 }
 
 class _SlideShowState extends State<SlideShow> {
-  final PageController _pageController = PageController(viewportFraction: 0.8);
+  final PageController _pageController = PageController(viewportFraction: 0.85);
   final double _slideBorderRadius = 30.0;
   int _currentPageIndex;
 
@@ -62,7 +62,7 @@ class _SlideShowState extends State<SlideShow> {
     return AnimatedContainer(
       duration: Duration(seconds: 1),
       curve: Curves.easeOutQuint,
-      margin: EdgeInsets.only(left: sides, right: sides, bottom: 50),
+      margin: EdgeInsets.only(left: sides, right: sides, bottom: 30),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(_slideBorderRadius),
           gradient: widget.withAppGradient ? appGradient : null,

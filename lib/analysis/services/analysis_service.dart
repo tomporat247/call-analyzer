@@ -1,11 +1,10 @@
-import 'package:call_analyzer/analysis/models/SortOption.dart';
+import 'package:call_analyzer/analysis/models/sort_option.dart';
 import 'package:call_analyzer/contacts/services/contact_service.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
 
 class AnalysisService {
-  final int topContactsAmount = 8;
   final ContactService _contactService;
   List<Contact> _contacts;
   List<CallLogEntry> _callLogs;
@@ -31,12 +30,28 @@ class AnalysisService {
             _getTotalCallDurationWith(contact).inSeconds);
   }
 
+  int getAmountOfTotalCallLogs() {
+    return _callLogs.length;
+  }
+
+  List<CallLogEntry> getAllCallLogsOfType(CallType callType) {
+    return _callLogs.where((CallLogEntry c) => c.callType == callType).toList();
+  }
+
   DateTime getFirstCallDate() {
     return DateTime.fromMillisecondsSinceEpoch(_callLogs.last.timestamp);
   }
 
   Duration getTotalCallDurationFor(Contact contact) {
     return Duration(seconds: _contactToCallDurationInSeconds[contact]);
+  }
+
+  Duration getTotalCallDuration() {
+    int totalSeconds = _contacts.fold<int>(
+        0,
+        (int curr, Contact contact) =>
+            curr + _contactToCallDurationInSeconds[contact]);
+    return Duration(seconds: totalSeconds);
   }
 
   List<CallLogEntry> getCallLogsFor(Contact contact) {
@@ -54,7 +69,7 @@ class AnalysisService {
     }
   }
 
-  Future<List<Contact>> getTopContacts(int amount) async {
+  Future<List<Contact>> getTopContacts([int amount = 10]) async {
     return (await _getSortedContacts(SortOption.CALL_DURATION))
         .take(amount)
         .toList();

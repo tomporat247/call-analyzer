@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:flutter/material.dart';
 
 typedef extractCompareByFromElement<Element, Comparer> = Comparer Function(
     Element element);
@@ -32,6 +34,15 @@ String stringifyDuration(Duration duration) {
   int minutes = int.parse(parts[1]);
   int seconds = int.parse(parts[2]);
   return '${hours}h ${minutes}m ${seconds}s';
+}
+
+charts.Color fromNormalColorToChartColor(Color color) {
+  return new charts.Color(
+      r: color.red, g: color.green, b: color.blue, a: color.alpha);
+}
+
+Color fromChartColorToNormalColor(charts.Color color) {
+  return new Color.fromARGB(color.a, color.r, color.g, color.b);
 }
 
 Future<List<Element>> asyncSort<Element, Comparer>(List<Element> originalList,
