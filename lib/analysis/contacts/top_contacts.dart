@@ -18,6 +18,8 @@ class TopContacts extends StatefulWidget {
 }
 
 class _TopContactsState extends State<TopContacts> {
+  final TextStyle filterPrefixStyle = TextStyle(color: Colors.white70);
+  final TextStyle filterValueStyle = TextStyle(fontWeight: FontWeight.bold);
   int _amount;
   SortOption _sortOption;
   AnalysisService _analysisService = GetIt.instance<AnalysisService>();
@@ -88,22 +90,34 @@ class _TopContactsState extends State<TopContacts> {
         .then((List<Contact> contacts) => _topContacts$.sink.add(contacts));
   }
 
-  Widget _getFilterOptions(BuildContext buildContext) {
+  Widget _getFilterOptions(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         PopupMenuWrapper(
           options: _menuSortOptions,
-          child: _getFilterFor(_menuSortOptions
-              .firstWhere(
-                  (MenuTextOption option) => option.value == _sortOption)
-              .data),
+          child: _getFilterFor(RichText(
+            text: TextSpan(children: [
+              TextSpan(text: 'Sort By: ', style: filterPrefixStyle),
+              TextSpan(
+                  text: _menuSortOptions
+                      .firstWhere((MenuTextOption option) =>
+                          option.value == _sortOption)
+                      .data,
+                  style: filterValueStyle),
+            ]),
+          )),
         ),
         InkWell(
-          child: _getFilterFor('$_amount Contacts Displayed'),
+          child: _getFilterFor(RichText(
+            text: TextSpan(children: [
+              TextSpan(text: 'Contacts Displayed: ', style: filterPrefixStyle),
+              TextSpan(text: _amount.toString(), style: filterValueStyle),
+            ]),
+          )),
           onTap: () {
             ContactAmountPickerDialog(
-              buildContext,
+              context,
               initialValue: _amount,
               maximumValue: _analysisService.getContactAmount(),
             ).show().then((int amount) {
@@ -117,9 +131,9 @@ class _TopContactsState extends State<TopContacts> {
     );
   }
 
-  Widget _getFilterFor(String filterText) {
+  Widget _getFilterFor(RichText richText) {
     return Row(children: <Widget>[
-      Text(filterText),
+      richText,
       Icon(Icons.arrow_drop_down),
     ]);
   }
