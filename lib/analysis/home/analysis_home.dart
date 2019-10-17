@@ -1,4 +1,5 @@
 import 'package:call_analyzer/analysis/contacts/contact_profile.dart';
+import 'package:call_analyzer/analysis/general_details/general_details.dart';
 import 'package:call_analyzer/analysis/home/contact_search.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:contacts_service/contacts_service.dart';
@@ -15,7 +16,7 @@ class AnalysisHome extends StatelessWidget {
             title: Text(appTitle),
             bottom: TabBar(
               tabs: <Widget>[
-                Tab(text: 'Me', icon: Icon(FontAwesomeIcons.chartArea)),
+                Tab(text: 'General', icon: Icon(FontAwesomeIcons.chartArea)),
                 Tab(text: 'Top', icon: Icon(FontAwesomeIcons.medal)),
                 Tab(text: 'Contacts', icon: Icon(FontAwesomeIcons.userFriends)),
               ],
@@ -36,7 +37,7 @@ class AnalysisHome extends StatelessWidget {
           ),
           body: TabBarView(
             children: <Widget>[
-              Icon(FontAwesomeIcons.chartArea),
+              GeneralDetails(),
               Icon(FontAwesomeIcons.medal),
               Icon(FontAwesomeIcons.userFriends)
             ],
