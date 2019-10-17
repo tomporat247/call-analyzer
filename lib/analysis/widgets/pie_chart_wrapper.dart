@@ -3,6 +3,7 @@ import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
+import '../widgets/chart_top_title.dart';
 
 class PieChartWrapper extends StatelessWidget {
   // Data Members
@@ -18,7 +19,7 @@ class PieChartWrapper extends StatelessWidget {
     _dataSeries = <charts.Series<ChartData, int>>[
       new charts.Series<ChartData, int>(
         id: _id,
-        domainFn: (ChartData data, _) => data.counter,
+        domainFn: (ChartData data, _) => data.pos,
         measureFn: (ChartData data, _) => data.value,
         colorFn: (ChartData data, _) => fromNormalColorToChartColor(data.color),
         data: _givenChartData,
@@ -38,13 +39,7 @@ class PieChartWrapper extends StatelessWidget {
         children: <Widget>[
           Expanded(
             flex: 2,
-            child: Center(
-              child: Text(
-                _id,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: normalFontSize + 2),
-              ),
-            ),
+            child: ChartTopTitle(_id),
           ),
           Expanded(
               flex: 10,

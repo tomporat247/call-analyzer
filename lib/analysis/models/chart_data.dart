@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
-class ChartData {
+class ChartData<T> {
   static int staticCounter = 0;
   final captionLimit = 20;
   String caption;
   num value;
-  int counter;
+  T pos;
   Color color;
   String collectionID;
   String suffix;
 
   // CTor
   ChartData(this.collectionID, this.caption, this.value, this.color,
-      {this.suffix = '', int counter, limitCaption = false}) {
-    if (counter == null) {
-      this.counter = ChartData.staticCounter++;
+      {this.suffix = '', T pos, limitCaption = false}) {
+    if (pos == null) {
+      this.pos = ChartData.staticCounter++ as T;
     } else {
-      this.counter = counter;
+      this.pos = pos;
     }
     if (limitCaption && caption.length > captionLimit) {
       caption = caption.substring(0, captionLimit - 3) + '...';
@@ -26,12 +26,12 @@ class ChartData {
   ChartData.alter(ChartData other,
       {String newCaption,
       num newValue,
-      int newCounter,
+      T newPos,
       Color newColor,
       String newCollectionID}) {
     this.caption = newCaption ?? other.caption;
     this.value = newValue ?? other.value;
-    this.counter = newCounter ?? other.counter;
+    this.pos = newPos ?? other.pos;
     this.color = newColor ?? other.color;
     this.collectionID = newCollectionID ?? other.collectionID;
   }

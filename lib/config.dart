@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-ThemeData getAppTheme(context) {
+ThemeData getAppTheme(BuildContext context) {
   return ThemeData(
     fontFamily: 'product',
     primarySwatch: Colors.teal,
@@ -10,8 +10,12 @@ ThemeData getAppTheme(context) {
 
 final double normalFontSize = 14.0;
 
-Color getAccentColor(context) {
+Color getAccentColor(BuildContext context) {
   return getAppTheme(context).accentColor;
+}
+
+Color getTextColor(BuildContext context) {
+  return Theme.of(context).textTheme.body1.color;
 }
 
 final LinearGradient appGradient = LinearGradient(

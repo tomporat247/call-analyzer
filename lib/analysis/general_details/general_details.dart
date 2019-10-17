@@ -1,5 +1,6 @@
 import 'package:call_analyzer/analysis/models/chart_data.dart';
 import 'package:call_analyzer/analysis/services/analysis_service.dart';
+import 'package:call_analyzer/analysis/widgets/time_series_chart_wrapper.dart';
 import 'package:call_analyzer/analysis/widgets/pie_chart_wrapper.dart';
 import 'package:call_analyzer/analysis/widgets/slide_show.dart';
 import 'package:call_analyzer/helper/helper.dart';
@@ -17,35 +18,32 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   final AnalysisService _analysisService = GetIt.instance<AnalysisService>();
   int _totalCallAmount;
   Duration _totalCallDuration;
-  List<ChartData> _totalCallsChartData;
-  List<ChartData> _topCallDurationData;
+  List<ChartData<num>> _totalCallsChartData;
+  List<ChartData<num>> _topCallDurationData;
+  List<ChartData<DateTime>> _totalCallsWithDate;
 
   @override
   initState() {
     _setupTotalCallData();
     _setupCallDurationData();
+    _setupTotalCallWithDateData();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return SlideShow(<Widget>[
-      _getPieChart(_totalCallsChartData, 'Total Calls - $_totalCallAmount'),
-      _getPieChart(_topCallDurationData,
+      PieChartWrapper(_totalCallsChartData, 'Total Calls - $_totalCallAmount'),
+      PieChartWrapper(_topCallDurationData,
           'Total Call Duration  - ${stringifyDuration(_totalCallDuration)}'),
-      Text('CCc'),
+      // TODO: Figure out how to show this without freezing the app
+//      TimeSeriesChartWrapper([_totalCallsWithDate], 'Calls Per Month'),
     ]);
-  }
-
-  Widget _getPieChart(List<ChartData> dataSeries, String id) {
-    return Center(
-      child: PieChartWrapper(dataSeries, id),
-    );
   }
 
   _setupTotalCallData() {
     _totalCallAmount = _analysisService.getAmountOfTotalCallLogs();
-    _totalCallsChartData = <ChartData>[
+    _totalCallsChartData = <ChartData<num>>[
       ChartData(
           "",
           "Incoming",
@@ -83,7 +81,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
       Colors.red[700],
     ];
     _totalCallDuration = _analysisService.getTotalCallDuration();
-    _topCallDurationData = new List<ChartData>();
+    _topCallDurationData = new List<ChartData<num>>();
     List<Contact> topContacts = await _analysisService.getTopContacts();
     setState(() {
       double sum = 0;
@@ -110,6 +108,30 @@ class _GeneralDetailsState extends State<GeneralDetails> {
         suffix: ' %',
         limitCaption: true,
       ));
+    });
+  }
+
+  _setupTotalCallWithDateData() {
+    _totalCallsWithDate = [];
+    DateTime currentDateTime;
+    DateTime previousDateTime = DateTime.fromMillisecondsSinceEpoch(
+        _analysisService.callLogs.last.timestamp);
+    int callsThisMonth = 0;
+
+    _analysisService.callLogs.reversed.forEach((CallLogEntry callLog) {
+      currentDateTime = DateTime.fromMillisecondsSinceEpoch(callLog.timestamp);
+
+      if (currentDateTime.month == previousDateTime.month) {
+        callsThisMonth++;
+      } else {
+        callsThisMonth = 1;
+      }
+
+      _totalCallsWithDate.add(ChartData<DateTime>(
+          '', '', callsThisMonth, Colors.white,
+          pos: DateTime(currentDateTime.year, currentDateTime.month, 1)));
+
+      previousDateTime = currentDateTime;
     });
   }
 }

@@ -13,6 +13,8 @@ class AnalysisService {
 
   List<Contact> get contacts => _contacts;
 
+  List<CallLogEntry> get callLogs => _callLogs;
+
   AnalysisService(this._contactService);
 
   init(List<Contact> contacts, List<CallLogEntry> callLogs) async {
