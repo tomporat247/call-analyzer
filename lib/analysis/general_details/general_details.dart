@@ -83,23 +83,33 @@ class _GeneralDetailsState extends State<GeneralDetails> {
       Colors.red[700],
     ];
     _totalCallDuration = _analysisService.getTotalCallDuration();
-    _topCallDurationData = [];
+    _topCallDurationData = new List<ChartData>();
     List<Contact> topContacts = await _analysisService.getTopContacts();
     setState(() {
-      _topCallDurationData = [
-        for (Contact contact in topContacts)
-          ChartData(
-            "",
-            contact.displayName,
-            double.parse(stringifyNumber(
-                _analysisService.getTotalCallDurationFor(contact).inSeconds /
-                    _totalCallDuration.inSeconds *
-                    100)),
-            colors[topContacts.indexOf(contact)],
-            suffix: ' %',
-            limitCaption: true,
-          )
-      ];
+      double sum = 0;
+      topContacts.forEach((Contact contact) {
+        double contactPercentageOutOfAllCalls =
+            _analysisService.getTotalCallDurationFor(contact).inSeconds /
+                _totalCallDuration.inSeconds *
+                100;
+        sum += contactPercentageOutOfAllCalls;
+        _topCallDurationData.add(ChartData(
+          "",
+          contact.displayName,
+          double.parse(stringifyNumber(contactPercentageOutOfAllCalls)),
+          colors[topContacts.indexOf(contact)],
+          suffix: ' %',
+          limitCaption: true,
+        ));
+      });
+      _topCallDurationData.add(ChartData(
+        "",
+        'Other',
+        double.parse(stringifyNumber(100 - sum)),
+        Colors.black,
+        suffix: ' %',
+        limitCaption: true,
+      ));
     });
   }
 }

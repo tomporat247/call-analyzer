@@ -57,7 +57,7 @@ class _SlideShowState extends State<SlideShow> {
   Widget _buildSlide(Widget slide, bool active) {
     final double blur = active ? 30 : 0;
     final double offset = active && widget.withOffset ? 20 : 0;
-    final double sides = active ? 60 : 100;
+    final double sides = active ? 50 : 80;
 
     return AnimatedContainer(
       duration: Duration(seconds: 1),
