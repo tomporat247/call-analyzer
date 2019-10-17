@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import '../../config.dart';
+
+import '../config.dart';
 
 class ChartTopTitle extends StatelessWidget {
   final String _title;

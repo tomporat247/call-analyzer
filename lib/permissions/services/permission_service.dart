@@ -1,4 +1,4 @@
-import 'package:call_analyzer/permissions/models/permission_details.dart';
+import 'package:call_analyzer/models/permission_details.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 

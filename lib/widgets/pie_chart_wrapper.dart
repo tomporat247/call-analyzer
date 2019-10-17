@@ -1,4 +1,4 @@
-import 'package:call_analyzer/analysis/models/chart_data.dart';
+import 'package:call_analyzer/models/chart_data.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:charts_flutter/flutter.dart' as charts;

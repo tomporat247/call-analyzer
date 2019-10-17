@@ -1,6 +1,6 @@
 import 'package:call_analyzer/analysis/services/analysis_service.dart';
-import 'package:call_analyzer/analysis/widgets/contact_image.dart';
 import 'package:call_analyzer/helper/helper.dart';
+import 'package:call_analyzer/widgets/contact_image.dart';
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';

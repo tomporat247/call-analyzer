@@ -1,4 +1,4 @@
-import 'package:call_analyzer/analysis/models/sort_option.dart';
+import 'package:call_analyzer/models/sort_option.dart';
 import 'package:call_analyzer/contacts/services/contact_service.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_log/call_log.dart';
@@ -30,6 +30,10 @@ class AnalysisService {
     _contacts.forEach((Contact contact) =>
         _contactToCallDurationInSeconds[contact] =
             _getTotalCallDurationWith(contact).inSeconds);
+  }
+
+  int getContactAmount() {
+    return _contacts.length;
   }
 
   int getAmountOfTotalCallLogs() {
@@ -71,10 +75,10 @@ class AnalysisService {
     }
   }
 
-  Future<List<Contact>> getTopContacts([int amount = 10]) async {
-    return (await _getSortedContacts(SortOption.CALL_DURATION))
-        .take(amount)
-        .toList();
+  Future<List<Contact>> getTopContacts(
+      {SortOption sortOption: SortOption.CALL_DURATION,
+      int amount = 10}) async {
+    return (await _getSortedContacts(sortOption)).take(amount).toList();
   }
 
   _updateContact(Contact contactToUpdate) {
