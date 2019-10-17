@@ -79,7 +79,7 @@ class _TopContactsState extends State<TopContacts> {
             ],
           );
         }
-        return Loader();
+        return Container();
       },
     );
   }
