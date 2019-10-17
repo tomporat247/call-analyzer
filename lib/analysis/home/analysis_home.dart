@@ -11,9 +11,9 @@ class AnalysisHome extends StatelessWidget {
     return DefaultTabController(
         length: 3,
         child: Scaffold(
-          backgroundColor: Colors.transparent,
+//          backgroundColor: Colors.transparent,
           appBar: AppBar(
-            backgroundColor: Colors.transparent,
+//            backgroundColor: Colors.transparent,
             bottom: TabBar(
               tabs: <Widget>[
                 Tab(

@@ -14,7 +14,7 @@ getNumberWithCommas(num number) {
       new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 }
 
-numberToString(num number, [numbersAfterDecimalPoint = 4]) {
+String stringifyNumber(num number, [numbersAfterDecimalPoint = 4]) {
   String numberString = number.toString();
   return numberString.substring(
       0,
@@ -22,6 +22,16 @@ numberToString(num number, [numbersAfterDecimalPoint = 4]) {
           ? null
           : min(numberString.length,
               numberString.indexOf('.') + numbersAfterDecimalPoint + 1));
+}
+
+String stringifyDuration(Duration duration) {
+  String durationString = duration.toString();
+  durationString = durationString.substring(0, durationString.indexOf('.'));
+  List<String> parts = durationString.split(':');
+  int hours = int.parse(parts[0]);
+  int minutes = int.parse(parts[1]);
+  int seconds = int.parse(parts[2]);
+  return '${hours}h ${minutes}m ${seconds}s';
 }
 
 Future<List<Element>> asyncSort<Element, Comparer>(List<Element> originalList,

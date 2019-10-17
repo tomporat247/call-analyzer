@@ -30,6 +30,7 @@ class _ContactProfileState extends State<ContactProfile> {
   int _totalRejectedCallAmount;
   Duration _totalCallDuration;
   double _averageCallsPerDay;
+  Duration _averageCallDurationInSecondsPerDay;
 
   @override
   void initState() {
@@ -43,17 +44,15 @@ class _ContactProfileState extends State<ContactProfile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: backgroundColors,
-        ),
-      ),
+//      decoration: BoxDecoration(
+//        gradient: LinearGradient(
+//          begin: Alignment.topLeft,
+//          end: Alignment.bottomRight,
+//          colors: backgroundColors,
+//        ),
+//      ),
       child: Scaffold(
-        backgroundColor: Colors.transparent,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
           title: Text('Contact Information'),
         ),
         body: Column(
@@ -120,6 +119,8 @@ class _ContactProfileState extends State<ContactProfile> {
     _totalCallAmount = _callLogs.length;
     _averageCallsPerDay = _totalCallAmount / daysSinceFirstCall;
     _totalCallDuration = _analysisService.getTotalCallDurationFor(_contact);
+    _averageCallDurationInSecondsPerDay = Duration(
+        seconds: (_totalCallDuration.inSeconds / (daysSinceFirstCall)).floor());
     _totalIncomingCallAmount = 0;
     _totalOutgoingCallAmount = 0;
     _totalMissedCallAmount = 0;
@@ -168,7 +169,7 @@ class _ContactProfileState extends State<ContactProfile> {
 
   Card wrapInCard(List<Widget> data) {
     return Card(
-      color: Colors.teal,
+//      color: Colors.teal,
       elevation: 16.0,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -212,7 +213,7 @@ class _ContactProfileState extends State<ContactProfile> {
   }
 
   String _getPercentageFromTotalCalls(int value) {
-    return '${numberToString(value / _totalCallAmount * 100, 2)}%';
+    return '${stringifyNumber(value / _totalCallAmount * 100, 2)}%';
   }
 
   List<Widget> _getCallDurationData() {
@@ -220,11 +221,10 @@ class _ContactProfileState extends State<ContactProfile> {
       ListTile(
         title: Text('Total Call Duration'),
         leading: Icon(FontAwesomeIcons.phoneVolume),
-        subtitle: Text(
-            '${_totalCallDuration.toString().substring(0, _totalCallDuration.toString().indexOf('.')).replaceAll(':', ' : ')}\n'
-            'In Hours: ${getNumberWithCommas(_totalCallDuration.inHours)}\n'
-            'In Minutes: ${getNumberWithCommas(_totalCallDuration.inMinutes)}\n'
-            'In Seconds: ${getNumberWithCommas(_totalCallDuration.inSeconds)}'),
+        subtitle: Text('${stringifyDuration(_totalCallDuration)}\n'
+            'In Hours: ${getNumberWithCommas(_totalCallDuration.inHours)}h\n'
+            'In Minutes: ${getNumberWithCommas(_totalCallDuration.inMinutes)}m\n'
+            'In Seconds: ${getNumberWithCommas(_totalCallDuration.inSeconds)}s\n'),
       ),
     ];
   }
@@ -232,19 +232,23 @@ class _ContactProfileState extends State<ContactProfile> {
   List<Widget> _getAveragesData() {
     return [
       ListTile(
-        title: Text('Average Calls Per Day'),
+        title: Text('Average Per Day'),
         leading: Icon(FontAwesomeIcons.chartLine),
-        subtitle: Text(numberToString(_averageCallsPerDay)),
+        subtitle: Text('Calls: ${stringifyNumber(_averageCallsPerDay, 2)}\n'
+            'Talk Time: ${stringifyDuration(_averageCallDurationInSecondsPerDay)}\n'),
       ),
       ListTile(
-        title: Text('Average Calls Per Week'),
+        title: Text('Average Per Week'),
         leading: Icon(FontAwesomeIcons.chartLine),
-        subtitle: Text(numberToString(_averageCallsPerDay * 7)),
+        subtitle: Text('Calls: ${stringifyNumber(_averageCallsPerDay * 7, 2)}\n'
+            'Talk Time: ${stringifyDuration(_averageCallDurationInSecondsPerDay * 7)}\n'),
       ),
       ListTile(
-        title: Text('Average Calls Per Year'),
+        title: Text('Average Per Year'),
         leading: Icon(FontAwesomeIcons.chartLine),
-        subtitle: Text(numberToString(_averageCallsPerDay * 365)),
+        subtitle: Text(
+            'Calls: ${stringifyNumber(_averageCallsPerDay * 365, 2)}\n'
+            'Talk Time: ${stringifyDuration(_averageCallDurationInSecondsPerDay * 365)}\n'),
       ),
     ];
   }
