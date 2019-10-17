@@ -40,7 +40,7 @@ class ContactImage extends StatelessWidget {
         FontAwesomeIcons.user,
         color: Colors.black,
       ),
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey,
       radius: radius,
     );
   }

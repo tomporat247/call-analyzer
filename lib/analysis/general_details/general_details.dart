@@ -36,8 +36,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
       PieChartWrapper(_totalCallsChartData, 'Total Calls - $_totalCallAmount'),
       PieChartWrapper(_topCallDurationData,
           'Total Call Duration  - ${stringifyDuration(_totalCallDuration)}'),
-      // TODO: Figure out how to show this without freezing the app
-//      TimeSeriesChartWrapper([_totalCallsWithDate], 'Calls Per Month'),
+      TimeSeriesChartWrapper([_totalCallsWithDate], 'Calls Per Month'),
     ]);
   }
 
@@ -124,14 +123,16 @@ class _GeneralDetailsState extends State<GeneralDetails> {
       if (currentDateTime.month == previousDateTime.month) {
         callsThisMonth++;
       } else {
+        _totalCallsWithDate.add(ChartData<DateTime>(
+            '', '', callsThisMonth, Colors.white,
+            pos: DateTime(currentDateTime.year, currentDateTime.month, 1)));
         callsThisMonth = 1;
       }
 
-      _totalCallsWithDate.add(ChartData<DateTime>(
-          '', '', callsThisMonth, Colors.white,
-          pos: DateTime(currentDateTime.year, currentDateTime.month, 1)));
-
       previousDateTime = currentDateTime;
     });
+    _totalCallsWithDate.add(ChartData<DateTime>(
+        '', '', callsThisMonth, Colors.white,
+        pos: DateTime(currentDateTime.year, currentDateTime.month, 1)));
   }
 }

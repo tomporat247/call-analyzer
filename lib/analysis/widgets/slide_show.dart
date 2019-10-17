@@ -5,8 +5,10 @@ class SlideShow extends StatefulWidget {
   final List<Widget> slides;
   final bool withOffset;
   final bool withAppGradient;
+  final void Function(int previous, int curr) onPageSwitch;
 
-  SlideShow(this.slides, {this.withOffset = true, this.withAppGradient = true});
+  SlideShow(this.slides,
+      {this.withOffset = true, this.withAppGradient = true, this.onPageSwitch});
 
   @override
   _SlideShowState createState() => _SlideShowState();
@@ -48,7 +50,11 @@ class _SlideShowState extends State<SlideShow> {
       int next = _pageController.page.round();
       if (_currentPageIndex != next) {
         setState(() {
+          int prev = _currentPageIndex;
           _currentPageIndex = next;
+          if (widget.onPageSwitch != null) {
+            widget.onPageSwitch(prev, next);
+          }
         });
       }
     });
