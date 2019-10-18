@@ -65,6 +65,6 @@ class AnalysisHome extends StatelessWidget {
 
   _openContactPageFor(Contact contact, BuildContext context) {
     Navigator.of(context).push(
-        new MaterialPageRoute(builder: (context) => ContactProfile(contact)));
+        MaterialPageRoute(builder: (context) => ContactProfile(contact)));
   }
 }
