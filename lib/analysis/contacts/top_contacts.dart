@@ -4,6 +4,7 @@ import 'package:call_analyzer/models/menu_text_option.dart';
 import 'package:call_analyzer/models/sort_option.dart';
 import 'package:call_analyzer/analysis/services/analysis_service.dart';
 import 'package:call_analyzer/widgets/popup_menu_wrapper.dart';
+import 'package:call_analyzer/widgets/slide.dart';
 import 'package:call_analyzer/widgets/slide_show.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
@@ -68,9 +69,7 @@ class _TopContactsState extends State<TopContacts> {
               ),
               Expanded(
                 flex: 7,
-                child: SlideShow([
-                  for (Contact contact in snapshot.data) ContactSlide(contact)
-                ]),
+                child: SlideShow(_getContactsSlides(snapshot.data)),
               )
             ],
           );
@@ -115,5 +114,16 @@ class _TopContactsState extends State<TopContacts> {
       _sortOption = option;
       _fetchContacts();
     });
+  }
+
+  List<Slide> _getContactsSlides(List<Contact> contacts) {
+    int index = 0;
+    return [
+      for (Contact contact in contacts)
+        Slide(
+          title: contact.displayName,
+          content: ContactSlide(contact, index++ + 1),
+        )
+    ];
   }
 }

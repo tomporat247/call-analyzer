@@ -3,7 +3,6 @@ import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
-import '../widgets/chart_top_title.dart';
 
 class PieChartWrapper extends StatelessWidget {
   // Data Members
@@ -37,10 +36,6 @@ class PieChartWrapper extends StatelessWidget {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          Expanded(
-            flex: 2,
-            child: ChartTopTitle(_id),
-          ),
           Expanded(
               flex: 10,
               child: new charts.PieChart(_dataSeries,

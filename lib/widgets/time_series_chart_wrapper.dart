@@ -5,7 +5,6 @@ import 'package:call_analyzer/helper/helper.dart';
 import 'package:charts_common/common.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:charts_common/common.dart' as common;
-import 'chart_top_title.dart';
 
 class TimeSeriesChartWrapper extends StatelessWidget {
   final double chartAreaOpacity = 0.18;
@@ -54,10 +53,6 @@ class TimeSeriesChartWrapper extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        Expanded(
-          flex: 2,
-          child: ChartTopTitle(id),
-        ),
         Expanded(
           flex: 13,
           child: charts.TimeSeriesChart(

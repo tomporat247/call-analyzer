@@ -1,8 +1,9 @@
 import 'package:call_analyzer/config.dart';
+import 'package:call_analyzer/widgets/slide.dart';
 import 'package:flutter/material.dart';
 
 class SlideShow extends StatefulWidget {
-  final List<Widget> slides;
+  final List<Slide> slides;
   final bool withOffset;
   final bool withAppGradient;
   final void Function(int previous, int curr) onPageSwitch;
@@ -60,7 +61,7 @@ class _SlideShowState extends State<SlideShow> {
     });
   }
 
-  Widget _buildSlide(Widget slide, bool active) {
+  Widget _buildSlide(Slide slide, bool active) {
     final double blur = active ? 30 : 0;
     final double offset = active && widget.withOffset ? 20 : 0;
     final double sides = active ? 50 : 80;

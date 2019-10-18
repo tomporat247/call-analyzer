@@ -3,6 +3,7 @@ import 'package:call_analyzer/analysis/services/analysis_service.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/widgets/pie_chart_wrapper.dart';
+import 'package:call_analyzer/widgets/slide.dart';
 import 'package:call_analyzer/widgets/slide_show.dart';
 import 'package:call_analyzer/widgets/time_series_chart_wrapper.dart';
 import 'package:call_log/call_log.dart';
@@ -17,6 +18,9 @@ class GeneralDetails extends StatefulWidget {
 
 class _GeneralDetailsState extends State<GeneralDetails> {
   final AnalysisService _analysisService = GetIt.instance<AnalysisService>();
+  final String _totalCallsId = 'totalCalls';
+  final String _totalCallDurationId = 'totalCallDuration';
+  final String _callPerMonthId = 'callPerMonth';
   final int topContactAmount = 10;
   int _totalCallAmount;
   Duration _totalCallDuration;
@@ -36,11 +40,16 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   @override
   Widget build(BuildContext context) {
     return SlideShow(
-      <Widget>[
-        PieChartWrapper(
-            _totalCallsChartData, 'Total Calls - $_totalCallAmount'),
-        PieChartWrapper(_topCallDurationData,
-            'Total Call Duration  - ${stringifyDuration(_totalCallDuration)}'),
+      <Slide>[
+        Slide(
+          title: 'Total Calls - $_totalCallAmount',
+          content: PieChartWrapper(_totalCallsChartData, _totalCallsId),
+        ),
+        Slide(
+          title:
+              'Total Call Duration  - ${stringifyDuration(_totalCallDuration)}',
+          content: PieChartWrapper(_topCallDurationData, _totalCallDurationId),
+        ),
         // TODO: Figure out how to show this without freezing the app
 //        _getCallPerMonthTimeSeriesChart(),
       ],
@@ -195,7 +204,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                     .where((ChartData<DateTime> data) =>
                         data.pos.year == _selectedYearForCallPerMonth)
                     .toList()
-          ], 'Calls Per Month'),
+          ], _callPerMonthId),
         )
       ],
     );
