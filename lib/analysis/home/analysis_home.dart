@@ -2,6 +2,7 @@ import 'package:call_analyzer/analysis/contacts/contact_profile.dart';
 import 'package:call_analyzer/analysis/contacts/top_contacts.dart';
 import 'package:call_analyzer/analysis/general_details/general_details.dart';
 import 'package:call_analyzer/analysis/home/contact_search.dart';
+import 'package:call_analyzer/analysis/top/top_accolades.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ class AnalysisHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+      initialIndex: 1,
         length: 3,
         child: Scaffold(
           appBar: AppBar(
@@ -39,7 +41,7 @@ class AnalysisHome extends StatelessWidget {
           body: TabBarView(
             children: <Widget>[
               GeneralDetails(),
-              Icon(FontAwesomeIcons.medal),
+              TopAccolades(),
               TopContacts(),
             ],
           ),

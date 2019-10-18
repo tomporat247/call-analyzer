@@ -6,9 +6,9 @@ import 'contact_profile.dart';
 
 class ContactTile extends StatelessWidget {
   final Contact _contact;
-  final int _rank;
+  final String _trailingText;
 
-  ContactTile(this._contact, [this._rank]);
+  ContactTile(this._contact, [this._trailingText]);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class ContactTile extends StatelessWidget {
       leading: ContactImage(_contact),
       title: Text(_contact.displayName),
       trailing: Text(
-        '#$_rank',
+        _trailingText,
         style: const TextStyle(fontStyle: FontStyle.italic),
       ),
     );

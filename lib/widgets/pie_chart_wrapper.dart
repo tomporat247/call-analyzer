@@ -39,8 +39,8 @@ class PieChartWrapper extends StatelessWidget {
           Expanded(
               flex: 10,
               child: new charts.PieChart(_dataSeries,
-                  animationDuration: animationDuration,
-                  animate: true,
+//                  animationDuration: animationDuration,
+                  animate: false,
                   defaultRenderer: _getDefaultRenderer(context))),
           Expanded(
               flex: 3,
