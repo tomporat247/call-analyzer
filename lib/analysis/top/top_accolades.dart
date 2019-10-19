@@ -54,13 +54,13 @@ class _TopAccoladesState extends State<TopAccolades> {
 
     // TODO: Run this in async compute
     _mostCallWith = (await _analysisService.getTopContacts(
-        sortOption: SortOption.CALL_AMOUNT, amount: 1))[0];
+        sortOption: SortOption.CALL_AMOUNT, amount: 1)).first;
     _longestCallCallLog = _analysisService.getLongestCallLog();
     _longestCallContact =
         _analysisService.getContactFromCallLog(_longestCallCallLog);
-    Map mostCallsInADatData = _analysisService.getMostCallsInADayData();
-    _mostCallsInADayDate = mostCallsInADatData['date'];
-    _mostCallsInADayAmount = mostCallsInADatData['amount'];
+    Map mostCallsInADateData = _analysisService.getMostCallsInADayData();
+    _mostCallsInADayDate = mostCallsInADateData['date'];
+    _mostCallsInADayAmount = mostCallsInADateData['amount'];
 
     if (mounted) {
       setState(() {
