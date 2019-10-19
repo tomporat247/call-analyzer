@@ -77,7 +77,7 @@ class ContactSearch extends SearchDelegate<Contact> {
 
         return ListTile(
           onTap: () => close(context, contact),
-          leading: ContactImage(contact),
+          leading: ContactImage(contact: contact),
           title: RichText(
             text: TextSpan(children: [
               TextSpan(

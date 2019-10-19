@@ -56,37 +56,12 @@ class _ContactProfileState extends State<ContactProfile> {
           children: <Widget>[
             Expanded(
               flex: 1,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  ContactImage(
-                    _contact,
-                    radius: _avatarRadius,
-                  ),
-                  Text(
-                    _contact.displayName,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: normalFontSize + 2,
-                    ),
-                  ),
-                  // TODO: Make this scrollable
-                  ...[
-                    for (Item phoneItem in _contact.phones)
-                      Text('${phoneItem.label[0].toUpperCase()}'
-                          '${phoneItem.label.substring(1).toLowerCase()}: ${_contact.phones.toList()[0].value}')
-                  ]
-                ],
-              ),
+              child: _getContactProfile(),
             ),
             Expanded(
               flex: 3,
-              child: Padding(
-                padding: EdgeInsets.only(top: 2 * defaultPadding),
-                child: ListView(
-                  children: _getCards(),
-                ),
+              child: ListView(
+                children: _getCards(),
               ),
             )
           ],
@@ -95,18 +70,40 @@ class _ContactProfileState extends State<ContactProfile> {
     );
   }
 
-  _formatContactPhones() {
-    List<Item> phones = new List<Item>();
-    _contact.phones.forEach((Item phone) {
-      if (phones
-          .where((Item p) =>
-              formatPhoneNumber(p.value) == formatPhoneNumber(phone.value))
-          .isEmpty) {
-        phones.add(phone);
-      }
-    });
-
-    _contact.phones = phones;
+  Widget _getContactProfile() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        ContactImage(
+          contact: _contact,
+          radius: _avatarRadius,
+        ),
+        Text(
+          _contact.displayName,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: normalFontSize + 2,
+          ),
+        ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              for (Item phoneItem in _contact.phones)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: defaultPadding),
+                  child: Text('${phoneItem.label[0].toUpperCase()}'
+                      '${phoneItem.label.substring(1).toLowerCase()}: '
+                      '${_contact.phones.toList()[0].value}'),
+                )
+            ],
+          ),
+        )
+      ],
+    );
   }
 
   _initCounters() {
@@ -144,6 +141,20 @@ class _ContactProfileState extends State<ContactProfile> {
     });
   }
 
+  _formatContactPhones() {
+    List<Item> phones = new List<Item>();
+    _contact.phones.forEach((Item phone) {
+      if (phones
+          .where((Item p) =>
+              formatPhoneNumber(p.value) == formatPhoneNumber(phone.value))
+          .isEmpty) {
+        phones.add(phone);
+      }
+    });
+
+    _contact.phones = phones;
+  }
+
   List<Widget> _getCards() {
     List<List<Widget>> cardDataList = [
       _getCallDurationData(),
@@ -157,13 +168,13 @@ class _ContactProfileState extends State<ContactProfile> {
           padding: EdgeInsets.symmetric(vertical: defaultPadding),
           child: FractionallySizedBox(
             widthFactor: 0.9,
-            child: wrapInCard(cardData),
+            child: _wrapInCard(cardData),
           ),
         )
     ];
   }
 
-  Widget wrapInCard(List<Widget> data) {
+  Widget _wrapInCard(List<Widget> data) {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(_cardBorderRadius),

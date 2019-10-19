@@ -8,7 +8,7 @@ typedef extractCompareByFromElement<Element, Comparer> = Comparer Function(
     Element element);
 
 formatPhoneNumber(String phoneNumber) {
-  return phoneNumber == null ? null : phoneNumber.replaceAll('-', '');
+  return phoneNumber == null ? null : phoneNumber.replaceAll('-', '').replaceAll(' ', '');
 }
 
 getNumberWithCommas(num number) {

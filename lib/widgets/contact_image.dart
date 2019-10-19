@@ -6,15 +6,15 @@ import 'package:get_it/get_it.dart';
 
 class ContactImage extends StatelessWidget {
   final AnalysisService _analysisService = GetIt.instance<AnalysisService>();
-  final Contact _contact;
+  final Contact contact;
   final double radius;
 
-  ContactImage(this._contact, {this.radius});
+  ContactImage({@required this.contact, this.radius});
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _analysisService.getContactWithImage(_contact),
+      future: _analysisService.getContactWithImage(contact),
       builder: (BuildContext context, AsyncSnapshot<Contact> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return snapshot.data?.avatar != null

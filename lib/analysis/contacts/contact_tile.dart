@@ -15,7 +15,7 @@ class ContactTile extends StatelessWidget {
     return ListTile(
       onTap: () => Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => ContactProfile(_contact))),
-      leading: ContactImage(_contact),
+      leading: ContactImage(contact: _contact),
       title: Text(_contact.displayName),
       trailing: Text(
         _trailingText,

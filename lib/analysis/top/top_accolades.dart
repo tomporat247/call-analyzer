@@ -30,6 +30,8 @@ class _TopAccoladesState extends State<TopAccolades> {
   int _mostCallsInADayAmount;
   bool _fetchedData = false;
 
+  // TODO: When every slide is tapped do something - same for general tab
+
   @override
   void initState() {
     _nameToFlare = {
