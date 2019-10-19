@@ -51,7 +51,10 @@ class _GeneralDetailsState extends State<GeneralDetails> {
           content: PieChartWrapper(_topCallDurationData, _totalCallDurationId),
         ),
         // TODO: Figure out how to show this without freezing the app
-//        _getCallPerMonthTimeSeriesChart(),
+//        Slide(
+//          title: 'Calls Per Month',
+//          content: _getCallPerMonthTimeSeriesChart(),
+//        ),
       ],
       onPageSwitch: _onPageSwitch,
     );
@@ -162,7 +165,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
         pos: DateTime(currentDateTime.year, currentDateTime.month, 1)));
   }
 
-  _getCallPerMonthTimeSeriesChart() {
+  Widget _getCallPerMonthTimeSeriesChart() {
     int firstYear = DateTime.fromMillisecondsSinceEpoch(
             _analysisService.callLogs.last.timestamp)
         .year;

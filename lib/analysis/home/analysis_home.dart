@@ -19,7 +19,7 @@ class AnalysisHome extends StatelessWidget {
             title: Text(appTitle),
             bottom: TabBar(
               tabs: <Widget>[
-                Tab(text: 'General', icon: Icon(FontAwesomeIcons.chartArea)),
+                Tab(text: 'General', icon: Icon(FontAwesomeIcons.chartPie)),
                 Tab(text: 'Top', icon: Icon(FontAwesomeIcons.medal)),
                 Tab(text: 'Contacts', icon: Icon(FontAwesomeIcons.userFriends)),
               ],

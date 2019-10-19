@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
-// TODO: Think about removing this service and just get full call logs every time
 class StorageService {
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
