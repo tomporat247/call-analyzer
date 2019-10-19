@@ -1,3 +1,4 @@
+import 'package:call_analyzer/analysis/services/analysis_service_async_helper.dart';
 import 'package:call_analyzer/models/sort_option.dart';
 import 'package:call_analyzer/contacts/services/contact_service.dart';
 import 'package:call_analyzer/helper/helper.dart';
@@ -8,8 +9,8 @@ class AnalysisService {
   final ContactService _contactService;
   List<Contact> _contacts;
   List<CallLogEntry> _callLogs;
-  Map<Contact, List<CallLogEntry>> _contactToCallLogs;
-  Map<Contact, int> _contactToCallDurationInSeconds;
+  Map<String, List<CallLogEntry>> _contactIdToCallLogs;
+  Map<String, int> _contactIdToCallDurationInSeconds;
 
   List<Contact> get contacts => _contacts;
 
@@ -18,17 +19,17 @@ class AnalysisService {
   AnalysisService(this._contactService);
 
   init(List<Contact> contacts, List<CallLogEntry> callLogs) async {
-    _contactToCallDurationInSeconds = new Map<Contact, int>();
-    _contactToCallLogs = new Map<Contact, List<CallLogEntry>>();
+    _contactIdToCallDurationInSeconds = new Map<String, int>();
+    _contactIdToCallLogs = new Map<String, List<CallLogEntry>>();
     _callLogs = callLogs;
     _contacts = contacts;
 
     // TODO: Figure out how to run these in compute
     _contacts.forEach((Contact contact) =>
-        _contactToCallLogs[contact] = _getAllCallLogsForContact(contact));
+    _contactIdToCallLogs[contact.identifier] = _getAllCallLogsForContact(contact));
 
     _contacts.forEach((Contact contact) =>
-        _contactToCallDurationInSeconds[contact] =
+    _contactIdToCallDurationInSeconds[contact.identifier] =
             _getTotalCallDurationWith(contact).inSeconds);
   }
 
@@ -94,19 +95,19 @@ class AnalysisService {
   }
 
   Duration getTotalCallDurationFor(Contact contact) {
-    return Duration(seconds: _contactToCallDurationInSeconds[contact]);
+    return Duration(seconds: _contactIdToCallDurationInSeconds[contact.identifier]);
   }
 
   Duration getTotalCallDuration() {
     int totalSeconds = _contacts.fold<int>(
         0,
         (int curr, Contact contact) =>
-            curr + _contactToCallDurationInSeconds[contact]);
+            curr + _contactIdToCallDurationInSeconds[contact.identifier]);
     return Duration(seconds: totalSeconds);
   }
 
   List<CallLogEntry> getCallLogsFor(Contact contact) {
-    return _contactToCallLogs[contact];
+    return _contactIdToCallLogs[contact.identifier];
   }
 
   Future<Contact> getContactWithImage(Contact contact) async {
@@ -114,7 +115,7 @@ class AnalysisService {
       Contact contactWithImage =
           await _contactService.getContactWithImage(contact);
       _updateContact(contactWithImage);
-      return contact;
+      return contactWithImage;
     } else {
       return contact;
     }
@@ -151,13 +152,20 @@ class AnalysisService {
 
   Future<List<Contact>> _sortContactsByCallDuration(
       List<Contact> contacts) async {
-    return asyncSort(
-        contacts, (Contact c) => _contactToCallDurationInSeconds[c]);
+    return AnalysisServiceAsyncHelper.asyncSort<Contact>(
+        contacts,
+        AnalysisServiceAsyncHelper.compareByCallDuration,
+        _contactIdToCallLogs,
+        _contactIdToCallDurationInSeconds);
   }
 
   Future<List<Contact>> _sortContactsByCallAmount(
       List<Contact> contacts) async {
-    return asyncSort(contacts, (Contact c) => _contactToCallLogs[c].length);
+    return AnalysisServiceAsyncHelper.asyncSort<Contact>(
+        contacts,
+        AnalysisServiceAsyncHelper.compareByCallAmount,
+        _contactIdToCallLogs,
+        _contactIdToCallDurationInSeconds);
   }
 
   Future<List<Contact>> _sortContactsByName(List<Contact> contacts) async {
@@ -168,7 +176,7 @@ class AnalysisService {
 
   Duration _getTotalCallDurationWith(Contact contact) {
     return Duration(
-        seconds: _contactToCallLogs[contact].fold<int>(
+        seconds: _contactIdToCallLogs[contact.identifier].fold<int>(
             0, (int curr, CallLogEntry callLog) => curr + callLog.duration));
   }
 

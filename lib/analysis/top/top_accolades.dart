@@ -62,9 +62,11 @@ class _TopAccoladesState extends State<TopAccolades> {
     _mostCallsInADayDate = mostCallsInADatData['date'];
     _mostCallsInADayAmount = mostCallsInADatData['amount'];
 
-    setState(() {
-      _fetchedData = true;
-    });
+    if (mounted) {
+      setState(() {
+        _fetchedData = true;
+      });
+    }
   }
 
   @override
