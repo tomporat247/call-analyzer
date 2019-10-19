@@ -32,6 +32,51 @@ class AnalysisService {
             _getTotalCallDurationWith(contact).inSeconds);
   }
 
+  Contact getContactFromCallLog(CallLogEntry callLog) {
+    return _contacts.firstWhere(
+        (Contact contact) =>
+            contact.displayName == callLog.name ||
+            _contactHasPhoneNumber(contact, callLog.number) ||
+            _contactHasPhoneNumber(contact, callLog.formattedNumber),
+        orElse: () => null);
+  }
+
+  CallLogEntry getLongestCallLog() {
+    CallLogEntry longest = CallLogEntry(duration: 0);
+    _callLogs.forEach((CallLogEntry callLog) {
+      if (callLog.duration > longest.duration) {
+        longest = callLog;
+      }
+    });
+    return longest;
+  }
+
+  Map<String, dynamic> getMostCallsInADayData() {
+    Map<String, dynamic> ans = new Map<String, dynamic>();
+    DateTime prevDate =
+        DateTime.fromMillisecondsSinceEpoch(_callLogs.first.timestamp);
+    int amount = 0;
+    DateTime maxDate;
+    int maxAmount = 0;
+    _callLogs.forEach((CallLogEntry callLog) {
+      DateTime newDate = DateTime.fromMillisecondsSinceEpoch(callLog.timestamp);
+      if (newDate.day == prevDate.day) {
+        amount++;
+      } else {
+        if (amount > maxAmount) {
+          maxAmount = amount;
+          maxDate = prevDate;
+        }
+        amount = 0;
+      }
+      prevDate = newDate;
+    });
+
+    ans['date'] = maxDate;
+    ans['amount'] = maxAmount;
+    return ans;
+  }
+
   int getContactAmount() {
     return _contacts.length;
   }

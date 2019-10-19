@@ -1,8 +1,13 @@
 import 'package:call_analyzer/analysis/contacts/contact_tile.dart';
 import 'package:call_analyzer/analysis/services/analysis_service.dart';
+import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/models/flare_animation.dart';
+import 'package:call_analyzer/models/sort_option.dart';
+import 'package:call_analyzer/widgets/loader.dart';
 import 'package:call_analyzer/widgets/slide.dart';
 import 'package:call_analyzer/widgets/slide_show.dart';
+import 'package:call_log/call_log.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -14,46 +19,102 @@ class TopAccolades extends StatefulWidget {
 
 class _TopAccoladesState extends State<TopAccolades> {
   final AnalysisService _analysisService = GetIt.instance<AnalysisService>();
-  final String _mostCallsInADayAnimationName = 'mostCallsInADay';
-  final String _mostCallsWith = 'mostCallsWith';
-  final String _longestCall = 'longestCall';
+  final String _mostCallsInADayId = 'mostCallsInADay';
+  final String _mostCallsWithId = 'mostCallsWith';
+  final String _longestCallId = 'longestCall';
   Map<String, FlareAnimation> _nameToFlare;
+  Contact _mostCallWith;
+  CallLogEntry _longestCallCallLog;
+  Contact _longestCallContact;
+  DateTime _mostCallsInADayDate;
+  int _mostCallsInADayAmount;
+  bool _fetchedData = false;
 
   @override
   void initState() {
     _nameToFlare = {
-      _mostCallsInADayAnimationName: FlareAnimation(
+      _mostCallsInADayId: FlareAnimation(
           fileName: 'assets/animations/phone_call.flr', animationName: 'call'),
-      _mostCallsWith: FlareAnimation(
+      _mostCallsWithId: FlareAnimation(
           fileName: 'assets/animations/trophy.flr', animationName: 'trophy'),
-      _longestCall: FlareAnimation(
+      _longestCallId: FlareAnimation(
           fileName: 'assets/animations/ticking_clock.flr',
           animationName: 'tick')
     };
+    _fetchTopAccolades();
     super.initState();
+  }
+
+  _fetchTopAccolades() async {
+    setState(() {
+      _fetchedData = false;
+    });
+
+    // TODO: Run this in async compute
+    _mostCallWith = (await _analysisService.getTopContacts(
+        sortOption: SortOption.CALL_AMOUNT, amount: 1))[0];
+    _longestCallCallLog = _analysisService.getLongestCallLog();
+    _longestCallContact =
+        _analysisService.getContactFromCallLog(_longestCallCallLog);
+    Map mostCallsInADatData = _analysisService.getMostCallsInADayData();
+    _mostCallsInADayDate = mostCallsInADatData['date'];
+    _mostCallsInADayAmount = mostCallsInADatData['amount'];
+
+    setState(() {
+      _fetchedData = true;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SlideShow(<Slide>[
-      Slide(
-        title: 'Most Calls With',
-        content: _getSlideContent(
-            ContactTile(_analysisService.contacts[146], '560 calls'),
-            _nameToFlare[_mostCallsWith]),
-      ),
-      Slide(
-        title: 'Longest Call',
-        content: _getSlideContent(
-            ContactTile(_analysisService.contacts[146], '3h 24m 15s'),
-            _nameToFlare[_longestCall]),
-      ),
-      Slide(
-        title: 'Most Calls In a Day',
-        content: _getSlideContent(Text('15 Calls on 12/10/18'),
-            _nameToFlare[_mostCallsInADayAnimationName]),
-      ),
-    ]);
+    return !_fetchedData
+        ? Loader()
+        : SlideShow(<Slide>[
+            _getMostCallsWithSlide(),
+            _getLongestCallWithSlide(),
+            getMostCallsADaySlide(),
+          ]);
+  }
+
+  Slide _getMostCallsWithSlide() {
+    return Slide(
+      title: 'Most Calls With',
+      content: _getSlideContent(
+          ContactTile(_mostCallWith,
+              '${_analysisService.getCallLogsFor(_mostCallWith).length} Calls'),
+          _nameToFlare[_mostCallsWithId]),
+    );
+  }
+
+  Slide _getLongestCallWithSlide() {
+    return Slide(
+      title: 'Longest Call',
+      content: _getSlideContent(
+          _longestCallContact != null
+              ? ContactTile(
+                  _longestCallContact,
+                  stringifyDuration(
+                      Duration(seconds: _longestCallCallLog.duration)))
+              : ListTile(
+                  title: Text(_longestCallCallLog.number ??
+                      _longestCallCallLog.formattedNumber ??
+                      'private number'),
+                  trailing: Text(stringifyDuration(
+                      Duration(seconds: _longestCallCallLog.duration))),
+                ),
+          _nameToFlare[_longestCallId]),
+    );
+  }
+
+  Slide getMostCallsADaySlide() {
+    String date = _mostCallsInADayDate.toString();
+    return Slide(
+      title: 'Most Calls In a Day',
+      content: _getSlideContent(
+          Text(
+              '$_mostCallsInADayAmount Calls on ${date.substring(0, date.indexOf(' '))}'),
+          _nameToFlare[_mostCallsInADayId]),
+    );
   }
 
   Widget _getSlideContent(Widget content, FlareAnimation flareAnimation) {
