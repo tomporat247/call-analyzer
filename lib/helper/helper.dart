@@ -5,19 +5,19 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-formatPhoneNumber(String phoneNumber) {
+String formatPhoneNumber(String phoneNumber) {
   return phoneNumber == null
       ? null
       : phoneNumber.replaceAll('-', '').replaceAll(' ', '');
 }
 
-getNumberWithCommas(num number) {
+String getNumberWithCommas(num number) {
   return number.toString().replaceAllMapped(
       new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 }
 
-String stringifyNumber(num number, [numbersAfterDecimalPoint = 4]) {
-  String numberString = number.toString();
+String stringifyNumber(num number, [numbersAfterDecimalPoint = 2]) {
+  String numberString = (number.isNaN ? 0 : number).toString();
   return numberString.substring(
       0,
       !numberString.contains('.')

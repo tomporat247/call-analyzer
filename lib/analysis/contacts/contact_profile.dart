@@ -228,7 +228,7 @@ class _ContactProfileState extends State<ContactProfile> {
   }
 
   String _getPercentageFromTotalCalls(int value) {
-    return '${stringifyNumber(value / _totalCallAmount * 100, 2)}%';
+    return '${stringifyNumber(value / _totalCallAmount * 100)}%';
   }
 
   List<Widget> _getCallDurationData() {
@@ -249,20 +249,20 @@ class _ContactProfileState extends State<ContactProfile> {
       ListTile(
         title: Text('Average Per Day'),
         leading: Icon(FontAwesomeIcons.chartLine),
-        subtitle: Text('Calls: ${stringifyNumber(_averageCallsPerDay, 2)}\n'
+        subtitle: Text('Calls: ${stringifyNumber(_averageCallsPerDay)}\n'
             'Talk Time: ${stringifyDuration(_averageCallDurationInSecondsPerDay)}\n'),
       ),
       ListTile(
         title: Text('Average Per Week'),
         leading: Icon(FontAwesomeIcons.chartLine),
-        subtitle: Text('Calls: ${stringifyNumber(_averageCallsPerDay * 7, 2)}\n'
+        subtitle: Text('Calls: ${stringifyNumber(_averageCallsPerDay * 7)}\n'
             'Talk Time: ${stringifyDuration(_averageCallDurationInSecondsPerDay * 7)}\n'),
       ),
       ListTile(
         title: Text('Average Per Year'),
         leading: Icon(FontAwesomeIcons.chartLine),
         subtitle: Text(
-            'Calls: ${stringifyNumber(_averageCallsPerDay * 365, 2)}\n'
+            'Calls: ${stringifyNumber(_averageCallsPerDay * 365)}\n'
             'Talk Time: ${stringifyDuration(_averageCallDurationInSecondsPerDay * 365)}\n'),
       ),
     ];
