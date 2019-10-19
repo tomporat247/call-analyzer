@@ -4,6 +4,7 @@ import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/models/menu_text_option.dart';
 import 'package:call_analyzer/models/sort_option.dart';
 import 'package:call_analyzer/analysis/services/analysis_service.dart';
+import 'package:call_analyzer/widgets/filterable_content.dart';
 import 'package:call_analyzer/widgets/popup_menu_wrapper.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
@@ -58,33 +59,18 @@ class _AllContactsState extends State<AllContacts> {
         return AnimatedSwitcher(
           duration: fastSwitchDuration,
           child: (snapshot.hasData && snapshot.data != null)
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 1,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          _getFilterOptions(context),
-                          Divider()
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      flex: 7,
-                      child: ListView.separated(
-                        separatorBuilder: (BuildContext context, int index) {
-                          return Divider();
-                        },
-                        itemBuilder: (BuildContext context, int index) {
-                          Contact contact = snapshot.data[index];
-                          return ContactTile(contact, '#${index + 1}');
-                        },
-                        itemCount: snapshot.data.length,
-                      ),
-                    )
-                  ],
+              ? FilterableContent(
+                  filterRow: _getFilterOptions(context),
+                  content: ListView.separated(
+                    separatorBuilder: (BuildContext context, int index) {
+                      return Divider();
+                    },
+                    itemBuilder: (BuildContext context, int index) {
+                      Contact contact = snapshot.data[index];
+                      return ContactTile(contact, '#${index + 1}');
+                    },
+                    itemCount: snapshot.data.length,
+                  ),
                 )
               : Center(
                   child: CircularProgressIndicator(),
