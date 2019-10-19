@@ -1,9 +1,10 @@
-import 'package:call_analyzer/analysis/services/analysis_service_async_helper.dart';
+import 'package:call_analyzer/analysis/services/async_sorter.dart';
 import 'package:call_analyzer/models/sort_option.dart';
 import 'package:call_analyzer/contacts/services/contact_service.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'contact_to_data_async_builder.dart';
 
 class AnalysisService {
   final ContactService _contactService;
@@ -19,26 +20,21 @@ class AnalysisService {
   AnalysisService(this._contactService);
 
   init(List<Contact> contacts, List<CallLogEntry> callLogs) async {
-    _contactIdToCallDurationInSeconds = new Map<String, int>();
-    _contactIdToCallLogs = new Map<String, List<CallLogEntry>>();
     _callLogs = callLogs;
     _contacts = contacts;
-
-    // TODO: Figure out how to run these in compute
-    _contacts.forEach((Contact contact) =>
-    _contactIdToCallLogs[contact.identifier] = _getAllCallLogsForContact(contact));
-
-    _contacts.forEach((Contact contact) =>
-    _contactIdToCallDurationInSeconds[contact.identifier] =
-            _getTotalCallDurationWith(contact).inSeconds);
+    _contactIdToCallLogs = await ContactToDataAsyncBuilder.mapContactToCallLogs(
+        _contacts, _callLogs);
+    _contactIdToCallDurationInSeconds =
+        await ContactToDataAsyncBuilder.mapContactToCallDurationInSeconds(
+            _contacts, _contactIdToCallLogs);
   }
 
   Contact getContactFromCallLog(CallLogEntry callLog) {
     return _contacts.firstWhere(
         (Contact contact) =>
             contact.displayName == callLog.name ||
-            _contactHasPhoneNumber(contact, callLog.number) ||
-            _contactHasPhoneNumber(contact, callLog.formattedNumber),
+            contactHasPhoneNumber(contact, callLog.number) ||
+            contactHasPhoneNumber(contact, callLog.formattedNumber),
         orElse: () => null);
   }
 
@@ -95,7 +91,8 @@ class AnalysisService {
   }
 
   Duration getTotalCallDurationFor(Contact contact) {
-    return Duration(seconds: _contactIdToCallDurationInSeconds[contact.identifier]);
+    return Duration(
+        seconds: _contactIdToCallDurationInSeconds[contact.identifier]);
   }
 
   Duration getTotalCallDuration() {
@@ -152,46 +149,19 @@ class AnalysisService {
 
   Future<List<Contact>> _sortContactsByCallDuration(
       List<Contact> contacts) async {
-    return AnalysisServiceAsyncHelper.asyncSort<Contact>(
-        contacts,
-        AnalysisServiceAsyncHelper.compareByCallDuration,
-        _contactIdToCallLogs,
-        _contactIdToCallDurationInSeconds);
+    return AsyncSorter.asyncSort<Contact>(contacts,
+        AsyncSorter.compareByCallDuration, _contactIdToCallDurationInSeconds);
   }
 
   Future<List<Contact>> _sortContactsByCallAmount(
       List<Contact> contacts) async {
-    return AnalysisServiceAsyncHelper.asyncSort<Contact>(
-        contacts,
-        AnalysisServiceAsyncHelper.compareByCallAmount,
-        _contactIdToCallLogs,
-        _contactIdToCallDurationInSeconds);
+    return AsyncSorter.asyncSort<Contact>(
+        contacts, AsyncSorter.compareByCallAmount, _contactIdToCallLogs);
   }
 
   Future<List<Contact>> _sortContactsByName(List<Contact> contacts) async {
     return contacts
       ..sort((Contact one, Contact two) =>
           one.displayName.compareTo(two.displayName));
-  }
-
-  Duration _getTotalCallDurationWith(Contact contact) {
-    return Duration(
-        seconds: _contactIdToCallLogs[contact.identifier].fold<int>(
-            0, (int curr, CallLogEntry callLog) => curr + callLog.duration));
-  }
-
-  List<CallLogEntry> _getAllCallLogsForContact(Contact contact) {
-    return _callLogs
-        .where((CallLogEntry callLog) => (contact.displayName == callLog.name ||
-            _contactHasPhoneNumber(contact, callLog.number) ||
-            _contactHasPhoneNumber(contact, callLog.formattedNumber)))
-        .toList();
-  }
-
-  // TODO: Verify that this works
-  bool _contactHasPhoneNumber(Contact contact, String callLogPhone) {
-    return contact.phones
-        .map((phone) => formatPhoneNumber(phone.value))
-        .contains(formatPhoneNumber(callLogPhone));
   }
 }
