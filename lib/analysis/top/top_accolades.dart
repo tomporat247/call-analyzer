@@ -16,6 +16,7 @@ class _TopAccoladesState extends State<TopAccolades> {
   final AnalysisService _analysisService = GetIt.instance<AnalysisService>();
   final String _mostCallsInADayAnimationName = 'mostCallsInADay';
   final String _mostCallsWith = 'mostCallsWith';
+  final String _longestCall = 'longestCall';
   Map<String, FlareAnimation> _nameToFlare;
 
   @override
@@ -24,7 +25,10 @@ class _TopAccoladesState extends State<TopAccolades> {
       _mostCallsInADayAnimationName: FlareAnimation(
           fileName: 'assets/animations/phone_call.flr', animationName: 'call'),
       _mostCallsWith: FlareAnimation(
-          fileName: 'assets/animations/trophy.flr', animationName: 'trophy')
+          fileName: 'assets/animations/trophy.flr', animationName: 'trophy'),
+      _longestCall: FlareAnimation(
+          fileName: 'assets/animations/ticking_clock.flr',
+          animationName: 'tick')
     };
     super.initState();
   }
@@ -39,6 +43,12 @@ class _TopAccoladesState extends State<TopAccolades> {
             _nameToFlare[_mostCallsWith]),
       ),
       Slide(
+        title: 'Longest Call',
+        content: _getSlideContent(
+            ContactTile(_analysisService.contacts[146], '3h 24m 15s'),
+            _nameToFlare[_longestCall]),
+      ),
+      Slide(
         title: 'Most Calls In a Day',
         content: _getSlideContent(Text('15 Calls on 12/10/18'),
             _nameToFlare[_mostCallsInADayAnimationName]),
@@ -46,7 +56,7 @@ class _TopAccoladesState extends State<TopAccolades> {
     ]);
   }
 
-  Widget _getSlideContent(Widget conent, FlareAnimation flareAnimation) {
+  Widget _getSlideContent(Widget content, FlareAnimation flareAnimation) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
@@ -56,7 +66,7 @@ class _TopAccoladesState extends State<TopAccolades> {
         ),
         Expanded(
           flex: 1,
-          child: conent,
+          child: content,
         ),
       ],
     );
