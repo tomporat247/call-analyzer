@@ -81,6 +81,7 @@ class _ContactProfileState extends State<ContactProfile> {
         ),
         Text(
           _contact.displayName,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: normalFontSize + 2,

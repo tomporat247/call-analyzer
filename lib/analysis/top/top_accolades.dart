@@ -1,9 +1,9 @@
 import 'package:call_analyzer/analysis/contacts/contact_tile.dart';
 import 'package:call_analyzer/analysis/services/analysis_service.dart';
+import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/models/flare_animation.dart';
 import 'package:call_analyzer/models/sort_option.dart';
-import 'package:call_analyzer/widgets/loader.dart';
 import 'package:call_analyzer/widgets/slide.dart';
 import 'package:call_analyzer/widgets/slide_show.dart';
 import 'package:call_log/call_log.dart';
@@ -54,7 +54,8 @@ class _TopAccoladesState extends State<TopAccolades> {
 
     // TODO: Run this in async compute
     _mostCallWith = (await _analysisService.getTopContacts(
-        sortOption: SortOption.CALL_AMOUNT, amount: 1)).first;
+            sortOption: SortOption.CALL_AMOUNT, amount: 1))
+        .first;
     _longestCallCallLog = _analysisService.getLongestCallLog();
     _longestCallContact =
         _analysisService.getContactFromCallLog(_longestCallCallLog);
@@ -71,13 +72,18 @@ class _TopAccoladesState extends State<TopAccolades> {
 
   @override
   Widget build(BuildContext context) {
-    return !_fetchedData
-        ? Loader()
-        : SlideShow(<Slide>[
-            _getMostCallsWithSlide(),
-            _getLongestCallWithSlide(),
-            getMostCallsADaySlide(),
-          ]);
+    return AnimatedSwitcher(
+      duration: fastSwitchDuration,
+      child: !_fetchedData
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : SlideShow(<Slide>[
+              _getMostCallsWithSlide(),
+              _getLongestCallWithSlide(),
+              getMostCallsADaySlide(),
+            ]),
+    );
   }
 
   Slide _getMostCallsWithSlide() {
@@ -111,12 +117,11 @@ class _TopAccoladesState extends State<TopAccolades> {
   }
 
   Slide getMostCallsADaySlide() {
-    String date = _mostCallsInADayDate.toString();
     return Slide(
       title: 'Most Calls In a Day',
       content: _getSlideContent(
           Text(
-              '$_mostCallsInADayAmount Calls on ${date.substring(0, date.indexOf(' '))}'),
+              '$_mostCallsInADayAmount Calls on ${stringifyDateTime(_mostCallsInADayDate)}'),
           _nameToFlare[_mostCallsInADayId]),
     );
   }

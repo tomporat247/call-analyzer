@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> {
       home: Material(
         child: AnimatedSwitcher(
           child: _pageToDisplay,
-          duration: Duration(seconds: 1),
+          duration: normalSwitchDuration,
           switchInCurve: Curves.easeInOut,
         ),
       ),

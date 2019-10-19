@@ -3,12 +3,7 @@ import 'dart:math';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
-
-bool contactHasPhoneNumber(Contact contact, String phoneNumber) {
-  return contact.phones
-      .map((phone) => formatPhoneNumber(phone.value))
-      .contains(formatPhoneNumber(phoneNumber));
-}
+import 'package:intl/intl.dart';
 
 formatPhoneNumber(String phoneNumber) {
   return phoneNumber == null
@@ -41,6 +36,11 @@ String stringifyDuration(Duration duration) {
   return '${hours}h ${minutes}m ${seconds}s';
 }
 
+String stringifyDateTime(DateTime dateTime) {
+  var formatter = new DateFormat('yyyy MMM dd');
+  return formatter.format(dateTime);
+}
+
 charts.Color fromNormalColorToChartColor(Color color) {
   return new charts.Color(
       r: color.red, g: color.green, b: color.blue, a: color.alpha);
@@ -48,4 +48,10 @@ charts.Color fromNormalColorToChartColor(Color color) {
 
 Color fromChartColorToNormalColor(charts.Color color) {
   return new Color.fromARGB(color.a, color.r, color.g, color.b);
+}
+
+bool contactHasPhoneNumber(Contact contact, String phoneNumber) {
+  return contact.phones
+      .map((phone) => formatPhoneNumber(phone.value))
+      .contains(formatPhoneNumber(phoneNumber));
 }

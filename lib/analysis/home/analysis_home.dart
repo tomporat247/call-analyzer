@@ -1,5 +1,5 @@
 import 'package:call_analyzer/analysis/contacts/contact_profile.dart';
-import 'package:call_analyzer/analysis/contacts/top_contacts.dart';
+import 'package:call_analyzer/analysis/contacts/all_contacts.dart';
 import 'package:call_analyzer/analysis/general_details/general_details.dart';
 import 'package:call_analyzer/analysis/home/contact_search.dart';
 import 'package:call_analyzer/analysis/top/top_accolades.dart';
@@ -42,7 +42,7 @@ class AnalysisHome extends StatelessWidget {
             children: <Widget>[
               GeneralDetails(),
               TopAccolades(),
-              TopContacts(),
+              AllContacts(),
             ],
           ),
         ));

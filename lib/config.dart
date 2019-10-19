@@ -28,3 +28,7 @@ const String appTitle = 'Call Analyzer';
 const double defaultPadding = 8.0;
 
 const Duration defaultChartAnimationDuration = Duration(milliseconds: 800);
+
+const Duration normalSwitchDuration = Duration(seconds: 1);
+
+const Duration fastSwitchDuration = Duration(milliseconds: 500);

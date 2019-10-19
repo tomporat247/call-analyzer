@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/models/menu_text_option.dart';
 import 'package:call_analyzer/models/sort_option.dart';
 import 'package:call_analyzer/analysis/services/analysis_service.dart';
@@ -9,12 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'contact_tile.dart';
 
-class TopContacts extends StatefulWidget {
+class AllContacts extends StatefulWidget {
   @override
-  _TopContactsState createState() => _TopContactsState();
+  _AllContactsState createState() => _AllContactsState();
 }
 
-class _TopContactsState extends State<TopContacts> {
+class _AllContactsState extends State<AllContacts> {
   final TextStyle filterPrefixStyle = TextStyle(color: Colors.white70);
   final TextStyle filterValueStyle = TextStyle(fontWeight: FontWeight.bold);
   SortOption _sortOption;
@@ -54,34 +55,41 @@ class _TopContactsState extends State<TopContacts> {
       stream: _topContacts$.stream,
       initialData: null,
       builder: (BuildContext context, AsyncSnapshot<List<Contact>> snapshot) {
-        if (snapshot.hasData && snapshot.data != null) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                flex: 1,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[_getFilterOptions(context), Divider()],
+        return AnimatedSwitcher(
+          duration: fastSwitchDuration,
+          child: (snapshot.hasData && snapshot.data != null)
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          _getFilterOptions(context),
+                          Divider()
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      flex: 7,
+                      child: ListView.separated(
+                        separatorBuilder: (BuildContext context, int index) {
+                          return Divider();
+                        },
+                        itemBuilder: (BuildContext context, int index) {
+                          Contact contact = snapshot.data[index];
+                          return ContactTile(contact, '#${index + 1}');
+                        },
+                        itemCount: snapshot.data.length,
+                      ),
+                    )
+                  ],
+                )
+              : Center(
+                  child: CircularProgressIndicator(),
                 ),
-              ),
-              Expanded(
-                flex: 7,
-                child: ListView.separated(
-                  separatorBuilder: (BuildContext context, int index) {
-                    return Divider();
-                  },
-                  itemBuilder: (BuildContext context, int index) {
-                    Contact contact = snapshot.data[index];
-                    return ContactTile(contact, '#${index + 1}');
-                  },
-                  itemCount: snapshot.data.length,
-                ),
-              )
-            ],
-          );
-        }
-        return Container();
+        );
       },
     );
   }

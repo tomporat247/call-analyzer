@@ -12,6 +12,7 @@ class ChartTopTitle extends StatelessWidget {
     return Center(
       child: Text(
         _title,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
             fontWeight: FontWeight.bold, fontSize: normalFontSize + 2),
       ),
