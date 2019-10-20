@@ -1,4 +1,5 @@
 import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_sorter.dart';
+import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_filter.dart';
 import 'package:call_analyzer/models/sort_option.dart';
 import 'package:call_analyzer/contacts/services/contact_service.dart';
 import 'package:call_analyzer/helper/helper.dart';
@@ -46,11 +47,9 @@ class AnalysisService {
   Future<void> filterByDate({DateTime from, DateTime to}) async {
     _filterFrom = from ?? _filterFrom;
     _filterTo = to ?? _filterTo;
-    // TODO: Get filtered callLogs async
-    _callLogs = _allCallLogs.where((CallLogEntry callLog) {
-      DateTime dateTime = getCallLogDateTime(callLog);
-      return dateTime.isBefore(_filterTo) && dateTime.isAfter(_filterFrom);
-    }).toList();
+    _callLogs = await AsyncFilter.asyncFilter(
+        _allCallLogs, AsyncFilter.filterByDate,
+        filterFrom: _filterFrom, filterTo: _filterTo);
     await _setupContactToDataMaps();
   }
 
@@ -75,10 +74,10 @@ class AnalysisService {
 
   Map<String, dynamic> getMostCallsInADayData() {
     Map<String, dynamic> ans = new Map<String, dynamic>();
-    DateTime prevDate = getCallLogDateTime(_callLogs.first);
+    DateTime prevDate = getFirstCallDate();
     int amount = 0;
-    DateTime maxDate;
-    int maxAmount = 0;
+    DateTime maxDate = prevDate;
+    int maxAmount = amount;
     _callLogs.forEach((CallLogEntry callLog) {
       DateTime newDate = getCallLogDateTime(callLog);
       if (newDate.day == prevDate.day) {

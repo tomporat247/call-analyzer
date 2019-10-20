@@ -89,7 +89,8 @@ class _AnalysisHomeState extends State<AnalysisHome> {
                       lastDate: DateTime.now())
                   .then((DateTime to) {
                 if (to != null) {
-                  _filterByDate(to: to);
+                  _filterByDate(
+                      to: DateTime(to.year, to.month, to.day, 23, 59, 59));
                 }
               });
             }),
@@ -104,7 +105,8 @@ class _AnalysisHomeState extends State<AnalysisHome> {
                       lastDate: _analysisService.filterTo)
                   .then((DateTime from) {
                 if (from != null) {
-                  _filterByDate(from: from);
+                  _filterByDate(
+                      from: DateTime(from.year, from.month, from.day));
                 }
               });
             }),
