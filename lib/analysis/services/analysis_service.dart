@@ -8,10 +8,17 @@ import 'contact_to_data_async_builder.dart';
 
 class AnalysisService {
   final ContactService _contactService;
+  DateTime _filterFrom;
+  DateTime _filterTo;
+  List<CallLogEntry> _allCallLogs;
   List<Contact> _contacts;
   List<CallLogEntry> _callLogs;
   Map<String, List<CallLogEntry>> _contactIdToCallLogs;
   Map<String, int> _contactIdToCallDurationInSeconds;
+
+  DateTime get filterFrom => _filterFrom;
+
+  DateTime get filterTo => _filterTo;
 
   List<Contact> get contacts => _contacts;
 
@@ -19,14 +26,32 @@ class AnalysisService {
 
   AnalysisService(this._contactService);
 
-  init(List<Contact> contacts, List<CallLogEntry> callLogs) async {
-    _callLogs = callLogs;
-    _contacts = contacts;
+  _setupContactToDataMaps() async {
     _contactIdToCallLogs = await ContactToDataAsyncBuilder.mapContactToCallLogs(
         _contacts, _callLogs);
     _contactIdToCallDurationInSeconds =
         await ContactToDataAsyncBuilder.mapContactToCallDurationInSeconds(
             _contacts, _contactIdToCallLogs);
+  }
+
+  init(List<Contact> contacts, List<CallLogEntry> callLogs) async {
+    _allCallLogs = callLogs;
+    _callLogs = callLogs;
+    _contacts = contacts;
+    _filterFrom = getFirstCallDate();
+    _filterTo = DateTime.now();
+    await _setupContactToDataMaps();
+  }
+
+  Future<void> filterByDate({DateTime from, DateTime to}) async {
+    _filterFrom = from ?? _filterFrom;
+    _filterTo = to ?? _filterTo;
+    _callLogs = _allCallLogs.where((CallLogEntry callLog) {
+      DateTime dateTime =
+          DateTime.fromMillisecondsSinceEpoch(callLog.timestamp);
+      return dateTime.isBefore(_filterTo) && dateTime.isAfter(_filterFrom);
+    }).toList();
+    await _setupContactToDataMaps();
   }
 
   Contact getContactFromCallLog(CallLogEntry callLog) {
@@ -86,8 +111,9 @@ class AnalysisService {
     return _callLogs.where((CallLogEntry c) => c.callType == callType).toList();
   }
 
-  DateTime getFirstCallDate() {
-    return DateTime.fromMillisecondsSinceEpoch(_callLogs.last.timestamp);
+  DateTime getFirstCallDate({firstFromAllTime = false}) {
+    return DateTime.fromMillisecondsSinceEpoch(
+        (firstFromAllTime ? _allCallLogs : _callLogs).last.timestamp - 1);
   }
 
   Duration getTotalCallDurationFor(Contact contact) {

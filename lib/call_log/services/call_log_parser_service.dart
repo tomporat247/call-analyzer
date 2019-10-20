@@ -8,6 +8,7 @@ class CallLogParserService {
   final String _number = 'n';
   final String _formattedNumber = 'fn';
 
+  // TODO: Run the for loop that does the read/writes in a compute - can take time when in large quantities
   dynamic callLogEntryToMap(dynamic callLogEntry) {
     return {
       _name: callLogEntry.name,

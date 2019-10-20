@@ -4,6 +4,7 @@ ThemeData getAppTheme(BuildContext context) {
   return ThemeData(
     fontFamily: 'product',
     primarySwatch: Colors.teal,
+    accentColor: Colors.tealAccent[700],
     brightness: Brightness.dark,
   );
 }
