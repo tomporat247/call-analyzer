@@ -1,10 +1,10 @@
-import 'package:call_analyzer/analysis/services/async_sorter.dart';
+import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_sorter.dart';
 import 'package:call_analyzer/models/sort_option.dart';
 import 'package:call_analyzer/contacts/services/contact_service.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
-import 'contact_to_data_async_builder.dart';
+import 'helpers/contact_to_data_async_builder.dart';
 
 class AnalysisService {
   final ContactService _contactService;
@@ -48,8 +48,7 @@ class AnalysisService {
     _filterTo = to ?? _filterTo;
     // TODO: Get filtered callLogs async
     _callLogs = _allCallLogs.where((CallLogEntry callLog) {
-      DateTime dateTime =
-          DateTime.fromMillisecondsSinceEpoch(callLog.timestamp);
+      DateTime dateTime = getCallLogDateTime(callLog);
       return dateTime.isBefore(_filterTo) && dateTime.isAfter(_filterFrom);
     }).toList();
     await _setupContactToDataMaps();
@@ -76,13 +75,12 @@ class AnalysisService {
 
   Map<String, dynamic> getMostCallsInADayData() {
     Map<String, dynamic> ans = new Map<String, dynamic>();
-    DateTime prevDate =
-        DateTime.fromMillisecondsSinceEpoch(_callLogs.first.timestamp);
+    DateTime prevDate = getCallLogDateTime(_callLogs.first);
     int amount = 0;
     DateTime maxDate;
     int maxAmount = 0;
     _callLogs.forEach((CallLogEntry callLog) {
-      DateTime newDate = DateTime.fromMillisecondsSinceEpoch(callLog.timestamp);
+      DateTime newDate = getCallLogDateTime(callLog);
       if (newDate.day == prevDate.day) {
         amount++;
       } else {
@@ -113,8 +111,10 @@ class AnalysisService {
   }
 
   DateTime getFirstCallDate({firstFromAllTime = false}) {
-    return DateTime.fromMillisecondsSinceEpoch(
-        (firstFromAllTime ? _allCallLogs : _callLogs).last.timestamp - 1);
+    DateTime dateTime =
+        getCallLogDateTime((firstFromAllTime ? _allCallLogs : _callLogs).last);
+    dateTime.subtract(Duration(seconds: 1));
+    return dateTime;
   }
 
   Duration getTotalCallDurationFor(Contact contact) {

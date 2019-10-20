@@ -1,4 +1,4 @@
-import 'package:call_analyzer/analysis/services/analysis_service.dart';
+import 'package:call_analyzer/analysis/services/analysis_service/analysis_service.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/widgets/contact_image.dart';
 import 'package:call_log/call_log.dart';

@@ -1,4 +1,4 @@
-import 'package:call_analyzer/analysis/services/analysis_service.dart';
+import 'package:call_analyzer/analysis/services/analysis_service/analysis_service.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

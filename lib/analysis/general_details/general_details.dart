@@ -1,5 +1,5 @@
 import 'package:call_analyzer/models/chart_data.dart';
-import 'package:call_analyzer/analysis/services/analysis_service.dart';
+import 'package:call_analyzer/analysis/services/analysis_service/analysis_service.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/models/life_event.dart';
@@ -158,12 +158,12 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   _setupTotalCallWithDateData() {
     _totalCallsWithDate = [];
     DateTime currentDateTime;
-    DateTime previousDateTime = DateTime.fromMillisecondsSinceEpoch(
-        _analysisService.callLogs.last.timestamp);
+    DateTime previousDateTime =
+        getCallLogDateTime(_analysisService.callLogs.last);
     int callsThisMonth = 0;
 
     _analysisService.callLogs.reversed.forEach((CallLogEntry callLog) {
-      currentDateTime = DateTime.fromMillisecondsSinceEpoch(callLog.timestamp);
+      currentDateTime = getCallLogDateTime(callLog);
 
       if (currentDateTime.month == previousDateTime.month) {
         callsThisMonth++;
@@ -182,12 +182,8 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   }
 
   Widget _getCallPerMonthTimeSeriesChart() {
-    int firstYear = DateTime.fromMillisecondsSinceEpoch(
-            _analysisService.callLogs.last.timestamp)
-        .year;
-    int lastYear = DateTime.fromMillisecondsSinceEpoch(
-            _analysisService.callLogs.first.timestamp)
-        .year;
+    int firstYear = getCallLogDateTime(_analysisService.callLogs.last).year;
+    int lastYear = getCallLogDateTime(_analysisService.callLogs.first).year;
     List<int> years = new List<int>.generate(
         lastYear - firstYear + 1, (int i) => firstYear + i);
 

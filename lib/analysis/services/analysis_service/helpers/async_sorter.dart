@@ -7,14 +7,14 @@ class AsyncSorter {
       List<T> list,
       int Function(T a, T b, Map<String, dynamic> helper) compareFunction,
       Map helperMap) async {
-    return compute(_sortWith, {
+    return compute(_sortBy, {
       'list': list,
       'compare': compareFunction,
       'helperMap': helperMap,
     });
   }
 
-  static List<T> _sortWith<T>(Map args) {
+  static List<T> _sortBy<T>(Map args) {
     List<T> list = args["list"];
     var compare = args["compare"];
     Map helperMap = args['helperMap'];

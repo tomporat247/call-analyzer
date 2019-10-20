@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:call_log/call_log.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
@@ -54,4 +55,8 @@ bool contactHasPhoneNumber(Contact contact, String phoneNumber) {
   return contact.phones
       .map((phone) => formatPhoneNumber(phone.value))
       .contains(formatPhoneNumber(phoneNumber));
+}
+
+DateTime getCallLogDateTime(CallLogEntry callLog) {
+  return DateTime.fromMillisecondsSinceEpoch(callLog.timestamp);
 }

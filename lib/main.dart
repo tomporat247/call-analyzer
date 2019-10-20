@@ -10,7 +10,7 @@ import 'package:call_analyzer/storage/services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import 'analysis/services/analysis_service.dart';
+import 'analysis/services/analysis_service/analysis_service.dart';
 
 void main() {
   _registerServices();

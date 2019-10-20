@@ -1,5 +1,5 @@
 import 'package:call_analyzer/analysis/contacts/contact_tile.dart';
-import 'package:call_analyzer/analysis/services/analysis_service.dart';
+import 'package:call_analyzer/analysis/services/analysis_service/analysis_service.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/models/flare_animation.dart';

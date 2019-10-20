@@ -4,7 +4,7 @@ import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/models/life_event.dart';
 import 'package:call_analyzer/models/menu_text_option.dart';
 import 'package:call_analyzer/models/sort_option.dart';
-import 'package:call_analyzer/analysis/services/analysis_service.dart';
+import 'package:call_analyzer/analysis/services/analysis_service/analysis_service.dart';
 import 'package:call_analyzer/widgets/filterable_content.dart';
 import 'package:call_analyzer/widgets/popup_menu_wrapper.dart';
 import 'package:contacts_service/contacts_service.dart';
