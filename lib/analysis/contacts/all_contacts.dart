@@ -77,7 +77,10 @@ class _AllContactsState extends State<AllContacts> {
                     },
                     itemBuilder: (BuildContext context, int index) {
                       Contact contact = snapshot.data[index];
-                      return ContactTile(contact, '#${index + 1}');
+                      return ContactTile(
+                        contact,
+                        trailingText: '#${index + 1}',
+                      );
                     },
                     itemCount: snapshot.data.length,
                   ),

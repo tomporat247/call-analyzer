@@ -16,6 +16,9 @@ class AnalysisService {
   List<CallLogEntry> _callLogs;
   Map<String, List<CallLogEntry>> _contactIdToCallLogs;
   Map<String, int> _contactIdToCallDurationInSeconds;
+  bool _isFilteringByDate;
+
+  bool get isFilteringByDate => _isFilteringByDate;
 
   DateTime get filterFrom => _filterFrom;
 
@@ -36,6 +39,7 @@ class AnalysisService {
   }
 
   init(List<Contact> contacts, List<CallLogEntry> callLogs) async {
+    _isFilteringByDate = false;
     _allCallLogs = callLogs;
     _callLogs = callLogs;
     _contacts = contacts;
@@ -51,6 +55,11 @@ class AnalysisService {
         _allCallLogs, AsyncFilter.filterByDate,
         filterFrom: _filterFrom, filterTo: _filterTo);
     await _setupContactToDataMaps();
+    _isFilteringByDate = (_filterFrom
+                .difference(getFirstCallDate(firstFromAllTime: true))
+                .inDays !=
+            0) ||
+        (_filterTo.difference(DateTime.now()).inDays != 0);
   }
 
   Contact getContactFromCallLog(CallLogEntry callLog) {

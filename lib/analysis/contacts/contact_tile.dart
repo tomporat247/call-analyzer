@@ -6,9 +6,10 @@ import 'contact_profile.dart';
 
 class ContactTile extends StatelessWidget {
   final Contact _contact;
-  final String _trailingText;
+  final String trailingText;
+  final Widget trailingWidget;
 
-  ContactTile(this._contact, [this._trailingText]);
+  ContactTile(this._contact, {this.trailingText, this.trailingWidget});
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +21,11 @@ class ContactTile extends StatelessWidget {
         _contact.displayName,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: Text(
-        _trailingText,
-        style: const TextStyle(fontStyle: FontStyle.italic),
-      ),
+      trailing: trailingWidget ??
+          Text(
+            trailingText,
+            style: const TextStyle(fontStyle: FontStyle.italic),
+          ),
     );
   }
 }

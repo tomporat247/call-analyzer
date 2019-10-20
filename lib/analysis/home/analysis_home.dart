@@ -38,7 +38,7 @@ class _AnalysisHomeState extends State<AnalysisHome> {
   Widget build(BuildContext context) {
     return DefaultTabController(
         initialIndex: 1,
-        length: 3,
+        length: 4,
         child: Scaffold(
           appBar: AppBar(
             title: Text(appTitle),
@@ -47,6 +47,7 @@ class _AnalysisHomeState extends State<AnalysisHome> {
                 Tab(text: 'General', icon: Icon(FontAwesomeIcons.chartPie)),
                 Tab(text: 'Top', icon: Icon(FontAwesomeIcons.medal)),
                 Tab(text: 'Contacts', icon: Icon(FontAwesomeIcons.userFriends)),
+                Tab(text: 'Calls', icon: Icon(FontAwesomeIcons.history)),
               ],
             ),
             actions: <Widget>[
@@ -68,6 +69,7 @@ class _AnalysisHomeState extends State<AnalysisHome> {
               GeneralDetails(_lifeEvent$.stream),
               TopAccolades(_lifeEvent$.stream),
               AllContacts(_lifeEvent$.stream),
+              Text('a')
             ],
           ),
           floatingActionButton: _getDateFilter(),
@@ -81,7 +83,11 @@ class _AnalysisHomeState extends State<AnalysisHome> {
       curve: Curves.bounceIn,
       tooltip: 'Filter',
       elevation: 8.0,
-      child: Icon(FontAwesomeIcons.filter),
+      child: Icon(
+        FontAwesomeIcons.filter,
+        color:
+            _analysisService.isFilteringByDate ? Colors.deepPurple[700] : null,
+      ),
       children: <SpeedDialChild>[
         _getSpeedDialChildWrapper(
             iconData: FontAwesomeIcons.calendarAlt,

@@ -104,8 +104,11 @@ class _TopAccoladesState extends State<TopAccolades> {
     return Slide(
       title: 'Most Calls With',
       content: _getSlideContent(
-          ContactTile(_mostCallWith,
-              '${_analysisService.getCallLogsFor(_mostCallWith).length} Calls'),
+          ContactTile(
+            _mostCallWith,
+            trailingText:
+                '${_analysisService.getCallLogsFor(_mostCallWith).length} Calls',
+          ),
           _nameToFlare[_mostCallsWithId]),
     );
   }
@@ -117,8 +120,9 @@ class _TopAccoladesState extends State<TopAccolades> {
           _longestCallContact != null
               ? ContactTile(
                   _longestCallContact,
-                  stringifyDuration(
-                      Duration(seconds: _longestCallCallLog.duration)))
+                  trailingText: stringifyDuration(
+                      Duration(seconds: _longestCallCallLog.duration)),
+                )
               : ListTile(
                   title: Text(_longestCallCallLog.number ??
                       _longestCallCallLog.formattedNumber ??
