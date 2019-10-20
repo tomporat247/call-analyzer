@@ -37,39 +37,41 @@ class _PermissionRequestState extends State<PermissionRequest> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Expanded(
-          flex: 5,
-          child: Align(
-            alignment: Alignment.center,
-            child: Text(
-              'Grant Required Permissions',
-              style: TextStyle(
-                  fontSize: normalFontSize + 10, fontWeight: FontWeight.bold),
+    return Material(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            flex: 5,
+            child: Align(
+              alignment: Alignment.center,
+              child: Text(
+                'Grant Required Permissions',
+                style: TextStyle(
+                    fontSize: normalFontSize + 10, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4 * defaultPadding),
-            child: LiquidLinearProgressIndicator(
-              value: (_grantedPermissions.length + _deniedPermissions.length) /
-                  _permissionsToRequire.length,
-              backgroundColor: Colors.white.withOpacity(0.1),
-              borderColor: Colors.transparent,
-              borderWidth: 0,
-              borderRadius: 16.0,
+          Expanded(
+            flex: 1,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4 * defaultPadding),
+              child: LiquidLinearProgressIndicator(
+                value: (_grantedPermissions.length + _deniedPermissions.length) /
+                    _permissionsToRequire.length,
+                backgroundColor: Colors.white.withOpacity(0.1),
+                borderColor: Colors.transparent,
+                borderWidth: 0,
+                borderRadius: 16.0,
+              ),
             ),
           ),
-        ),
-        Expanded(
-          flex: 20,
-          child: _getStepper(),
-        ),
-      ],
+          Expanded(
+            flex: 20,
+            child: _getStepper(),
+          ),
+        ],
+      ),
     );
   }
 

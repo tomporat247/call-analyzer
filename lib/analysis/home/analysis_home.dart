@@ -9,11 +9,14 @@ import 'package:call_analyzer/analysis/top/top_accolades.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/models/life_event.dart';
+import 'package:call_analyzer/permissions/permission_request.dart';
+import 'package:call_analyzer/permissions/services/permission_service.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AnalysisHome extends StatefulWidget {
   @override
@@ -22,6 +25,7 @@ class AnalysisHome extends StatefulWidget {
 
 class _AnalysisHomeState extends State<AnalysisHome> {
   AnalysisService _analysisService = GetIt.instance<AnalysisService>();
+  PermissionService _permissionService = GetIt.instance<PermissionService>();
   StreamController<LifeEvent> _lifeEvent$;
 
   @override
@@ -166,19 +170,36 @@ class _AnalysisHomeState extends State<AnalysisHome> {
   }
 
   Widget _getPopupMenu() {
-    // TODO: Allow re setting permissions from popup menu
-    List<String> options = ['Settings'];
+    String permissionsOption = 'Permissions';
+    List<String> options = [permissionsOption];
 
-    return PopupMenuButton<String>(
-      tooltip: 'Settings',
-      onSelected: (String option) => print('selected $option'),
-      itemBuilder: (BuildContext context) => [
-        for (String option in options)
-          PopupMenuItem<String>(
-            value: option,
-            child: Text(option),
-          )
-      ],
+    return Builder(
+      builder: (BuildContext context) => PopupMenuButton<String>(
+        tooltip: 'Settings',
+        onSelected: (String option) async {
+          if (option == permissionsOption) {
+            if (!(await _permissionService.hasOptionalPermissions())) {
+              List<PermissionGroup> grantedPermissions =
+                  await _permissionService.getGrantedPermissions();
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => PermissionRequest(
+                      grantedPermissions: grantedPermissions)));
+            } else {
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text(
+                    'All permissions granted (Contact, Call logs & Storage)'),
+              ));
+            }
+          }
+        },
+        itemBuilder: (BuildContext context) => [
+          for (String option in options)
+            PopupMenuItem<String>(
+              value: option,
+              child: Text(option),
+            )
+        ],
+      ),
     );
   }
 
