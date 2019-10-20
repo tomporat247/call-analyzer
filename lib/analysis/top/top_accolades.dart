@@ -48,7 +48,7 @@ class _TopAccoladesState extends State<TopAccolades> {
           animationName: 'tick')
     };
     _setup();
-    widget._lifeEvent$.listen((LifeEvent event) {
+    widget._lifeEvent$.takeWhile((e) => mounted).listen((LifeEvent event) {
       if (event == LifeEvent.RELOAD) {
         _setup();
       }

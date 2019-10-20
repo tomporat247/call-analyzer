@@ -38,7 +38,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   @override
   initState() {
     _setup();
-    widget._lifeEvent$.listen((LifeEvent event) {
+    widget._lifeEvent$.takeWhile((e) => mounted).listen((LifeEvent event) {
       if (event == LifeEvent.RELOAD) {
         _setup();
       }

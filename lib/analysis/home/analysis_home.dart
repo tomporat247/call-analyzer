@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:call_analyzer/analysis/calls/all_calls.dart';
 import 'package:call_analyzer/analysis/contacts/contact_profile.dart';
 import 'package:call_analyzer/analysis/contacts/all_contacts.dart';
 import 'package:call_analyzer/analysis/general_details/general_details.dart';
@@ -69,7 +70,7 @@ class _AnalysisHomeState extends State<AnalysisHome> {
               GeneralDetails(_lifeEvent$.stream),
               TopAccolades(_lifeEvent$.stream),
               AllContacts(_lifeEvent$.stream),
-              Text('a')
+              AllCalls(_lifeEvent$.stream)
             ],
           ),
           floatingActionButton: _getDateFilter(),
