@@ -100,7 +100,11 @@ class _AllContactsState extends State<AllContacts> {
   _fetchContacts() {
     _analysisService
         .getTopContacts(sortOption: _sortOption)
-        .then((List<Contact> contacts) => _topContacts$.sink.add(contacts));
+        .then((List<Contact> contacts) {
+      if (mounted) {
+        _topContacts$.sink.add(contacts);
+      }
+    });
   }
 
   Widget _getFilterOptions(BuildContext context) {

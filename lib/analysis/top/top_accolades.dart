@@ -2,12 +2,12 @@ import 'package:call_analyzer/analysis/contacts/contact_tile.dart';
 import 'package:call_analyzer/analysis/services/analysis_service/analysis_service.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
+import 'package:call_analyzer/models/call_log_info.dart';
 import 'package:call_analyzer/models/flare_animation.dart';
 import 'package:call_analyzer/models/life_event.dart';
 import 'package:call_analyzer/models/sort_option.dart';
 import 'package:call_analyzer/widgets/slide.dart';
 import 'package:call_analyzer/widgets/slide_show.dart';
-import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
@@ -29,8 +29,7 @@ class _TopAccoladesState extends State<TopAccolades> {
   final String _longestCallId = 'longestCall';
   Map<String, FlareAnimation> _nameToFlare;
   Contact _mostCallWith;
-  CallLogEntry _longestCallCallLog;
-  Contact _longestCallContact;
+  CallLogInfo _longestCallCallLog;
   DateTime _mostCallsInADayDate;
   int _mostCallsInADayAmount;
   bool _fetchedData = false;
@@ -87,8 +86,6 @@ class _TopAccoladesState extends State<TopAccolades> {
             sortOption: SortOption.CALL_AMOUNT, amount: 1))
         .first;
     _longestCallCallLog = _analysisService.getLongestCallLog();
-    _longestCallContact =
-        _analysisService.getContactFromCallLog(_longestCallCallLog);
     Map mostCallsInADateData = _analysisService.getMostCallsInADayData();
     _mostCallsInADayDate = mostCallsInADateData['date'];
     _mostCallsInADayAmount = mostCallsInADateData['amount'];
@@ -117,18 +114,17 @@ class _TopAccoladesState extends State<TopAccolades> {
     return Slide(
       title: 'Longest Call',
       content: _getSlideContent(
-          _longestCallContact != null
+          _longestCallCallLog.contact != null
               ? ContactTile(
-                  _longestCallContact,
-                  trailingText: stringifyDuration(
-                      Duration(seconds: _longestCallCallLog.duration)),
+                  _longestCallCallLog.contact,
+                  trailingText: stringifyDuration(_longestCallCallLog.duration),
                 )
               : ListTile(
                   title: Text(_longestCallCallLog.number ??
                       _longestCallCallLog.formattedNumber ??
                       'private number'),
-                  trailing: Text(stringifyDuration(
-                      Duration(seconds: _longestCallCallLog.duration))),
+                  trailing:
+                      Text(stringifyDuration(_longestCallCallLog.duration)),
                 ),
           _nameToFlare[_longestCallId]),
     );

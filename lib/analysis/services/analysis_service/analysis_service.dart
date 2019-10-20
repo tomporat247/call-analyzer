@@ -1,20 +1,22 @@
-import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_sorter.dart';
 import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_filter.dart';
-import 'package:call_analyzer/models/sort_option.dart';
+import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_mapper.dart';
+import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_sorter.dart';
 import 'package:call_analyzer/contacts/services/contact_service.dart';
-import 'package:call_analyzer/helper/helper.dart';
+import 'package:call_analyzer/models/call_log_info.dart';
+import 'package:call_analyzer/models/sort_option.dart';
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
+
 import 'helpers/contact_to_data_async_builder.dart';
 
 class AnalysisService {
   final ContactService _contactService;
   DateTime _filterFrom;
   DateTime _filterTo;
-  List<CallLogEntry> _allCallLogs;
+  List<CallLogInfo> _allCallLogs;
   List<Contact> _contacts;
-  List<CallLogEntry> _callLogs;
-  Map<String, List<CallLogEntry>> _contactIdToCallLogs;
+  List<CallLogInfo> _callLogs;
+  Map<String, List<CallLogInfo>> _contactIdToCallLogs;
   Map<String, int> _contactIdToCallDurationInSeconds;
   bool _isFilteringByDate;
 
@@ -26,7 +28,7 @@ class AnalysisService {
 
   List<Contact> get contacts => _contacts;
 
-  List<CallLogEntry> get callLogs => _callLogs;
+  List<CallLogInfo> get callLogs => _callLogs;
 
   AnalysisService(this._contactService);
 
@@ -39,9 +41,11 @@ class AnalysisService {
   }
 
   init(List<Contact> contacts, List<CallLogEntry> callLogs) async {
+    _allCallLogs =
+        await AsyncMapper.asyncMap<CallLogEntry, CallLogInfo, List<Contact>>(
+            callLogs, contacts, AsyncMapper.callLogEntryToCallLogInfo);
+    _callLogs = _allCallLogs;
     _isFilteringByDate = false;
-    _allCallLogs = callLogs;
-    _callLogs = callLogs;
     _contacts = contacts;
     _filterFrom = getFirstCallDate();
     _filterTo = DateTime.now();
@@ -62,18 +66,9 @@ class AnalysisService {
         (_filterTo.difference(DateTime.now()).inDays != 0);
   }
 
-  Contact getContactFromCallLog(CallLogEntry callLog) {
-    return _contacts.firstWhere(
-        (Contact contact) =>
-            contact.displayName == callLog.name ||
-            contactHasPhoneNumber(contact, callLog.number) ||
-            contactHasPhoneNumber(contact, callLog.formattedNumber),
-        orElse: () => null);
-  }
-
-  CallLogEntry getLongestCallLog() {
-    CallLogEntry longest = CallLogEntry(duration: 0);
-    _callLogs.forEach((CallLogEntry callLog) {
+  CallLogInfo getLongestCallLog() {
+    CallLogInfo longest = CallLogInfo(duration: Duration());
+    _callLogs.forEach((CallLogInfo callLog) {
       if (callLog.duration > longest.duration) {
         longest = callLog;
       }
@@ -87,9 +82,8 @@ class AnalysisService {
     int amount = 0;
     DateTime maxDate = prevDate;
     int maxAmount = amount;
-    _callLogs.forEach((CallLogEntry callLog) {
-      DateTime newDate = getCallLogDateTime(callLog);
-      if (newDate.day == prevDate.day) {
+    _callLogs.forEach((CallLogInfo callLog) {
+      if (callLog.dateTime.day == prevDate.day) {
         amount++;
       } else {
         if (amount > maxAmount) {
@@ -98,7 +92,7 @@ class AnalysisService {
         }
         amount = 0;
       }
-      prevDate = newDate;
+      prevDate = callLog.dateTime;
     });
 
     ans['date'] = maxDate;
@@ -114,13 +108,13 @@ class AnalysisService {
     return _callLogs.length;
   }
 
-  List<CallLogEntry> getAllCallLogsOfType(CallType callType) {
-    return _callLogs.where((CallLogEntry c) => c.callType == callType).toList();
+  List<CallLogInfo> getAllCallLogsOfType(CallType callType) {
+    return _callLogs.where((CallLogInfo c) => c.callType == callType).toList();
   }
 
   DateTime getFirstCallDate({firstFromAllTime = false}) {
     DateTime dateTime =
-        getCallLogDateTime((firstFromAllTime ? _allCallLogs : _callLogs).last);
+        (firstFromAllTime ? _allCallLogs : _callLogs).last.dateTime;
     dateTime.subtract(Duration(seconds: 1));
     return dateTime;
   }
@@ -138,7 +132,7 @@ class AnalysisService {
     return Duration(seconds: totalSeconds);
   }
 
-  List<CallLogEntry> getCallLogsFor(Contact contact) {
+  List<CallLogInfo> getCallLogsFor(Contact contact) {
     return _contactIdToCallLogs[contact.identifier];
   }
 

@@ -1,3 +1,4 @@
+import 'package:call_analyzer/models/call_log_info.dart';
 import 'package:call_analyzer/models/chart_data.dart';
 import 'package:call_analyzer/analysis/services/analysis_service/analysis_service.dart';
 import 'package:call_analyzer/config.dart';
@@ -158,12 +159,11 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   _setupTotalCallWithDateData() {
     _totalCallsWithDate = [];
     DateTime currentDateTime;
-    DateTime previousDateTime =
-        getCallLogDateTime(_analysisService.callLogs.last);
+    DateTime previousDateTime = _analysisService.callLogs.last.dateTime;
     int callsThisMonth = 0;
 
-    _analysisService.callLogs.reversed.forEach((CallLogEntry callLog) {
-      currentDateTime = getCallLogDateTime(callLog);
+    _analysisService.callLogs.reversed.forEach((CallLogInfo callLog) {
+      currentDateTime = callLog.dateTime;
 
       if (currentDateTime.month == previousDateTime.month) {
         callsThisMonth++;
@@ -182,8 +182,8 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   }
 
   Widget _getCallPerMonthTimeSeriesChart() {
-    int firstYear = getCallLogDateTime(_analysisService.callLogs.last).year;
-    int lastYear = getCallLogDateTime(_analysisService.callLogs.first).year;
+    int firstYear = _analysisService.callLogs.last.dateTime.year;
+    int lastYear = _analysisService.callLogs.first.dateTime.year;
     List<int> years = new List<int>.generate(
         lastYear - firstYear + 1, (int i) => firstYear + i);
 

@@ -1,18 +1,18 @@
 import 'package:call_analyzer/helper/helper.dart';
-import 'package:call_log/call_log.dart';
+import 'package:call_analyzer/models/call_log_info.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/foundation.dart';
 
 class ContactToDataAsyncBuilder {
-  static Future<Map<String, List<CallLogEntry>>> mapContactToCallLogs(
-      List<Contact> contacts, List<CallLogEntry> callLogs) {
+  static Future<Map<String, List<CallLogInfo>>> mapContactToCallLogs(
+      List<Contact> contacts, List<CallLogInfo> callLogs) {
     return compute(_buildContactIdToCallLogs,
         {'contacts': contacts, 'callLogs': callLogs});
   }
 
   static Future<Map<String, int>> mapContactToCallDurationInSeconds(
       List<Contact> contacts,
-      Map<String, List<CallLogEntry>> contactIdToCallLogs) {
+      Map<String, List<CallLogInfo>> contactIdToCallLogs) {
     return compute(_buildContactToDurationInSeconds,
         {'contacts': contacts, 'contactIdToCallLogs': contactIdToCallLogs});
   }
@@ -20,7 +20,7 @@ class ContactToDataAsyncBuilder {
   static Map<String, int> _buildContactToDurationInSeconds(Map args) {
     Map<String, int> contactIdToCallDurationInSeconds = new Map<String, int>();
     List<Contact> contacts = args['contacts'];
-    Map<String, List<CallLogEntry>> contactIdToCallLogs =
+    Map<String, List<CallLogInfo>> contactIdToCallLogs =
         args['contactIdToCallLogs'];
     contacts.forEach((Contact contact) =>
         contactIdToCallDurationInSeconds[contact.identifier] =
@@ -29,17 +29,16 @@ class ContactToDataAsyncBuilder {
   }
 
   static Duration _getTotalCallDurationWith(
-      Contact contact, Map<String, List<CallLogEntry>> contactIdToCallLogs) {
-    return Duration(
-        seconds: contactIdToCallLogs[contact.identifier].fold<int>(
-            0, (int curr, CallLogEntry callLog) => curr + callLog.duration));
+      Contact contact, Map<String, List<CallLogInfo>> contactIdToCallLogs) {
+    return contactIdToCallLogs[contact.identifier].fold<Duration>(
+        Duration(), (Duration curr, CallLogInfo callLog) => curr + callLog.duration);
   }
 
-  static Map<String, List<CallLogEntry>> _buildContactIdToCallLogs(Map args) {
-    Map<String, List<CallLogEntry>> contactIdToCallLogs =
-        new Map<String, List<CallLogEntry>>();
+  static Map<String, List<CallLogInfo>> _buildContactIdToCallLogs(Map args) {
+    Map<String, List<CallLogInfo>> contactIdToCallLogs =
+        new Map<String, List<CallLogInfo>>();
     List<Contact> contacts = args['contacts'];
-    List<CallLogEntry> callLogs = args['callLogs'];
+    List<CallLogInfo> callLogs = args['callLogs'];
     contacts.forEach((Contact contact) =>
         contactIdToCallLogs[contact.identifier] =
             _getAllCallLogsForContact(contact, callLogs));
@@ -47,10 +46,10 @@ class ContactToDataAsyncBuilder {
     return contactIdToCallLogs;
   }
 
-  static List<CallLogEntry> _getAllCallLogsForContact(
-      Contact contact, List<CallLogEntry> callLogs) {
+  static List<CallLogInfo> _getAllCallLogsForContact(
+      Contact contact, List<CallLogInfo> callLogs) {
     return callLogs
-        .where((CallLogEntry callLog) => (contact.displayName == callLog.name ||
+        .where((CallLogInfo callLog) => (contact.displayName == callLog.name ||
             _contactHasPhoneNumber(contact, callLog.number) ||
             _contactHasPhoneNumber(contact, callLog.formattedNumber)))
         .toList();

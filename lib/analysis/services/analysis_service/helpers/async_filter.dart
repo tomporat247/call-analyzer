@@ -1,5 +1,4 @@
-import 'package:call_analyzer/helper/helper.dart';
-import 'package:call_log/call_log.dart';
+import 'package:call_analyzer/models/call_log_info.dart';
 import 'package:flutter/foundation.dart';
 
 class AsyncFilter {
@@ -20,9 +19,8 @@ class AsyncFilter {
     return list.where((T element) => filter(element, args)).toList();
   }
 
-  static bool filterByDate(CallLogEntry callLog, Map args) {
-    DateTime dateTime = getCallLogDateTime(callLog);
-    return dateTime.isBefore(args['filterTo']) &&
-        dateTime.isAfter(args['filterFrom']);
+  static bool filterByDate(CallLogInfo callLog, Map args) {
+    return callLog.dateTime.isBefore(args['filterTo']) &&
+        callLog.dateTime.isAfter(args['filterFrom']);
   }
 }

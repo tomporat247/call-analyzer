@@ -1,5 +1,6 @@
 import 'package:call_analyzer/analysis/services/analysis_service/analysis_service.dart';
 import 'package:call_analyzer/helper/helper.dart';
+import 'package:call_analyzer/models/call_log_info.dart';
 import 'package:call_analyzer/models/chart_data.dart';
 import 'package:call_analyzer/widgets/contact_image.dart';
 import 'package:call_analyzer/widgets/time_series_chart_wrapper.dart';
@@ -26,7 +27,7 @@ class _ContactProfileState extends State<ContactProfile> {
   final double _cardBorderRadius = 12.0;
   final AnalysisService _analysisService = GetIt.instance<AnalysisService>();
   Contact _contact;
-  List<CallLogEntry> _callLogs;
+  List<CallLogInfo> _callLogs;
   int _totalCallAmount;
   int _totalIncomingCallAmount;
   int _totalOutgoingCallAmount;
@@ -77,8 +78,8 @@ class _ContactProfileState extends State<ContactProfile> {
     _totalRejectedCallAmount = 0;
     _callPerDay = new List<ChartData<DateTime>>();
     int amountToday = 0;
-    DateTime prev = getCallLogDateTime(_callLogs.first);
-    _callLogs.forEach((CallLogEntry callLog) {
+    DateTime prev = _callLogs.first.dateTime;
+    _callLogs.forEach((CallLogInfo callLog) {
       switch (callLog.callType) {
         case CallType.incoming:
           _totalIncomingCallAmount++;
@@ -99,7 +100,7 @@ class _ContactProfileState extends State<ContactProfile> {
           break;
       }
 
-      DateTime curr = getCallLogDateTime(callLog);
+      DateTime curr = callLog.dateTime;
       if (curr.day == prev.day) {
         amountToday++;
       } else {
