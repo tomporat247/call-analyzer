@@ -1,6 +1,8 @@
 import 'package:call_analyzer/analysis/services/analysis_service/analysis_service.dart';
 import 'package:call_analyzer/helper/helper.dart';
+import 'package:call_analyzer/models/chart_data.dart';
 import 'package:call_analyzer/widgets/contact_image.dart';
+import 'package:call_analyzer/widgets/time_series_chart_wrapper.dart';
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,7 @@ class ContactProfile extends StatefulWidget {
 }
 
 class _ContactProfileState extends State<ContactProfile> {
+  final Color allCallLineChartColor = Colors.cyan[800];
   final double _avatarRadius = 50.0;
   final double _cardBorderRadius = 12.0;
   final AnalysisService _analysisService = GetIt.instance<AnalysisService>();
@@ -32,8 +35,7 @@ class _ContactProfileState extends State<ContactProfile> {
   Duration _totalCallDuration;
   double _averageCallsPerDay;
   Duration _averageCallDurationInSecondsPerDay;
-
-  // TODO: Add a graph of all calls with user (x axis is the time, y is calls per day in one color and call duration per day in another color)
+  List<ChartData<DateTime>> _callPerDay;
 
   @override
   void initState() {
@@ -48,62 +50,16 @@ class _ContactProfileState extends State<ContactProfile> {
   Widget build(BuildContext context) {
     return Container(
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Contact Information'),
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: _getContactProfile(),
-            ),
-            Expanded(
-              flex: 3,
-              child: ListView(
-                children: _getCards(),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _getContactProfile() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        ContactImage(
-          contact: _contact,
-          radius: _avatarRadius,
-        ),
-        Text(
-          _contact.displayName,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: normalFontSize + 2,
+          appBar: AppBar(
+            title: Text('Contact Information'),
           ),
-        ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          body: ListView(
             children: <Widget>[
-              for (Item phoneItem in _contact.phones)
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: defaultPadding),
-                  child: Text('${phoneItem.label[0].toUpperCase()}'
-                      '${phoneItem.label.substring(1).toLowerCase()}: '
-                      '${_contact.phones.toList()[0].value}'),
-                )
+              _getContactProfile(),
+              ..._getCards(),
+              ..._getGraphs()
             ],
-          ),
-        )
-      ],
+          )),
     );
   }
 
@@ -119,6 +75,9 @@ class _ContactProfileState extends State<ContactProfile> {
     _totalOutgoingCallAmount = 0;
     _totalMissedCallAmount = 0;
     _totalRejectedCallAmount = 0;
+    _callPerDay = new List<ChartData<DateTime>>();
+    int amountToday = 0;
+    DateTime prev = getCallLogDateTime(_callLogs.first);
     _callLogs.forEach((CallLogEntry callLog) {
       switch (callLog.callType) {
         case CallType.incoming:
@@ -139,7 +98,65 @@ class _ContactProfileState extends State<ContactProfile> {
         default:
           break;
       }
+
+      DateTime curr = getCallLogDateTime(callLog);
+      if (curr.day == prev.day) {
+        amountToday++;
+      } else {
+        _callPerDay.add(
+            ChartData<DateTime>('', '', amountToday, allCallLineChartColor, pos: prev));
+        amountToday = 0;
+      }
+      prev = curr;
     });
+  }
+
+  Widget _getContactProfile() {
+    final EdgeInsetsGeometry pad = EdgeInsets.only(bottom: defaultPadding);
+    List<Widget> contactProfilePieces = [
+      ContactImage(
+        contact: _contact,
+        radius: _avatarRadius,
+      ),
+      Text(
+        _contact.displayName,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: normalFontSize + 2,
+        ),
+      ),
+      SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            for (Item phoneItem in _contact.phones)
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: defaultPadding),
+                child: Text('${phoneItem.label[0].toUpperCase()}'
+                    '${phoneItem.label.substring(1).toLowerCase()}: '
+                    '${_contact.phones.toList()[0].value}'),
+              )
+          ],
+        ),
+      )
+    ];
+
+    return Padding(
+      padding: EdgeInsets.only(top: 2 * defaultPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          for (Widget widget in contactProfilePieces)
+            Padding(
+              padding: pad,
+              child: widget,
+            )
+        ],
+      ),
+    );
   }
 
   _formatContactPhones() {
@@ -156,6 +173,25 @@ class _ContactProfileState extends State<ContactProfile> {
     _contact.phones = phones;
   }
 
+  List<Widget> _getGraphs() {
+    List<List<Widget>> graphsData = [
+      [
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.5,
+          child: TimeSeriesChartWrapper([_callPerDay], 'Calls'),
+        )
+      ]
+    ];
+    return [
+      for (List<Widget> graphData in graphsData)
+        _wrapInCard(graphData,
+            gradient: LinearGradient(
+                colors: [Colors.grey[850], Colors.grey[800]],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight))
+    ];
+  }
+
   List<Widget> _getCards() {
     List<List<Widget>> cardDataList = [
       _getCallDurationData(),
@@ -163,34 +199,30 @@ class _ContactProfileState extends State<ContactProfile> {
       _getCallsCardData(),
     ];
 
-    return [
-      for (List<Widget> cardData in cardDataList)
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: defaultPadding),
-          child: FractionallySizedBox(
-            widthFactor: 0.9,
-            child: _wrapInCard(cardData),
-          ),
-        )
-    ];
+    return [for (List<Widget> cardData in cardDataList) _wrapInCard(cardData)];
   }
 
-  Widget _wrapInCard(List<Widget> data) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(_cardBorderRadius),
-          gradient: appGradient),
-      child: Card(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(_cardBorderRadius)),
-        color: Colors.transparent,
-//        elevation: 16.0,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: data,
-        ),
-      ),
-    );
+  Widget _wrapInCard(List<Widget> data, {Gradient gradient}) {
+    return Padding(
+        padding: EdgeInsets.symmetric(vertical: defaultPadding),
+        child: FractionallySizedBox(
+          widthFactor: 0.9,
+          child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(_cardBorderRadius),
+                gradient: gradient ?? appGradient),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(_cardBorderRadius)),
+              color: Colors.transparent,
+//              elevation: 0.0,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: data,
+              ),
+            ),
+          ),
+        ));
   }
 
   List<Widget> _getCallsCardData() {
@@ -261,8 +293,7 @@ class _ContactProfileState extends State<ContactProfile> {
       ListTile(
         title: Text('Average Per Year'),
         leading: Icon(FontAwesomeIcons.chartLine),
-        subtitle: Text(
-            'Calls: ${stringifyNumber(_averageCallsPerDay * 365)}\n'
+        subtitle: Text('Calls: ${stringifyNumber(_averageCallsPerDay * 365)}\n'
             'Talk Time: ${stringifyDuration(_averageCallDurationInSecondsPerDay * 365)}\n'),
       ),
     ];

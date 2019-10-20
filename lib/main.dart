@@ -8,13 +8,17 @@ import 'package:call_analyzer/permissions/services/permission_service.dart';
 import 'package:call_analyzer/splash_screen/splash_screen.dart';
 import 'package:call_analyzer/storage/services/storage_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 
 import 'analysis/services/analysis_service/analysis_service.dart';
 
 void main() {
   _registerServices();
-  runApp(MyApp());
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(new MyApp());
+  });
 }
 
 _registerServices() {

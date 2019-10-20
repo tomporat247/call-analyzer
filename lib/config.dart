@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 
+final Color accentColor = Colors.tealAccent[700];
+
 ThemeData getAppTheme(BuildContext context) {
   return ThemeData(
     fontFamily: 'product',
     primarySwatch: Colors.teal,
-    accentColor: Colors.tealAccent[700],
+    accentColor: accentColor,
     brightness: Brightness.dark,
   );
 }
 
 final double normalFontSize = 14.0;
-
-Color getAccentColor(BuildContext context) {
-  return getAppTheme(context).accentColor;
-}
 
 Color getTextColor(BuildContext context) {
   return Theme.of(context).textTheme.body1.color;

@@ -30,13 +30,13 @@ class TimeSeriesChartWrapper extends StatelessWidget {
       dashesPatternFunctions =
           _getDashPatternFunctionsList(givenChartData.length);
     } else {
-      dashesPatternFunctions = new List.filled(givenChartData.length, null);
+      dashesPatternFunctions = List.filled(givenChartData.length, null);
     }
 
     // Add every line to the chart
     for (List<ChartData> lineData in givenChartData) {
       final int finalIndex = index;
-      _dataSeries.add(new charts.Series<ChartData, DateTime>(
+      _dataSeries.add(charts.Series<ChartData, DateTime>(
         id: id,
         dashPatternFn: dashesPatternFunctions[finalIndex],
         colorFn: (ChartData data, _) => fromNormalColorToChartColor(data.color),
@@ -63,7 +63,8 @@ class TimeSeriesChartWrapper extends StatelessWidget {
                   showHorizontalFollowLine:
                       common.LinePointHighlighterFollowLineType.all,
                   showVerticalFollowLine:
-                      common.LinePointHighlighterFollowLineType.all)
+                      common.LinePointHighlighterFollowLineType.all),
+              charts.SeriesLegend(),
             ],
             defaultRenderer: charts.LineRendererConfig(
                 includeArea: true,
@@ -72,35 +73,47 @@ class TimeSeriesChartWrapper extends StatelessWidget {
                 areaOpacity: chartAreaOpacity),
             animationDuration: animationDuration,
             animate: true,
-            domainAxis:
-                _getCustomizedAxisSpeC(verticalGridLineOpacity, context),
-            primaryMeasureAxis:
-                _getCustomizedAxisSpeC(horizontalGridLineOpacity, context),
-            secondaryMeasureAxis: _getCustomizedAxisSpeC(0.0, context),
+            domainAxis: _getDateTimeCustomizedAxisSpeC(
+                verticalGridLineOpacity, context),
+            primaryMeasureAxis: _getNumericCustomizedAxisSpex(
+                horizontalGridLineOpacity, context),
+            secondaryMeasureAxis: _getNumericCustomizedAxisSpex(0.0, context),
           ),
         ),
       ],
     );
   }
 
-  charts.DateTimeAxisSpec _getCustomizedAxisSpeC(
+  charts.DateTimeAxisSpec _getDateTimeCustomizedAxisSpeC(
       double opacity, BuildContext context) {
-    return null;
-//    return charts.DateTimeAxisSpec(
-//        renderSpec: new charts.GridlineRendererSpec(
-//      lineStyle: new charts.LineStyleSpec(
-//          color: fromNormalColorToChartColor(
-//              getTextColor(context).withOpacity(opacity))),
-//      // Tick and Label styling here.
-//      labelStyle: new charts.TextStyleSpec(
-//          color: fromNormalColorToChartColor(getTextColor(context))),
-//    ));
+    return charts.DateTimeAxisSpec(
+        renderSpec: new charts.GridlineRendererSpec(
+      lineStyle: new charts.LineStyleSpec(
+          color: fromNormalColorToChartColor(
+              getTextColor(context).withOpacity(opacity))),
+      // Tick and Label styling here.
+      labelStyle: new charts.TextStyleSpec(
+          color: fromNormalColorToChartColor(getTextColor(context))),
+    ));
+  }
+
+  charts.NumericAxisSpec _getNumericCustomizedAxisSpex(
+      double opacity, BuildContext context) {
+    return charts.NumericAxisSpec(
+        renderSpec: charts.GridlineRendererSpec(
+      lineStyle: charts.LineStyleSpec(
+          color: fromNormalColorToChartColor(
+              getTextColor(context).withOpacity(opacity))),
+      // Tick and Label styling here.
+      labelStyle: charts.TextStyleSpec(
+          color: fromNormalColorToChartColor(getTextColor(context))),
+    ));
   }
 
   List<TypedAccessorFn<ChartData, List<int>>> _getDashPatternFunctionsList(
       int dataLineAmount) {
     List<TypedAccessorFn<ChartData, List<int>>> ans =
-        new List<TypedAccessorFn<ChartData, List<int>>>();
+        List<TypedAccessorFn<ChartData, List<int>>>();
 
     List<List<int>> dashesPattern = _getDashPatternsFor(dataLineAmount);
 
@@ -116,7 +129,7 @@ class TimeSeriesChartWrapper extends StatelessWidget {
   }
 
   List<List<int>> _getDashPatternsFor(int dataLineAmount) {
-    List<List<int>> ans = new List<List<int>>();
+    List<List<int>> ans = List<List<int>>();
     int dash;
     final int multiplier = 6;
 
