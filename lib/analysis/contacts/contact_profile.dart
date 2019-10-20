@@ -173,6 +173,7 @@ class _ContactProfileState extends State<ContactProfile> {
     _contact.phones = phones;
   }
 
+  // TODO: Add call duration graph as well
   List<Widget> _getGraphs() {
     List<List<Widget>> graphsData = [
       [
