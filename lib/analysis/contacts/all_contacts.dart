@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:call_analyzer/config.dart';
+import 'package:call_analyzer/models/life_event.dart';
 import 'package:call_analyzer/models/menu_text_option.dart';
 import 'package:call_analyzer/models/sort_option.dart';
 import 'package:call_analyzer/analysis/services/analysis_service.dart';
@@ -12,6 +13,10 @@ import 'package:get_it/get_it.dart';
 import 'contact_tile.dart';
 
 class AllContacts extends StatefulWidget {
+  final Stream<LifeEvent> _lifeEvent$;
+
+  AllContacts(this._lifeEvent$);
+
   @override
   _AllContactsState createState() => _AllContactsState();
 }
@@ -40,7 +45,12 @@ class _AllContactsState extends State<AllContacts> {
       ),
     ];
     _topContacts$ = StreamController<List<Contact>>();
-    _fetchContacts();
+    _setup();
+    widget._lifeEvent$.listen((LifeEvent event) {
+      if (event == LifeEvent.RELOAD) {
+        _setup();
+      }
+    });
     super.initState();
   }
 
@@ -78,6 +88,10 @@ class _AllContactsState extends State<AllContacts> {
         );
       },
     );
+  }
+
+  _setup() {
+    _fetchContacts();
   }
 
   _fetchContacts() {

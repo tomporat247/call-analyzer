@@ -2,6 +2,7 @@ import 'package:call_analyzer/models/chart_data.dart';
 import 'package:call_analyzer/analysis/services/analysis_service.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
+import 'package:call_analyzer/models/life_event.dart';
 import 'package:call_analyzer/widgets/pie_chart_wrapper.dart';
 import 'package:call_analyzer/widgets/slide.dart';
 import 'package:call_analyzer/widgets/slide_show.dart';
@@ -12,6 +13,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 class GeneralDetails extends StatefulWidget {
+  final Stream<LifeEvent> _lifeEvent$;
+
+  GeneralDetails(this._lifeEvent$);
+
   @override
   _GeneralDetailsState createState() => _GeneralDetailsState();
 }
@@ -31,9 +36,12 @@ class _GeneralDetailsState extends State<GeneralDetails> {
 
   @override
   initState() {
-    _setupTotalCallData();
-    _setupCallDurationData();
-    _setupTotalCallWithDateData();
+    _setup();
+    widget._lifeEvent$.listen((LifeEvent event) {
+      if (event == LifeEvent.RELOAD) {
+        _setup();
+      }
+    });
     super.initState();
   }
 
@@ -58,6 +66,12 @@ class _GeneralDetailsState extends State<GeneralDetails> {
       ],
       onPageSwitch: _onPageSwitch,
     );
+  }
+
+  _setup() {
+    _setupTotalCallData();
+    _setupCallDurationData();
+    _setupTotalCallWithDateData();
   }
 
   _onPageSwitch(int prevIndex, int currIndex) {
@@ -111,32 +125,34 @@ class _GeneralDetailsState extends State<GeneralDetails> {
     _topCallDurationData = new List<ChartData<num>>();
     List<Contact> topContacts =
         await _analysisService.getTopContacts(amount: topContactAmount);
-    setState(() {
-      double sum = 0;
-      topContacts.forEach((Contact contact) {
-        double contactPercentageOutOfAllCalls =
-            _analysisService.getTotalCallDurationFor(contact).inSeconds /
-                _totalCallDuration.inSeconds *
-                100;
-        sum += contactPercentageOutOfAllCalls;
+    if (mounted) {
+      setState(() {
+        double sum = 0;
+        topContacts.forEach((Contact contact) {
+          double contactPercentageOutOfAllCalls =
+              _analysisService.getTotalCallDurationFor(contact).inSeconds /
+                  _totalCallDuration.inSeconds *
+                  100;
+          sum += contactPercentageOutOfAllCalls;
+          _topCallDurationData.add(ChartData(
+            "",
+            contact.displayName,
+            double.parse(stringifyNumber(contactPercentageOutOfAllCalls)),
+            colors[topContacts.indexOf(contact)],
+            suffix: ' %',
+            limitCaption: true,
+          ));
+        });
         _topCallDurationData.add(ChartData(
           "",
-          contact.displayName,
-          double.parse(stringifyNumber(contactPercentageOutOfAllCalls)),
-          colors[topContacts.indexOf(contact)],
+          'Other',
+          double.parse(stringifyNumber(100 - sum)),
+          Colors.black,
           suffix: ' %',
           limitCaption: true,
         ));
       });
-      _topCallDurationData.add(ChartData(
-        "",
-        'Other',
-        double.parse(stringifyNumber(100 - sum)),
-        Colors.black,
-        suffix: ' %',
-        limitCaption: true,
-      ));
-    });
+    }
   }
 
   _setupTotalCallWithDateData() {

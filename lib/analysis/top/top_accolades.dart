@@ -3,6 +3,7 @@ import 'package:call_analyzer/analysis/services/analysis_service.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/models/flare_animation.dart';
+import 'package:call_analyzer/models/life_event.dart';
 import 'package:call_analyzer/models/sort_option.dart';
 import 'package:call_analyzer/widgets/slide.dart';
 import 'package:call_analyzer/widgets/slide_show.dart';
@@ -13,6 +14,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 class TopAccolades extends StatefulWidget {
+  final Stream<LifeEvent> _lifeEvent$;
+
+  const TopAccolades(this._lifeEvent$);
+
   @override
   _TopAccoladesState createState() => _TopAccoladesState();
 }
@@ -43,11 +48,36 @@ class _TopAccoladesState extends State<TopAccolades> {
           fileName: 'assets/animations/ticking_clock.flr',
           animationName: 'tick')
     };
-    _fetchTopAccolades();
+    _setup();
+    widget._lifeEvent$.listen((LifeEvent event) {
+      if (event == LifeEvent.RELOAD) {
+        _setup();
+      }
+    });
     super.initState();
   }
 
-  _fetchTopAccolades() async {
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: fastSwitchDuration,
+      child: !_fetchedData
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : SlideShow(<Slide>[
+              _getMostCallsWithSlide(),
+              _getLongestCallWithSlide(),
+              _getMostCallsADaySlide(),
+            ]),
+    );
+  }
+
+  _setup() async {
+    if (!mounted) {
+      return;
+    }
+
     setState(() {
       _fetchedData = false;
     });
@@ -68,22 +98,6 @@ class _TopAccoladesState extends State<TopAccolades> {
         _fetchedData = true;
       });
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: fastSwitchDuration,
-      child: !_fetchedData
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : SlideShow(<Slide>[
-              _getMostCallsWithSlide(),
-              _getLongestCallWithSlide(),
-              getMostCallsADaySlide(),
-            ]),
-    );
   }
 
   Slide _getMostCallsWithSlide() {
@@ -116,7 +130,7 @@ class _TopAccoladesState extends State<TopAccolades> {
     );
   }
 
-  Slide getMostCallsADaySlide() {
+  Slide _getMostCallsADaySlide() {
     return Slide(
       title: 'Most Calls In a Day',
       content: _getSlideContent(

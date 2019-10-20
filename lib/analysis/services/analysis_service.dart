@@ -46,6 +46,7 @@ class AnalysisService {
   Future<void> filterByDate({DateTime from, DateTime to}) async {
     _filterFrom = from ?? _filterFrom;
     _filterTo = to ?? _filterTo;
+    // TODO: Get filtered callLogs async
     _callLogs = _allCallLogs.where((CallLogEntry callLog) {
       DateTime dateTime =
           DateTime.fromMillisecondsSinceEpoch(callLog.timestamp);

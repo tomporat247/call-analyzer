@@ -61,9 +61,9 @@ class _AnalysisHomeState extends State<AnalysisHome> {
           ),
           body: TabBarView(
             children: <Widget>[
-              GeneralDetails(),
-              TopAccolades(),
-              AllContacts(),
+              GeneralDetails(_lifeEvent$.stream),
+              TopAccolades(_lifeEvent$.stream),
+              AllContacts(_lifeEvent$.stream),
             ],
           ),
           floatingActionButton: _getDateFilter(),
@@ -75,9 +75,6 @@ class _AnalysisHomeState extends State<AnalysisHome> {
       overlayColor: Colors.black,
       closeManually: false,
       curve: Curves.bounceIn,
-      onClose: () {
-        print('onClose');
-      },
       tooltip: 'Filter',
       elevation: 8.0,
       child: Icon(FontAwesomeIcons.filter),
