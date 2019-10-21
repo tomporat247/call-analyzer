@@ -4,8 +4,8 @@ import 'package:contacts_service/contacts_service.dart';
 class CallLogInfo {
   final Contact contact;
   final String name;
-  final String number;
-  final String formattedNumber;
+  String number;
+  String formattedNumber;
   final CallType callType;
   final Duration duration;
   final DateTime dateTime;
@@ -18,5 +18,10 @@ class CallLogInfo {
     this.callType,
     this.duration,
     this.dateTime,
-  });
+  }) {
+    if (number == null && formattedNumber == null) {
+      number = 'Unkown';
+      formattedNumber = 'Unkown';
+    }
+  }
 }

@@ -37,7 +37,7 @@ class ContactImage extends StatelessWidget {
   CircleAvatar _getContactWithDefaultImage() {
     return CircleAvatar(
       child: Icon(
-        FontAwesomeIcons.user,
+        FontAwesomeIcons.userAlt,
         color: Colors.black,
       ),
       backgroundColor: Colors.grey,

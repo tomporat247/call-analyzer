@@ -36,8 +36,8 @@ String stringifyDuration(Duration duration) {
   return '${hours}h ${minutes}m ${seconds}s';
 }
 
-String stringifyDateTime(DateTime dateTime) {
-  var formatter = new DateFormat('yyyy MMM dd');
+String stringifyDateTime(DateTime dateTime, {bool withTime = false}) {
+  DateFormat formatter = DateFormat('MMM dd yyyy ${withTime ? 'HH:mm' : ''}');
   return formatter.format(dateTime);
 }
 

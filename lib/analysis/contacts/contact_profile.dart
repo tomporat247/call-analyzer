@@ -2,6 +2,7 @@ import 'package:call_analyzer/analysis/services/analysis_service/analysis_servic
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/models/call_log_info.dart';
 import 'package:call_analyzer/models/chart_data.dart';
+import 'package:call_analyzer/widgets/call_icon.dart';
 import 'package:call_analyzer/widgets/contact_image.dart';
 import 'package:call_analyzer/widgets/time_series_chart_wrapper.dart';
 import 'package:call_log/call_log.dart';
@@ -82,8 +83,6 @@ class _ContactProfileState extends State<ContactProfile> {
     _callLogs.forEach((CallLogInfo callLog) {
       switch (callLog.callType) {
         case CallType.incoming:
-          _totalIncomingCallAmount++;
-          break;
         case CallType.answeredExternally:
           _totalIncomingCallAmount++;
           break;
@@ -104,8 +103,9 @@ class _ContactProfileState extends State<ContactProfile> {
       if (curr.day == prev.day) {
         amountToday++;
       } else {
-        _callPerDay.add(
-            ChartData<DateTime>('', '', amountToday, allCallLineChartColor, pos: prev));
+        _callPerDay.add(ChartData<DateTime>(
+            '', '', amountToday, allCallLineChartColor,
+            pos: prev));
         amountToday = 0;
       }
       prev = curr;
@@ -236,25 +236,25 @@ class _ContactProfileState extends State<ContactProfile> {
       ),
       ListTile(
         title: Text('Incoming Calls'),
-        leading: Icon(Icons.call_received),
+        leading: CallIcon(callType: CallType.incoming),
         trailing: Text(_getPercentageFromTotalCalls(_totalIncomingCallAmount)),
         subtitle: Text(_totalIncomingCallAmount.toString()),
       ),
       ListTile(
         title: Text('Outgoing Calls'),
-        leading: Icon(Icons.call_made),
+        leading: CallIcon(callType: CallType.outgoing),
         trailing: Text(_getPercentageFromTotalCalls(_totalOutgoingCallAmount)),
         subtitle: Text(_totalOutgoingCallAmount.toString()),
       ),
       ListTile(
         title: Text('Missed Calls'),
-        leading: Icon(Icons.call_missed),
+        leading: CallIcon(callType: CallType.missed),
         trailing: Text(_getPercentageFromTotalCalls(_totalMissedCallAmount)),
         subtitle: Text(_totalMissedCallAmount.toString()),
       ),
       ListTile(
         title: Text('Rejected Calls'),
-        leading: Icon(FontAwesomeIcons.phoneSlash),
+        leading: CallIcon(callType: CallType.rejected),
         trailing: Text(_getPercentageFromTotalCalls(_totalRejectedCallAmount)),
         subtitle: Text(_totalRejectedCallAmount.toString()),
       ),

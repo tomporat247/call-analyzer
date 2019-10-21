@@ -65,31 +65,30 @@ class _AllContactsState extends State<AllContacts> {
     return StreamBuilder<List<Contact>>(
       stream: _topContacts$.stream,
       initialData: null,
-      builder: (BuildContext context, AsyncSnapshot<List<Contact>> snapshot) {
-        return AnimatedSwitcher(
-          duration: fastSwitchDuration,
-          child: (snapshot.hasData && snapshot.data != null)
-              ? FilterableContent(
-                  filterRow: _getFilterOptions(context),
-                  content: ListView.separated(
-                    separatorBuilder: (BuildContext context, int index) {
-                      return Divider();
-                    },
-                    itemBuilder: (BuildContext context, int index) {
-                      Contact contact = snapshot.data[index];
-                      return ContactTile(
-                        contact,
-                        trailingText: '#${index + 1}',
-                      );
-                    },
-                    itemCount: snapshot.data.length,
-                  ),
-                )
-              : Center(
-                  child: CircularProgressIndicator(),
+      builder: (BuildContext context, AsyncSnapshot<List<Contact>> snapshot) =>
+          AnimatedSwitcher(
+        duration: fastSwitchDuration,
+        child: (snapshot.hasData && snapshot.data != null)
+            ? FilterableContent(
+                filterRow: _getFilterOptions(context),
+                content: ListView.separated(
+                  separatorBuilder: (BuildContext context, int index) {
+                    return Divider();
+                  },
+                  itemBuilder: (BuildContext context, int index) {
+                    Contact contact = snapshot.data[index];
+                    return ContactTile(
+                      contact,
+                      trailingText: '#${index + 1}',
+                    );
+                  },
+                  itemCount: snapshot.data.length,
                 ),
-        );
-      },
+              )
+            : Center(
+                child: CircularProgressIndicator(),
+              ),
+      ),
     );
   }
 
