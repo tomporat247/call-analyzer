@@ -5,7 +5,6 @@ import 'package:numberpicker/numberpicker.dart';
 import 'app_dialog.dart';
 
 class ContactAmountPickerDialog extends StatefulWidget {
-  // Members
   final BuildContext _context;
   final int initialValue;
   final int maximumValue;

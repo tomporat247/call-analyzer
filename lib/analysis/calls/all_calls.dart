@@ -5,7 +5,10 @@ import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/models/call_log_info.dart';
 import 'package:call_analyzer/models/life_event.dart';
 import 'package:call_analyzer/widgets/call_tile.dart';
+import 'package:call_analyzer/widgets/contact_image.dart';
+import 'package:call_analyzer/widgets/dialogs/contact_picker_dialog.dart';
 import 'package:call_log/call_log.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -22,8 +25,9 @@ class AllCalls extends StatefulWidget {
 class _AllCallsState extends State<AllCalls> {
   AnalysisService _analysisService = GetIt.instance<AnalysisService>();
   StreamController<List<CallLogInfo>> _calls;
+  List<Contact> _contacts;
   bool _filterByContacts = false;
-  List<String> _contactIDsToFilterBy;
+  List<Contact> _contactsToFilterBy;
   final List<CallType> _allCallTypes = [
     CallType.incoming,
     CallType.outgoing,
@@ -35,8 +39,9 @@ class _AllCallsState extends State<AllCalls> {
   @override
   void initState() {
     _calls = StreamController<List<CallLogInfo>>();
+    _contacts = _analysisService.contacts;
     _callTypesToFilterBy = [..._allCallTypes];
-    _contactIDsToFilterBy = new List<String>();
+    _contactsToFilterBy = new List<Contact>();
     _setup();
     widget._lifeEvent$.takeWhile((e) => mounted).listen((LifeEvent event) {
       if (event == LifeEvent.RELOAD) {
@@ -79,7 +84,9 @@ class _AllCallsState extends State<AllCalls> {
     bool show = _callTypesToFilterBy.contains(callLog.callType);
     if (show && _filterByContacts) {
       show = callLog.contact != null &&
-          _contactIDsToFilterBy.contains(callLog.contact.identifier);
+          _contactsToFilterBy
+              .map((Contact c) => c.identifier)
+              .contains(callLog.contact.identifier);
     }
     return show;
   }
@@ -101,13 +108,22 @@ class _AllCallsState extends State<AllCalls> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: _getCallTypesToFilterByChips(),
+        Expanded(
+          flex: 4,
+          child: Padding(
+            padding: EdgeInsets.only(left: defaultPadding),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _getCallTypesToFilterByChips(),
+            ),
+          ),
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: _getFilterByContactChips(),
+        Expanded(
+          flex: 5,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: _getFilterByContactChips(),
+          ),
         ),
       ],
     );
@@ -128,8 +144,36 @@ class _AllCallsState extends State<AllCalls> {
           Text('Filter By Contacts'),
           IconButton(
             icon: Icon(FontAwesomeIcons.plusCircle),
-            onPressed: !_filterByContacts ? null : () {},
+            onPressed: !_filterByContacts
+                ? null
+                : () {
+                    ContactPickerDialog(context,
+                            allContacts: _contacts,
+                            selectedContacts: _contactsToFilterBy)
+                        .show()
+                        .then((List<Contact> selectedContacts) {
+                      setState(() {
+                        _contactsToFilterBy = selectedContacts;
+                      });
+                    });
+                  },
           ),
+        ],
+      ),
+      Wrap(
+        direction: Axis.horizontal,
+        children: <Widget>[
+          for (Contact contact in _contactsToFilterBy)
+            InputChip(
+                label: Text(
+                  contact.displayName.split(' ').first,
+                ),
+                avatar: ContactImage(contact: contact, iconSize: 12.0),
+                onDeleted: () {
+                  setState(() {
+                    _contactsToFilterBy.remove(contact);
+                  });
+                })
         ],
       )
     ];

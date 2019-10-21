@@ -6,13 +6,12 @@ class AppDialog extends AlertDialog {
     IconData iconData,
     @required Widget content,
     @required List<MaterialButton> actions,
-    bool setFixedSizeToAllowScrolling = false,
     BuildContext context,
   }) : super(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20.0))),
-          title: Text(title),
-          content: content,
-          actions: actions,
-        );
+    shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(20.0))),
+    title: Text(title),
+    content: content,
+    actions: actions,
+  );
 }

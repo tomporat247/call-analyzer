@@ -55,3 +55,12 @@ bool contactHasPhoneNumber(Contact contact, String phoneNumber) {
       .map((phone) => formatPhoneNumber(phone.value))
       .contains(formatPhoneNumber(phoneNumber));
 }
+
+void unfocus(BuildContext context) {
+  FocusScope.of(context).requestFocus(new FocusNode());
+}
+
+void focus(BuildContext context, FocusNode node) {
+  unfocus(context);
+  FocusScope.of(context).requestFocus(node);
+}

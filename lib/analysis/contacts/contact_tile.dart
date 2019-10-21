@@ -9,15 +9,21 @@ class ContactTile extends StatelessWidget {
   final String trailingText;
   final String subtitleText;
   final Widget trailing;
+  final bool tapToOpenContactProfile;
 
   ContactTile(this._contact,
-      {this.trailingText, this.trailing, this.subtitleText});
+      {this.trailingText,
+      this.trailing,
+      this.subtitleText,
+      this.tapToOpenContactProfile = true});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => ContactProfile(_contact))),
+      onTap: !tapToOpenContactProfile
+          ? null
+          : () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => ContactProfile(_contact))),
       leading: ContactImage(contact: _contact),
       title: Text(
         _contact.displayName,
@@ -25,10 +31,12 @@ class ContactTile extends StatelessWidget {
       ),
       subtitle: subtitleText != null ? Text(subtitleText) : null,
       trailing: trailing ??
-          Text(
-            trailingText,
-            style: const TextStyle(fontStyle: FontStyle.italic),
-          ),
+          (trailingText != null
+              ? Text(
+                  trailingText,
+                  style: const TextStyle(fontStyle: FontStyle.italic),
+                )
+              : null),
     );
   }
 }

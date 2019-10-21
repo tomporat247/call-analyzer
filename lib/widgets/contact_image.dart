@@ -8,8 +8,9 @@ class ContactImage extends StatelessWidget {
   final AnalysisService _analysisService = GetIt.instance<AnalysisService>();
   final Contact contact;
   final double radius;
+  final double iconSize;
 
-  ContactImage({@required this.contact, this.radius});
+  ContactImage({@required this.contact, this.radius, this.iconSize});
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +40,7 @@ class ContactImage extends StatelessWidget {
       child: Icon(
         FontAwesomeIcons.userAlt,
         color: Colors.black,
+        size: iconSize,
       ),
       backgroundColor: Colors.grey,
       radius: radius,
