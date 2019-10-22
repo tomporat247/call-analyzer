@@ -16,6 +16,7 @@ class SelectContactsTypeAhead extends TypeAheadField {
     ValueChanged onSubmitted,
     FocusNode focusNode,
     bool autoFocus = false,
+    bool enabled
   }) : super(
           textFieldConfiguration: TextFieldConfiguration<String>(
             autofocus: autoFocus,
@@ -26,6 +27,7 @@ class SelectContactsTypeAhead extends TypeAheadField {
             style: style,
             onSubmitted: onSubmitted,
             focusNode: focusNode,
+            enabled: enabled
           ),
           suggestionsBoxDecoration: new SuggestionsBoxDecoration(
             color: Colors.blueGrey[900],

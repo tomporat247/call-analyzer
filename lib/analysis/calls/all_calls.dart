@@ -4,6 +4,7 @@ import 'package:call_analyzer/analysis/services/analysis_service/analysis_servic
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/models/call_log_info.dart';
 import 'package:call_analyzer/models/life_event.dart';
+import 'package:call_analyzer/widgets/call_icon.dart';
 import 'package:call_analyzer/widgets/call_tile.dart';
 import 'package:call_analyzer/widgets/contact_image.dart';
 import 'package:call_analyzer/widgets/dialogs/contact_picker_dialog.dart';
@@ -26,7 +27,6 @@ class _AllCallsState extends State<AllCalls> {
   AnalysisService _analysisService = GetIt.instance<AnalysisService>();
   StreamController<List<CallLogInfo>> _calls;
   List<Contact> _contacts;
-  bool _filterByContacts = false;
   List<Contact> _contactsToFilterBy;
   final List<CallType> _allCallTypes = [
     CallType.incoming,
@@ -66,8 +66,16 @@ class _AllCallsState extends State<AllCalls> {
               AnimatedSwitcher(
         duration: fastSwitchDuration,
         child: (snapshot.hasData && snapshot.data != null)
-            ? _getCallsWithFilter(
-                snapshot.data.where(_shouldDisplayCallLog).toList())
+            ? Column(
+                children: <Widget>[
+                  _getFilters(),
+                  Divider(),
+                  Flexible(
+                    child: _getCallsWithFilter(
+                        snapshot.data.where(_shouldDisplayCallLog).toList()),
+                  )
+                ],
+              )
             : Container(),
       ),
     );
@@ -79,10 +87,14 @@ class _AllCallsState extends State<AllCalls> {
     }
   }
 
+  bool _isFilteringByContacts() {
+    return _contactsToFilterBy.isNotEmpty;
+  }
+
   // TODO: Do this async, create a function for this in AsyncFilter
   bool _shouldDisplayCallLog(CallLogInfo callLog) {
     bool show = _callTypesToFilterBy.contains(callLog.callType);
-    if (show && _filterByContacts) {
+    if (show && _isFilteringByContacts()) {
       show = callLog.contact != null &&
           _contactsToFilterBy
               .map((Contact c) => c.identifier)
@@ -97,127 +109,104 @@ class _AllCallsState extends State<AllCalls> {
         return Divider();
       },
       itemBuilder: (BuildContext context, int index) =>
-          index == 0 ? _getFilters() : CallTile(callLog: calls[index - 1]),
-      itemCount: calls.length + 1,
+          CallTile(callLog: calls[index]),
+      itemCount: calls.length,
     );
   }
 
   Widget _getFilters() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Expanded(
-          flex: 4,
-          child: Padding(
-            padding: EdgeInsets.only(left: defaultPadding),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _getCallTypesToFilterByChips(),
-            ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: defaultPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: _getCallTypesToFilterByChips(),
           ),
-        ),
-        Expanded(
-          flex: 5,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: _getFilterByContactChips(),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   List<Widget> _getFilterByContactChips() {
     return [
-      Row(
-        children: <Widget>[
-          Checkbox(
-            onChanged: (bool isChecked) {
-              setState(() {
-                _filterByContacts = isChecked;
-              });
-            },
-            value: _filterByContacts,
-          ),
-          Text('Filter By Contacts'),
-          IconButton(
-            icon: Icon(FontAwesomeIcons.plusCircle),
-            onPressed: !_filterByContacts
-                ? null
-                : () {
-                    ContactPickerDialog(context,
-                            allContacts: _contacts,
-                            selectedContacts: _contactsToFilterBy)
-                        .show()
-                        .then((List<Contact> selectedContacts) {
-                      setState(() {
-                        _contactsToFilterBy = selectedContacts;
-                      });
-                    });
-                  },
-          ),
-        ],
+      Expanded(
+        flex: 1,
+        child: Text('Contacts: ${_contactsToFilterBy.isEmpty ? 'All' : ''}'),
       ),
-      Wrap(
-        direction: Axis.horizontal,
-        children: <Widget>[
-          for (Contact contact in _contactsToFilterBy)
-            InputChip(
-                label: Text(
-                  contact.displayName.split(' ').first,
-                ),
-                avatar: ContactImage(contact: contact, iconSize: 12.0),
-                onDeleted: () {
-                  setState(() {
-                    _contactsToFilterBy.remove(contact);
-                  });
-                })
-        ],
-      )
+      Expanded(
+        flex: 4,
+        child: Wrap(
+          direction: Axis.horizontal,
+          children: [
+            ...[
+              for (Contact contact in _contactsToFilterBy)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: defaultPadding / 2),
+                  child: InputChip(
+                      label: Text(
+                        contact.displayName.split(' ').first,
+                      ),
+                      avatar: ContactImage(contact: contact, iconSize: 12.0),
+                      onDeleted: () => _removeFromContactsToFilterBy(contact)),
+                )
+            ],
+            IconButton(
+              icon: Icon(FontAwesomeIcons.plusCircle),
+              onPressed: () => ContactPickerDialog(context, contacts: _contacts)
+                  .show()
+                  .then((Contact contact) {
+                if (contact != null) {
+                  _addToContactsToFilterBy(contact);
+                }
+              }),
+            ),
+          ],
+        ),
+      ),
     ];
   }
 
   List<Widget> _getCallTypesToFilterByChips() {
     return [
-      for (CallType type in _allCallTypes)
-        FilterChip(
-          onSelected: (bool selected) {
-            setState(() {
-              if (selected) {
-                _callTypesToFilterBy.add(type);
-              } else {
-                _callTypesToFilterBy.remove(type);
-              }
-            });
-          },
-          label: Text(_getCallTypeName(type)),
-          selected: _callTypesToFilterBy.contains(type),
-        )
+      Text('Type:'),
+      ...[
+        for (CallType type in _allCallTypes)
+          FilterChip(
+            onSelected: (bool selected) =>
+                _setCallTypesToFilterByForType(type, selected),
+            label: CallIcon(callType: type),
+            selected: _callTypesToFilterBy.contains(type),
+          )
+      ]
     ];
   }
 
-  String _getCallTypeName(CallType callType) {
-    switch (callType) {
-      case CallType.incoming:
-      case CallType.answeredExternally:
-        return 'Incoming';
-        break;
-      case CallType.outgoing:
-        return 'Outgoing';
-        break;
-      case CallType.missed:
-        return 'Missed';
-        break;
-      // TODO: Voicemail doesn't work
-//      case CallType.voiceMail:
-//        break;
-      case CallType.rejected:
-        return 'Rejected';
-        break;
-      default:
-        return null;
+  _setCallTypesToFilterByForType(CallType type, bool filter) {
+    setState(() {
+      if (filter) {
+        _callTypesToFilterBy.add(type);
+      } else {
+        _callTypesToFilterBy.remove(type);
+      }
+    });
+  }
+
+  _removeFromContactsToFilterBy(Contact contact) {
+    setState(() {
+      _contactsToFilterBy.remove(contact);
+    });
+  }
+
+  _addToContactsToFilterBy(Contact contact) {
+    if (!_contactsToFilterBy.contains(contact)) {
+      setState(() {
+        _contactsToFilterBy.add(contact);
+      });
     }
   }
 }

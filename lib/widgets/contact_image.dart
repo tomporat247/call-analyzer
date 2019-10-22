@@ -14,6 +14,7 @@ class ContactImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Don't do this in a future builder it is just slower and display flickers
     return FutureBuilder(
       future: _analysisService.getContactWithImage(contact),
       builder: (BuildContext context, AsyncSnapshot<Contact> snapshot) {
