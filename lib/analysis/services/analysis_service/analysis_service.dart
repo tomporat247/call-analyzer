@@ -52,6 +52,7 @@ class AnalysisService {
     await _setupContactToDataMaps();
   }
 
+  // TODO: Bug - should add a minute and remove a minute at the edges
   Future<void> filterByDate({DateTime from, DateTime to}) async {
     _filterFrom = from ?? _filterFrom;
     _filterTo = to ?? _filterTo;
