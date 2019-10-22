@@ -34,7 +34,8 @@ class _TopAccoladesState extends State<TopAccolades> {
   int _mostCallsInADayAmount;
   bool _fetchedData = false;
 
-  // TODO: When every slide is tapped do something - same for general tab
+  // TODO: When every slide is tapped do something like show the top 10 - same for general tab
+  // TODO: Add a slide for longest total call duration with
 
   @override
   void initState() {
