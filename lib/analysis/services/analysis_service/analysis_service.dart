@@ -136,6 +136,9 @@ class AnalysisService {
     return _contactIdToCallLogs[contact.identifier];
   }
 
+  // TODO: This doesn't work well because the contact received is not the same
+  // TODO: object as the contact in the contacts list - this means that the
+  // TODO: image is never saved on the contact object. FIX this!
   Future<Contact> getContactWithImage(Contact contact) async {
     if (contact.avatar.isEmpty) {
       Contact contactWithImage =
