@@ -19,7 +19,7 @@ class TimeSeriesChartWrapper extends StatelessWidget {
     return Column(
       children: <Widget>[
         Text(
-          'long press and drag the points',
+          'long press and drag points for information',
           style: TextStyle(fontSize: normalFontSize - 2, color: Colors.white70),
         ),
         Flexible(
