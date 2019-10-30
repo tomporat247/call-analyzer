@@ -19,8 +19,12 @@ class AsyncFilter {
     return list.where((T element) => filter(element, args)).toList();
   }
 
-  static bool filterByDate(CallLogInfo callLog, Map args) {
-    return callLog.dateTime.isBefore(args['filterTo']) &&
-        callLog.dateTime.isAfter(args['filterFrom']);
+  static bool filterByDate(CallLogInfo callLog, Map args, [Duration delta]) {
+    Duration defaultDelta = Duration(seconds: 1);
+    DateTime to = args['filterTo'];
+    DateTime from = args['filterFrom'];
+    to = to.add(delta ?? defaultDelta);
+    from = from.subtract(delta ?? defaultDelta);
+    return callLog.dateTime.isBefore(to) && callLog.dateTime.isAfter(from);
   }
 }
