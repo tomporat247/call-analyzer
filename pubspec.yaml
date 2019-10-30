@@ -29,6 +29,7 @@ dependencies:
   flare_flutter: ^1.6.2
   liquid_progress_indicator: ^0.3.2
   charts_flutter: ^0.8.1
+  bezier_chart: ^1.0.15
   numberpicker: ^1.1.0
   intl: ^0.16.0
   flutter_speed_dial: ^1.2.2

@@ -1,3 +1,4 @@
+import 'package:bezier_chart/bezier_chart.dart';
 import 'package:call_analyzer/models/call_log_info.dart';
 import 'package:call_analyzer/models/chart_data.dart';
 import 'package:call_analyzer/analysis/services/analysis_service/analysis_service.dart';
@@ -7,7 +8,6 @@ import 'package:call_analyzer/models/life_event.dart';
 import 'package:call_analyzer/widgets/pie_chart_wrapper.dart';
 import 'package:call_analyzer/widgets/slide.dart';
 import 'package:call_analyzer/widgets/slide_show.dart';
-import 'package:call_analyzer/widgets/time_series_chart_wrapper.dart';
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
@@ -26,13 +26,12 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   final AnalysisService _analysisService = GetIt.instance<AnalysisService>();
   final String _totalCallsId = 'totalCalls';
   final String _totalCallDurationId = 'totalCallDuration';
-  final String _allCallsId = 'All Calls';
   final int topContactAmount = 10;
   int _totalCallAmount;
   Duration _totalCallDuration;
   List<ChartData<num>> _totalCallsChartData;
   List<ChartData<num>> _topCallDurationData;
-  List<ChartData<DateTime>> _totalCallsWithDate;
+  List<DataPoint<DateTime>> _callsPerMonthWithDate;
 
   @override
   initState() {
@@ -62,11 +61,11 @@ class _GeneralDetailsState extends State<GeneralDetails> {
         ),
         Slide(
           title: 'All Calls',
-          content: _getAllCallsTimeSeriesChart(),
+          content: _geCallsPerMonthTimeSeriesChart(),
           gradient: appGradient,
         ),
       ],
-      animate: false,
+      animate: true,
     );
   }
 
@@ -150,7 +149,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   }
 
   _setupTotalCallWithDateData() {
-    _totalCallsWithDate = [];
+    _callsPerMonthWithDate = [];
     DateTime currentDateTime;
     DateTime previousDateTime = _analysisService.callLogs.last.dateTime;
     int callsThisMonth = 0;
@@ -161,20 +160,35 @@ class _GeneralDetailsState extends State<GeneralDetails> {
       if (currentDateTime.month == previousDateTime.month) {
         callsThisMonth++;
       } else {
-        _totalCallsWithDate.add(ChartData<DateTime>(
-            '', '', callsThisMonth, Colors.white,
-            pos: DateTime(currentDateTime.year, currentDateTime.month, 1)));
+        _callsPerMonthWithDate.add(DataPoint<DateTime>(
+            value: callsThisMonth.toDouble(), xAxis: currentDateTime));
         callsThisMonth = 1;
       }
 
       previousDateTime = currentDateTime;
     });
-    _totalCallsWithDate.add(ChartData<DateTime>(
-        '', '', callsThisMonth, Colors.white,
-        pos: DateTime(currentDateTime.year, currentDateTime.month, 1)));
+    _callsPerMonthWithDate.add(DataPoint<DateTime>(
+        value: callsThisMonth.toDouble(), xAxis: currentDateTime));
   }
 
-  Widget _getAllCallsTimeSeriesChart() {
-    return TimeSeriesChartWrapper([_totalCallsWithDate], _allCallsId);
+  Widget _geCallsPerMonthTimeSeriesChart() {
+    return BezierChart(
+      bezierChartScale: BezierChartScale.MONTHLY,
+      fromDate: _callsPerMonthWithDate.first.xAxis,
+      toDate: _callsPerMonthWithDate.last.xAxis,
+      series: [
+        BezierLine(
+          onMissingValue: (dateTime) => 0.0,
+          data: _callsPerMonthWithDate,
+        ),
+      ],
+      config: BezierChartConfig(
+        displayYAxis: true,
+        verticalIndicatorStrokeWidth: 3.0,
+        verticalIndicatorColor: Colors.black26,
+        showVerticalIndicator: true,
+        verticalIndicatorFixedPosition: false,
+      ),
+    );
   }
 }
