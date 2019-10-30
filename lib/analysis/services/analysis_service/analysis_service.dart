@@ -136,18 +136,16 @@ class AnalysisService {
     return _contactIdToCallLogs[contact.identifier];
   }
 
-  // TODO: This doesn't work well because the contact received is not the same
-  // TODO: object as the contact in the contacts list - this means that the
-  // TODO: image is never saved on the contact object. FIX this!
   Future<Contact> getContactWithImage(Contact contact) async {
     if (contact.avatar.isEmpty) {
       Contact contactWithImage =
           await _contactService.getContactWithImage(contact);
-      _updateContact(contactWithImage);
-      return contactWithImage;
-    } else {
-      return contact;
+      contact.avatar = contactWithImage.avatar;
+      _contacts
+          .firstWhere((Contact c) => c.identifier == contact.identifier)
+          .avatar = contactWithImage.avatar;
     }
+    return contact;
   }
 
   Future<List<Contact>> getTopContacts(
@@ -157,12 +155,6 @@ class AnalysisService {
       contacts = contacts.take(amount).toList();
     }
     return contacts;
-  }
-
-  _updateContact(Contact contactToUpdate) {
-    int index = _contacts.indexWhere(
-        (Contact contact) => contact.identifier == contactToUpdate.identifier);
-    _contacts[index].avatar = contactToUpdate.avatar;
   }
 
   Future<List<Contact>> _getSortedContacts(SortOption sortOption) {
