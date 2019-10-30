@@ -103,23 +103,25 @@ class _TopAccoladesState extends State<TopAccolades> {
     return Slide(
       title: 'Most Calls With',
       content: _getSlideContent(
-          ContactTile(
+          bottomContent: ContactTile(
             _mostCallWith,
             trailingText:
                 '${_analysisService.getCallLogsFor(_mostCallWith).length} Calls',
           ),
-          _nameToFlare[_mostCallsWithId], () {
-        _showTopDialogFor<Contact>(
-            context: context,
-            title: 'Top 10 Most Calls With',
-            future: _analysisService.getTopContacts(
-                sortOption: SortOption.CALL_AMOUNT, amount: 10),
-            itemBuilder: (BuildContext context, Contact contact) => ContactTile(
-                  contact,
-                  subtitleText:
-                      '${_analysisService.getCallLogsFor(contact).length} Calls',
-                ));
-      }),
+          flareAnimation: _nameToFlare[_mostCallsWithId],
+          onFlareTapped: () {
+            _showTopDialogFor<Contact>(
+                context: context,
+                title: 'Top 10 Most Calls With',
+                future: _analysisService.getTopContacts(
+                    sortOption: SortOption.CALL_AMOUNT, amount: 10),
+                itemBuilder: (BuildContext context, Contact contact) =>
+                    ContactTile(
+                      contact,
+                      subtitleText:
+                          '${_analysisService.getCallLogsFor(contact).length} Calls',
+                    ));
+          }),
       gradient: appGradient,
     );
   }
@@ -128,7 +130,7 @@ class _TopAccoladesState extends State<TopAccolades> {
     return Slide(
       title: 'Longest Call',
       content: _getSlideContent(
-          _longestCallCallLog.contact != null
+          bottomContent: _longestCallCallLog.contact != null
               ? ContactTile(
                   _longestCallCallLog.contact,
                   trailingText: stringifyDuration(_longestCallCallLog.duration),
@@ -140,7 +142,7 @@ class _TopAccoladesState extends State<TopAccolades> {
                   trailing:
                       Text(stringifyDuration(_longestCallCallLog.duration)),
                 ),
-          _nameToFlare[_longestCallId]),
+          flareAnimation: _nameToFlare[_longestCallId]),
       gradient: appGradient,
     );
   }
@@ -149,15 +151,17 @@ class _TopAccoladesState extends State<TopAccolades> {
     return Slide(
       title: 'Most Calls In a Day',
       content: _getSlideContent(
-          Text(
+          bottomContent: Text(
               '$_mostCallsInADayAmount Calls on ${stringifyDateTime(_mostCallsInADayDate)}'),
-          _nameToFlare[_mostCallsInADayId]),
+          flareAnimation: _nameToFlare[_mostCallsInADayId]),
       gradient: appGradient,
     );
   }
 
-  Widget _getSlideContent(Widget bottomContent, FlareAnimation flareAnimation,
-      [VoidCallback onFlareTapped]) {
+  Widget _getSlideContent(
+      {@required Widget bottomContent,
+      @required FlareAnimation flareAnimation,
+      VoidCallback onFlareTapped}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
