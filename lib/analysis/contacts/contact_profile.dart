@@ -1,7 +1,7 @@
+import 'package:bezier_chart/bezier_chart.dart';
 import 'package:call_analyzer/analysis/services/analysis_service/analysis_service.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/models/call_log_info.dart';
-import 'package:call_analyzer/models/chart_data.dart';
 import 'package:call_analyzer/widgets/call_icon.dart';
 import 'package:call_analyzer/widgets/contact_image.dart';
 import 'package:call_analyzer/widgets/time_series_chart_wrapper.dart';
@@ -23,7 +23,6 @@ class ContactProfile extends StatefulWidget {
 }
 
 class _ContactProfileState extends State<ContactProfile> {
-  final Color allCallLineChartColor = Colors.cyan[800];
   final double _avatarRadius = 50.0;
   final double _cardBorderRadius = 12.0;
   final AnalysisService _analysisService = GetIt.instance<AnalysisService>();
@@ -37,12 +36,17 @@ class _ContactProfileState extends State<ContactProfile> {
   Duration _totalCallDuration;
   double _averageCallsPerDay;
   Duration _averageCallDurationInSecondsPerDay;
-  List<ChartData<DateTime>> _callPerDay;
+  List<DataPoint<DateTime>> _incomingCallsPerDay;
+  List<DataPoint<DateTime>> _outgoingCallsPerDay;
+  List<DataPoint<DateTime>> _missedCallsPerDay;
+  List<DataPoint<DateTime>> _rejectedCallsPerDay;
 
   @override
   void initState() {
     _contact = widget._contact;
-    _callLogs = _analysisService.getCallLogsFor(_contact);
+    _callLogs = _analysisService.getCallLogsFor(_contact)
+      ..sort((CallLogInfo one, CallLogInfo two) =>
+          one.dateTime.compareTo(two.dateTime));
     _formatContactPhones();
     _initCounters();
     super.initState();
@@ -77,39 +81,63 @@ class _ContactProfileState extends State<ContactProfile> {
     _totalOutgoingCallAmount = 0;
     _totalMissedCallAmount = 0;
     _totalRejectedCallAmount = 0;
-    _callPerDay = new List<ChartData<DateTime>>();
-    int amountToday = 0;
+    _incomingCallsPerDay = new List<DataPoint<DateTime>>();
+    _outgoingCallsPerDay = new List<DataPoint<DateTime>>();
+    _missedCallsPerDay = new List<DataPoint<DateTime>>();
+    _rejectedCallsPerDay = new List<DataPoint<DateTime>>();
+    int incomingToday = 0;
+    int outgoingToday = 0;
+    int missedToday = 0;
+    int rejectedToday = 0;
     DateTime prev = _callLogs.first.dateTime;
     _callLogs.forEach((CallLogInfo callLog) {
       switch (callLog.callType) {
         case CallType.incoming:
         case CallType.answeredExternally:
           _totalIncomingCallAmount++;
+          incomingToday++;
           break;
         case CallType.outgoing:
           _totalOutgoingCallAmount++;
+          outgoingToday++;
           break;
         case CallType.missed:
           _totalMissedCallAmount++;
+          missedToday++;
           break;
         case CallType.rejected:
           _totalRejectedCallAmount++;
+          rejectedToday++;
           break;
         default:
           break;
       }
 
       DateTime curr = callLog.dateTime;
-      if (curr.day == prev.day) {
-        amountToday++;
-      } else {
-        _callPerDay.add(ChartData<DateTime>(
-            '', '', amountToday, allCallLineChartColor,
-            pos: prev));
-        amountToday = 0;
+      if (curr.day != prev.day) {
+        _incomingCallsPerDay.add(
+            DataPoint<DateTime>(value: incomingToday.toDouble(), xAxis: prev));
+        _outgoingCallsPerDay.add(
+            DataPoint<DateTime>(value: outgoingToday.toDouble(), xAxis: prev));
+        _missedCallsPerDay.add(
+            DataPoint<DateTime>(value: missedToday.toDouble(), xAxis: prev));
+        _rejectedCallsPerDay.add(
+            DataPoint<DateTime>(value: rejectedToday.toDouble(), xAxis: prev));
+        incomingToday = 0;
+        outgoingToday = 0;
+        missedToday = 0;
+        rejectedToday = 0;
       }
       prev = curr;
     });
+    _incomingCallsPerDay
+        .add(DataPoint<DateTime>(value: incomingToday.toDouble(), xAxis: prev));
+    _outgoingCallsPerDay
+        .add(DataPoint<DateTime>(value: outgoingToday.toDouble(), xAxis: prev));
+    _missedCallsPerDay
+        .add(DataPoint<DateTime>(value: missedToday.toDouble(), xAxis: prev));
+    _rejectedCallsPerDay
+        .add(DataPoint<DateTime>(value: rejectedToday.toDouble(), xAxis: prev));
   }
 
   Widget _getContactProfile() {
@@ -178,16 +206,39 @@ class _ContactProfileState extends State<ContactProfile> {
   List<Widget> _getGraphs() {
     List<List<Widget>> graphsData = [
       [
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.5,
-          child: TimeSeriesChartWrapper([_callPerDay], 'Calls'),
+        Column(
+          children: <Widget>[
+            _getGraphTitle('Calls per Day'),
+            SizedBox(
+                height: MediaQuery.of(context).size.height * 0.5,
+                child: TimeSeriesChartWrapper(
+                  dataPointLines: [
+                    _incomingCallsPerDay,
+                    _outgoingCallsPerDay,
+                    _missedCallsPerDay,
+                    _rejectedCallsPerDay
+                  ],
+                  colors: [Colors.green, Colors.blue, Colors.red, Colors.black],
+                  labels: ['Incoming', 'Outgoing', 'Missed', 'Rejected'],
+                ))
+          ],
         )
       ]
     ];
     return [
       for (List<Widget> graphData in graphsData)
-        _wrapInCard(graphData, gradient: darkGradient)
+        _wrapInCard(graphData, gradient: appGradient)
     ];
+  }
+
+  Widget _getGraphTitle(String title) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: defaultPadding),
+      child: Text(
+        'Calls per Day',
+        style: TextStyle(fontSize: normalFontSize + 4),
+      ),
+    );
   }
 
   List<Widget> _getCards() {

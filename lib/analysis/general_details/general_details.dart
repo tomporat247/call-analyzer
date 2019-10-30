@@ -8,6 +8,7 @@ import 'package:call_analyzer/models/life_event.dart';
 import 'package:call_analyzer/widgets/pie_chart_wrapper.dart';
 import 'package:call_analyzer/widgets/slide.dart';
 import 'package:call_analyzer/widgets/slide_show.dart';
+import 'package:call_analyzer/widgets/time_series_chart_wrapper.dart';
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
@@ -92,12 +93,12 @@ class _GeneralDetailsState extends State<GeneralDetails> {
           "",
           "Missed",
           _analysisService.getAllCallLogsOfType(CallType.missed).length,
-          Colors.grey[800]),
+          Colors.red),
       ChartData(
           "",
           "Rejected",
           _analysisService.getAllCallLogsOfType(CallType.rejected).length,
-          Colors.red[700])
+          Colors.black)
     ];
   }
 
@@ -161,7 +162,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
         callsThisMonth++;
       } else {
         _callsPerMonthWithDate.add(DataPoint<DateTime>(
-            value: callsThisMonth.toDouble(), xAxis: currentDateTime));
+            value: callsThisMonth.toDouble(), xAxis: previousDateTime));
         callsThisMonth = 1;
       }
 
@@ -172,23 +173,10 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   }
 
   Widget _geCallsPerMonthTimeSeriesChart() {
-    return BezierChart(
-      bezierChartScale: BezierChartScale.MONTHLY,
-      fromDate: _callsPerMonthWithDate.first.xAxis,
-      toDate: _callsPerMonthWithDate.last.xAxis,
-      series: [
-        BezierLine(
-          onMissingValue: (dateTime) => 0.0,
-          data: _callsPerMonthWithDate,
-        ),
-      ],
-      config: BezierChartConfig(
-        displayYAxis: true,
-        verticalIndicatorStrokeWidth: 3.0,
-        verticalIndicatorColor: Colors.black26,
-        showVerticalIndicator: true,
-        verticalIndicatorFixedPosition: false,
-      ),
-    );
+    return TimeSeriesChartWrapper(
+        allowPinchAndZoom: false,
+        dataPointLines: [this._callsPerMonthWithDate],
+        colors: [lineChartLineColor],
+        labels: ['Calls']);
   }
 }

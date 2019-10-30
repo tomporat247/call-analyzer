@@ -27,6 +27,8 @@ final LinearGradient darkGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight);
 
+final Color lineChartLineColor = Colors.grey[300];
+
 const String appTitle = 'Call Analyzer';
 
 const double defaultPadding = 8.0;

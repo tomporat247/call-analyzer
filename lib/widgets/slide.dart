@@ -1,3 +1,4 @@
+import 'package:call_analyzer/config.dart';
 import 'package:flutter/material.dart';
 
 import 'chart_top_title.dart';
@@ -16,15 +17,19 @@ class Slide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Expanded(
-          flex: 2,
-          child: ChartTopTitle(title),
-        ),
-        Expanded(flex: 13, child: showContent ? content : Container()),
-      ],
+    return Container(
+      padding: EdgeInsets.only(
+          bottom: defaultPadding, left: defaultPadding, right: defaultPadding),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            flex: 2,
+            child: ChartTopTitle(title),
+          ),
+          Expanded(flex: 13, child: showContent ? content : Container()),
+        ],
+      ),
     );
   }
 }
