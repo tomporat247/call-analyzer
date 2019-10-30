@@ -6,6 +6,7 @@ import 'package:call_analyzer/models/call_log_info.dart';
 import 'package:call_analyzer/models/flare_animation.dart';
 import 'package:call_analyzer/models/life_event.dart';
 import 'package:call_analyzer/models/sort_option.dart';
+import 'package:call_analyzer/widgets/dialogs/future_dialog.dart';
 import 'package:call_analyzer/widgets/slide.dart';
 import 'package:call_analyzer/widgets/slide_show.dart';
 import 'package:contacts_service/contacts_service.dart';
@@ -107,7 +108,18 @@ class _TopAccoladesState extends State<TopAccolades> {
             trailingText:
                 '${_analysisService.getCallLogsFor(_mostCallWith).length} Calls',
           ),
-          _nameToFlare[_mostCallsWithId]),
+          _nameToFlare[_mostCallsWithId], () {
+        _showTopDialogFor<Contact>(
+            context: context,
+            title: 'Top 10 Most Calls With',
+            future: _analysisService.getTopContacts(
+                sortOption: SortOption.CALL_AMOUNT, amount: 10),
+            itemBuilder: (BuildContext context, Contact contact) => ContactTile(
+                  contact,
+                  subtitleText:
+                      '${_analysisService.getCallLogsFor(contact).length} Calls',
+                ));
+      }),
       gradient: appGradient,
     );
   }
@@ -144,17 +156,21 @@ class _TopAccoladesState extends State<TopAccolades> {
     );
   }
 
-  Widget _getSlideContent(Widget content, FlareAnimation flareAnimation) {
+  Widget _getSlideContent(Widget bottomContent, FlareAnimation flareAnimation,
+      [VoidCallback onFlareTapped]) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Expanded(
           flex: 5,
-          child: _getFlareActorFor(flareAnimation),
+          child: InkWell(
+            child: _getFlareActorFor(flareAnimation),
+            onTap: onFlareTapped,
+          ),
         ),
         Expanded(
           flex: 1,
-          child: content,
+          child: bottomContent,
         ),
       ],
     );
@@ -167,5 +183,35 @@ class _TopAccoladesState extends State<TopAccolades> {
       fit: BoxFit.fitWidth,
       animation: flareAnimation.animationName,
     );
+  }
+
+  _showTopDialogFor<T>(
+      {@required BuildContext context,
+      @required String title,
+      @required Future<List<T>> future,
+      @required Widget Function(BuildContext context, T data) itemBuilder}) {
+    FutureDialog(
+      context: context,
+      title: title,
+      futureBuilder: FutureBuilder<List<T>>(
+        future: future,
+        builder: (BuildContext context, AsyncSnapshot<List<T>> snapshot) {
+          return FractionallySizedBox(
+            heightFactor: 0.6,
+            child: snapshot.connectionState == ConnectionState.done
+                ? SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        for (T item in snapshot.data) itemBuilder(context, item)
+                      ],
+                    ),
+                  )
+                : Center(
+                    child: CircularProgressIndicator(),
+                  ),
+          );
+        },
+      ),
+    ).show();
   }
 }
