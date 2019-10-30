@@ -186,11 +186,7 @@ class _ContactProfileState extends State<ContactProfile> {
     ];
     return [
       for (List<Widget> graphData in graphsData)
-        _wrapInCard(graphData,
-            gradient: LinearGradient(
-                colors: [Colors.grey[850], Colors.grey[800]],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight))
+        _wrapInCard(graphData, gradient: darkGradient)
     ];
   }
 

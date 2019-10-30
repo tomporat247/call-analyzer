@@ -26,14 +26,13 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   final AnalysisService _analysisService = GetIt.instance<AnalysisService>();
   final String _totalCallsId = 'totalCalls';
   final String _totalCallDurationId = 'totalCallDuration';
-  final String _callPerMonthId = 'callPerMonth';
+  final String _allCallsId = 'All Calls';
   final int topContactAmount = 10;
   int _totalCallAmount;
   Duration _totalCallDuration;
   List<ChartData<num>> _totalCallsChartData;
   List<ChartData<num>> _topCallDurationData;
   List<ChartData<DateTime>> _totalCallsWithDate;
-  int _selectedYearForCallPerMonth;
 
   @override
   initState() {
@@ -49,23 +48,25 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   @override
   Widget build(BuildContext context) {
     return SlideShow(
-      <Slide>[
+      slides: <Slide>[
         Slide(
           title: 'Total Calls - $_totalCallAmount',
           content: PieChartWrapper(_totalCallsChartData, _totalCallsId),
+          gradient: appGradient,
         ),
         Slide(
           title:
               'Total Call Duration  - ${stringifyDuration(_totalCallDuration)}',
           content: PieChartWrapper(_topCallDurationData, _totalCallDurationId),
+          gradient: appGradient,
         ),
-        // TODO: Figure out how to show this without freezing the app
-//        Slide(
-//          title: 'Calls Per Month',
-//          content: _getCallPerMonthTimeSeriesChart(),
-//        ),
+        Slide(
+          title: 'All Calls',
+          content: _getAllCallsTimeSeriesChart(),
+          gradient: appGradient,
+        ),
       ],
-      onPageSwitch: _onPageSwitch,
+      animate: false,
     );
   }
 
@@ -73,14 +74,6 @@ class _GeneralDetailsState extends State<GeneralDetails> {
     _setupTotalCallData();
     _setupCallDurationData();
     _setupTotalCallWithDateData();
-  }
-
-  _onPageSwitch(int prevIndex, int currIndex) {
-    if (prevIndex == 2) {
-      setState(() {
-        _selectedYearForCallPerMonth = null;
-      });
-    }
   }
 
   _setupTotalCallData() {
@@ -181,47 +174,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
         pos: DateTime(currentDateTime.year, currentDateTime.month, 1)));
   }
 
-  Widget _getCallPerMonthTimeSeriesChart() {
-    int firstYear = _analysisService.callLogs.last.dateTime.year;
-    int lastYear = _analysisService.callLogs.first.dateTime.year;
-    List<int> years = new List<int>.generate(
-        lastYear - firstYear + 1, (int i) => firstYear + i);
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Expanded(
-          flex: 1,
-          child: Wrap(
-            children: <Widget>[
-              for (int year in years)
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: defaultPadding),
-                  child: ChoiceChip(
-                    label: Text(year.toString()),
-                    selected: _selectedYearForCallPerMonth == year,
-                    onSelected: (bool selected) {
-                      setState(() {
-                        _selectedYearForCallPerMonth = selected ? year : null;
-                      });
-                    },
-                  ),
-                )
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 6,
-          child: TimeSeriesChartWrapper([
-            _selectedYearForCallPerMonth == null
-                ? []
-                : _totalCallsWithDate
-                    .where((ChartData<DateTime> data) =>
-                        data.pos.year == _selectedYearForCallPerMonth)
-                    .toList()
-          ], _callPerMonthId),
-        )
-      ],
-    );
+  Widget _getAllCallsTimeSeriesChart() {
+    return TimeSeriesChartWrapper([_totalCallsWithDate], _allCallsId);
   }
 }

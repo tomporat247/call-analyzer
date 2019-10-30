@@ -65,7 +65,7 @@ class _TopAccoladesState extends State<TopAccolades> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : SlideShow(<Slide>[
+          : SlideShow(slides: <Slide>[
               _getMostCallsWithSlide(),
               _getLongestCallWithSlide(),
               _getMostCallsADaySlide(),
@@ -108,6 +108,7 @@ class _TopAccoladesState extends State<TopAccolades> {
                 '${_analysisService.getCallLogsFor(_mostCallWith).length} Calls',
           ),
           _nameToFlare[_mostCallsWithId]),
+      gradient: appGradient,
     );
   }
 
@@ -128,6 +129,7 @@ class _TopAccoladesState extends State<TopAccolades> {
                       Text(stringifyDuration(_longestCallCallLog.duration)),
                 ),
           _nameToFlare[_longestCallId]),
+      gradient: appGradient,
     );
   }
 
@@ -138,6 +140,7 @@ class _TopAccoladesState extends State<TopAccolades> {
           Text(
               '$_mostCallsInADayAmount Calls on ${stringifyDateTime(_mostCallsInADayDate)}'),
           _nameToFlare[_mostCallsInADayId]),
+      gradient: appGradient,
     );
   }
 

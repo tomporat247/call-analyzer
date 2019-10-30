@@ -22,6 +22,11 @@ final LinearGradient appGradient = LinearGradient(
     end: Alignment.bottomRight,
     colors: [Colors.teal[600], Colors.deepPurple[600]]);
 
+final LinearGradient darkGradient = LinearGradient(
+    colors: [Colors.grey[850], Colors.grey[800]],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight);
+
 const String appTitle = 'Call Analyzer';
 
 const double defaultPadding = 8.0;

@@ -1,15 +1,17 @@
-import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/widgets/slide.dart';
 import 'package:flutter/material.dart';
 
 class SlideShow extends StatefulWidget {
   final List<Slide> slides;
   final bool withOffset;
-  final bool withAppGradient;
   final void Function(int previous, int curr) onPageSwitch;
+  final bool animate;
 
-  SlideShow(this.slides,
-      {this.withOffset = true, this.withAppGradient = true, this.onPageSwitch});
+  SlideShow(
+      {@required this.slides,
+      this.animate = true,
+      this.withOffset = true,
+      this.onPageSwitch});
 
   @override
   _SlideShowState createState() => _SlideShowState();
@@ -65,21 +67,32 @@ class _SlideShowState extends State<SlideShow> {
     final double blur = active ? 30 : 0;
     final double offset = active && widget.withOffset ? 20 : 0;
     final double sides = active ? 50 : 80;
+    final margin = EdgeInsets.only(left: sides, right: sides, bottom: 30);
 
-    return AnimatedContainer(
-      duration: Duration(seconds: 1),
-      curve: Curves.easeOutQuint,
-      margin: EdgeInsets.only(left: sides, right: sides, bottom: 30),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(_slideBorderRadius),
-          gradient: widget.withAppGradient ? appGradient : null,
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black87,
-                blurRadius: blur,
-                offset: Offset(offset, offset))
-          ]),
-      child: slide,
-    );
+    return widget.animate
+        ? AnimatedContainer(
+            duration: Duration(seconds: 1),
+            curve: Curves.easeOutQuint,
+            margin: margin,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(_slideBorderRadius),
+                gradient: slide.gradient,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black87,
+                      blurRadius: blur,
+                      offset: Offset(offset, offset))
+                ]),
+            child: slide,
+          )
+        : Container(
+            margin: EdgeInsets.only(left: 20, right: 20, bottom: 30),
+            decoration: BoxDecoration(
+              gradient: slide.gradient,
+              borderRadius: BorderRadius.circular(_slideBorderRadius),
+              border: Border.all(width: 1.0, color: Colors.grey[800]),
+            ),
+            child: slide,
+          );
   }
 }

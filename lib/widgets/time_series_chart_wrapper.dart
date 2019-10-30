@@ -65,6 +65,7 @@ class TimeSeriesChartWrapper extends StatelessWidget {
                   showVerticalFollowLine:
                       common.LinePointHighlighterFollowLineType.all),
               charts.SeriesLegend(),
+              charts.PanAndZoomBehavior()
             ],
             defaultRenderer: charts.LineRendererConfig(
                 includeArea: true,

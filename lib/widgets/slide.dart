@@ -6,8 +6,13 @@ class Slide extends StatelessWidget {
   final String title;
   final Widget content;
   final bool showContent;
+  final LinearGradient gradient;
 
-  Slide({this.title, this.content, this.showContent = true});
+  Slide(
+      {@required this.title,
+      @required this.content,
+      this.gradient,
+      this.showContent = true});
 
   @override
   Widget build(BuildContext context) {
