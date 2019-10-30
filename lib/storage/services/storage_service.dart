@@ -28,7 +28,9 @@ class StorageService {
   }
 
   Future<bool> fileExists(String fileName) async {
-    return (await _getFile(fileName)).exists();
+    bool exists = await (await _getFile(fileName)).exists();
+    exists = exists && (await getLastModified(fileName)).year != 1970;
+    return exists;
   }
 
   Future<DateTime> getLastModified(String fileName) async {
