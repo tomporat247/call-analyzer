@@ -85,7 +85,7 @@ class _TopAccoladesState extends State<TopAccolades> {
       _fetchedData = false;
     });
 
-    // TODO: Run this in async compute
+    // TODO: Run this in async compute - all with future.delayed
     _mostCallWith = (await _analysisService.getTopContacts(
             sortOption: SortOption.CALL_AMOUNT, amount: 1))
         .first;
