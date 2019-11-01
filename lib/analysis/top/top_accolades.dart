@@ -36,7 +36,6 @@ class _TopAccoladesState extends State<TopAccolades> {
   Map _mostCallsInADayData;
   bool _fetchedData = false;
 
-  // TODO: When every slide is tapped do something like show the top 10 - same for general tab
   // TODO: Add a slide for longest total call duration with
 
   @override
