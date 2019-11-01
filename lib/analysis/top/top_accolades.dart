@@ -6,6 +6,7 @@ import 'package:call_analyzer/models/call_log_info.dart';
 import 'package:call_analyzer/models/flare_animation.dart';
 import 'package:call_analyzer/models/life_event.dart';
 import 'package:call_analyzer/models/sort_option.dart';
+import 'package:call_analyzer/widgets/call_tile.dart';
 import 'package:call_analyzer/widgets/dialogs/future_dialog.dart';
 import 'package:call_analyzer/widgets/slide.dart';
 import 'package:call_analyzer/widgets/slide_show.dart';
@@ -28,6 +29,7 @@ class _TopAccoladesState extends State<TopAccolades> {
   final String _mostCallsInADayId = 'mostCallsInADay';
   final String _mostCallsWithId = 'mostCallsWith';
   final String _longestCallId = 'longestCall';
+  final int _topAmount = 10;
   Map<String, FlareAnimation> _nameToFlare;
   Contact _mostCallWith;
   CallLogInfo _longestCallCallLog;
@@ -87,7 +89,7 @@ class _TopAccoladesState extends State<TopAccolades> {
     _mostCallWith = (await _analysisService.getTopContacts(
             sortOption: SortOption.CALL_AMOUNT, amount: 1))
         .first;
-    _longestCallCallLog = _analysisService.getLongestCallLog();
+    _longestCallCallLog = await _analysisService.getLongestCallLog();
     Map mostCallsInADateData = _analysisService.getMostCallsInADayData();
     _mostCallsInADayDate = mostCallsInADateData['date'];
     _mostCallsInADayAmount = mostCallsInADateData['amount'];
@@ -112,9 +114,9 @@ class _TopAccoladesState extends State<TopAccolades> {
           onFlareTapped: () {
             _showTopDialogFor<Contact>(
                 context: context,
-                title: 'Top 10 Most Calls With',
+                title: 'Top $_topAmount Most Calls With',
                 future: _analysisService.getTopContacts(
-                    sortOption: SortOption.CALL_AMOUNT, amount: 10),
+                    sortOption: SortOption.CALL_AMOUNT, amount: _topAmount),
                 itemBuilder: (BuildContext context, Contact contact) =>
                     ContactTile(
                       contact,
@@ -142,7 +144,15 @@ class _TopAccoladesState extends State<TopAccolades> {
                   trailing:
                       Text(stringifyDuration(_longestCallCallLog.duration)),
                 ),
-          flareAnimation: _nameToFlare[_longestCallId]),
+          flareAnimation: _nameToFlare[_longestCallId],
+          onFlareTapped: () {
+            _showTopDialogFor<CallLogInfo>(
+                context: context,
+                title: 'Top $_topAmount Longest Calls',
+                future: _analysisService.getLongestCallLogs(_topAmount),
+                itemBuilder: (BuildContext context, CallLogInfo callLogInfo) =>
+                    CallTile(callLog: callLogInfo));
+          }),
       gradient: appGradient,
     );
   }

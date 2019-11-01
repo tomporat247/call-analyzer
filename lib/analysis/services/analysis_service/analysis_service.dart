@@ -1,3 +1,4 @@
+import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_extractor.dart';
 import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_filter.dart';
 import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_mapper.dart';
 import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_sorter.dart';
@@ -66,14 +67,13 @@ class AnalysisService {
         (_filterTo.difference(DateTime.now()).inDays != 0);
   }
 
-  CallLogInfo getLongestCallLog() {
-    CallLogInfo longest = CallLogInfo(duration: Duration());
-    _callLogs.forEach((CallLogInfo callLog) {
-      if (callLog.duration > longest.duration) {
-        longest = callLog;
-      }
-    });
-    return longest;
+  Future<CallLogInfo> getLongestCallLog() async {
+    return (await getLongestCallLogs(1)).first;
+  }
+
+  Future<List<CallLogInfo>> getLongestCallLogs(int amount) async {
+    return AsyncExtractor.asyncExtractor<CallLogInfo>(
+        _callLogs, amount, AsyncExtractor.getLongestCallLogs);
   }
 
   Map<String, dynamic> getMostCallsInADayData() {
