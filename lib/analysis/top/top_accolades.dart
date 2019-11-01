@@ -33,8 +33,7 @@ class _TopAccoladesState extends State<TopAccolades> {
   Map<String, FlareAnimation> _nameToFlare;
   Contact _mostCallWith;
   CallLogInfo _longestCallCallLog;
-  DateTime _mostCallsInADayDate;
-  int _mostCallsInADayAmount;
+  Map _mostCallsInADayData;
   bool _fetchedData = false;
 
   // TODO: When every slide is tapped do something like show the top 10 - same for general tab
@@ -85,14 +84,14 @@ class _TopAccoladesState extends State<TopAccolades> {
       _fetchedData = false;
     });
 
-    // TODO: Run this in async compute - all with future.delayed
-    _mostCallWith = (await _analysisService.getTopContacts(
-            sortOption: SortOption.CALL_AMOUNT, amount: 1))
-        .first;
-    _longestCallCallLog = await _analysisService.getLongestCallLog();
-    Map mostCallsInADateData = _analysisService.getMostCallsInADayData();
-    _mostCallsInADayDate = mostCallsInADateData['date'];
-    _mostCallsInADayAmount = mostCallsInADateData['amount'];
+    List results = await Future.wait([
+      _analysisService.getTopContact(SortOption.CALL_AMOUNT),
+      _analysisService.getLongestCallLog(),
+      _analysisService.getMostCallsInADayData()
+    ]);
+    _mostCallWith = results[0];
+    _longestCallCallLog = results[1];
+    _mostCallsInADayData = results[2];
 
     if (mounted) {
       setState(() {
@@ -162,8 +161,18 @@ class _TopAccoladesState extends State<TopAccolades> {
       title: 'Most Calls In a Day',
       content: _getSlideContent(
           bottomContent: Text(
-              '$_mostCallsInADayAmount Calls on ${stringifyDateTime(_mostCallsInADayDate)}'),
-          flareAnimation: _nameToFlare[_mostCallsInADayId]),
+              '${_mostCallsInADayData['amount']} Calls on ${stringifyDateTime(_mostCallsInADayData['date'])}'),
+          flareAnimation: _nameToFlare[_mostCallsInADayId],
+          onFlareTapped: () {
+            _showTopDialogFor<Map>(
+                context: context,
+                title: 'Top $_topAmount Most Calls in a Day',
+                future: _analysisService.getTopMostCallsInADayData(_topAmount),
+                itemBuilder: (BuildContext context, Map data) => ListTile(
+                      title: Text('${data['amount']} Calls'),
+                      subtitle: Text('on ${stringifyDateTime(data['date'])}'),
+                    ));
+          }),
       gradient: appGradient,
     );
   }

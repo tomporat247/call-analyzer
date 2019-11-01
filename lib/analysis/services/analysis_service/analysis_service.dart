@@ -72,32 +72,17 @@ class AnalysisService {
   }
 
   Future<List<CallLogInfo>> getLongestCallLogs(int amount) async {
-    return AsyncExtractor.asyncExtractor<CallLogInfo>(
+    return AsyncExtractor.asyncExtractor<CallLogInfo, CallLogInfo>(
         _callLogs, amount, AsyncExtractor.getLongestCallLogs);
   }
 
-  Map<String, dynamic> getMostCallsInADayData() {
-    Map<String, dynamic> ans = new Map<String, dynamic>();
-    DateTime prevDate = getFirstCallDate();
-    int amount = 0;
-    DateTime maxDate = prevDate;
-    int maxAmount = amount;
-    _callLogs.forEach((CallLogInfo callLog) {
-      if (callLog.dateTime.day == prevDate.day) {
-        amount++;
-      } else {
-        if (amount > maxAmount) {
-          maxAmount = amount;
-          maxDate = prevDate;
-        }
-        amount = 0;
-      }
-      prevDate = callLog.dateTime;
-    });
+  Future<Map> getMostCallsInADayData() async {
+    return (await getTopMostCallsInADayData(1)).first;
+  }
 
-    ans['date'] = maxDate;
-    ans['amount'] = maxAmount;
-    return ans;
+  Future<List<Map>> getTopMostCallsInADayData(int amount) async {
+    return AsyncExtractor.asyncExtractor(
+        _callLogs, amount, AsyncExtractor.getMostCallsInADayData);
   }
 
   int getContactAmount() {
@@ -146,6 +131,10 @@ class AnalysisService {
           .avatar = contactWithImage.avatar;
     }
     return contact;
+  }
+
+  Future<Contact> getTopContact(SortOption sortOption) async {
+    return (await getTopContacts(amount: 1, sortOption: sortOption)).first;
   }
 
   Future<List<Contact>> getTopContacts(
