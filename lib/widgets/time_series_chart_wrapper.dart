@@ -7,12 +7,24 @@ class TimeSeriesChartWrapper extends StatelessWidget {
   final List<Color> colors;
   final List<String> labels;
   final bool allowPinchAndZoom;
+  DateTime _fromDate;
+  DateTime _toDate;
 
   TimeSeriesChartWrapper(
       {@required this.dataPointLines,
       @required this.colors,
       @required this.labels,
-      this.allowPinchAndZoom = true});
+      this.allowPinchAndZoom = true}) {
+    _fromDate = dataPointLines
+        .map((List<DataPoint<DateTime>> line) => line.first.xAxis)
+        .reduce((DateTime one, DateTime two) => one.isBefore(two) ? one : two);
+    _toDate = dataPointLines
+        .map((List<DataPoint<DateTime>> line) => line.last.xAxis)
+        .reduce((DateTime one, DateTime two) => one.isAfter(two) ? one : two);
+    if (_fromDate == _toDate) {
+      _toDate = _toDate.add(Duration(hours: 1));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,14 +37,8 @@ class TimeSeriesChartWrapper extends StatelessWidget {
         Flexible(
           child: BezierChart(
             bezierChartScale: BezierChartScale.MONTHLY,
-            fromDate: dataPointLines
-                .map((List<DataPoint<DateTime>> line) => line.first.xAxis)
-                .reduce((DateTime one, DateTime two) =>
-                    one.isBefore(two) ? one : two),
-            toDate: dataPointLines
-                .map((List<DataPoint<DateTime>> line) => line.last.xAxis)
-                .reduce((DateTime one, DateTime two) =>
-                    one.isAfter(two) ? one : two),
+            fromDate: _fromDate,
+            toDate: _toDate,
             series: [
               for (int i = 0; i < dataPointLines.length; i++)
                 BezierLine(

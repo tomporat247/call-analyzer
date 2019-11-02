@@ -45,9 +45,7 @@ class _ContactProfileState extends State<ContactProfile> {
   @override
   void initState() {
     _contact = widget._contact;
-    _callLogs = _analysisService.getCallLogsFor(_contact)
-      ..sort((CallLogInfo one, CallLogInfo two) =>
-          one.dateTime.compareTo(two.dateTime));
+    _callLogs = _analysisService.getCallLogsFor(_contact);
     _formatContactPhones();
     _initCounters();
     super.initState();
@@ -150,7 +148,7 @@ class _ContactProfileState extends State<ContactProfile> {
     _rejectedCallsPerDay.add(
         DataPoint<DateTime>(value: rejectedCallAmount.toDouble(), xAxis: date));
     _callDurationPerDay.add(DataPoint<DateTime>(
-        value: (callDurationInSecondsAmount / 60).round().toDouble(),
+        value: ((callDurationInSecondsAmount / 60) + 0.5).round().toDouble(),
         xAxis: date));
   }
 
@@ -249,7 +247,7 @@ class _ContactProfileState extends State<ContactProfile> {
   Widget _getCallDurationPerDayGraph() {
     return Column(
       children: <Widget>[
-        _getGraphTitle('Talk Time'),
+        _getGraphTitle('Talk Time in Minutes'),
         SizedBox(
             height: MediaQuery.of(context).size.height * 0.5,
             child: TimeSeriesChartWrapper(

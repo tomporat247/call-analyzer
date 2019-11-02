@@ -30,8 +30,8 @@ class ContactToDataAsyncBuilder {
 
   static Duration _getTotalCallDurationWith(
       Contact contact, Map<String, List<CallLogInfo>> contactIdToCallLogs) {
-    return contactIdToCallLogs[contact.identifier].fold<Duration>(
-        Duration(), (Duration curr, CallLogInfo callLog) => curr + callLog.duration);
+    return contactIdToCallLogs[contact.identifier].fold<Duration>(Duration(),
+        (Duration curr, CallLogInfo callLog) => curr + callLog.duration);
   }
 
   static Map<String, List<CallLogInfo>> _buildContactIdToCallLogs(Map args) {
@@ -52,7 +52,9 @@ class ContactToDataAsyncBuilder {
         .where((CallLogInfo callLog) => (contact.displayName == callLog.name ||
             _contactHasPhoneNumber(contact, callLog.number) ||
             _contactHasPhoneNumber(contact, callLog.formattedNumber)))
-        .toList();
+        .toList()
+          ..sort((CallLogInfo one, CallLogInfo two) =>
+              one.dateTime.compareTo(two.dateTime));
   }
 
   static bool _contactHasPhoneNumber(Contact contact, String phoneNumber) {
