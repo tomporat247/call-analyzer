@@ -43,6 +43,11 @@ class _AllContactsState extends State<AllContacts> {
         value: SortOption.CALL_AMOUNT,
         onPressed: () => _setSortOption(SortOption.CALL_AMOUNT),
       ),
+      MenuTextOption(
+        text: 'Alphabetical',
+        value: SortOption.ALPHABETICAL,
+        onPressed: () => _setSortOption(SortOption.ALPHABETICAL),
+      ),
     ];
     _topContacts$ = StreamController<List<Contact>>();
     _setup();
@@ -111,7 +116,7 @@ class _AllContactsState extends State<AllContacts> {
       options: _menuSortOptions,
       child: _getFilterFor(RichText(
         text: TextSpan(children: [
-          TextSpan(text: 'Sort By: ', style: filterPrefixStyle),
+          TextSpan(text: 'Order By: ', style: filterPrefixStyle),
           TextSpan(
               text: _menuSortOptions
                   .firstWhere(
