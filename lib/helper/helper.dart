@@ -4,6 +4,7 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 String formatPhoneNumber(String phoneNumber) {
   return phoneNumber == null
@@ -63,4 +64,12 @@ void unfocus(BuildContext context) {
 void focus(BuildContext context, FocusNode node) {
   unfocus(context);
   FocusScope.of(context).requestFocus(node);
+}
+
+launchURL(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
+  }
 }

@@ -7,6 +7,7 @@ import 'package:call_analyzer/analysis/general_details/general_details.dart';
 import 'package:call_analyzer/analysis/home/contact_search.dart';
 import 'package:call_analyzer/analysis/services/analysis_service/analysis_service.dart';
 import 'package:call_analyzer/analysis/top/top_accolades.dart';
+import 'package:call_analyzer/attributions/attributions.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/models/life_event.dart';
@@ -176,26 +177,34 @@ class _AnalysisHomeState extends State<AnalysisHome> {
   }
 
   Widget _getPopupMenu() {
-    String permissionsOption = 'Permissions';
-    List<String> options = [permissionsOption];
+    const String permissionsOption = 'Permissions';
+    const String attributionsOption = 'Attributions';
+    List<String> options = [permissionsOption, attributionsOption];
 
     return Builder(
       builder: (BuildContext context) => PopupMenuButton<String>(
-        tooltip: 'Settings',
         onSelected: (String option) async {
-          if (option == permissionsOption) {
-            if (!(await _permissionService.hasOptionalPermissions())) {
-              List<PermissionGroup> grantedPermissions =
-                  await _permissionService.getGrantedPermissions();
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => PermissionRequest(
-                      grantedPermissions: grantedPermissions)));
-            } else {
-              Scaffold.of(context).showSnackBar(SnackBar(
-                content: Text(
-                    'All permissions granted (Contact, Call logs & Storage)'),
-              ));
-            }
+          switch (option) {
+            case permissionsOption:
+              if (!(await _permissionService.hasOptionalPermissions())) {
+                List<PermissionGroup> grantedPermissions =
+                    await _permissionService.getGrantedPermissions();
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => PermissionRequest(
+                        grantedPermissions: grantedPermissions)));
+              } else {
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                      'All permissions granted (Contacts, Call logs & Storage)'),
+                ));
+              }
+              break;
+            case attributionsOption:
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => Attributions()));
+              break;
+            default:
+              break;
           }
         },
         itemBuilder: (BuildContext context) => [
