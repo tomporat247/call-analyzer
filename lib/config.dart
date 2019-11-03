@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-final Color accentColor = Colors.tealAccent[700];
+final Color accentColor = Color(0xFF29ACE5);
 
 ThemeData getAppTheme(BuildContext context) {
   return ThemeData(
     fontFamily: 'product',
-    primarySwatch: Colors.teal,
+    primarySwatch: Colors.blue,
     accentColor: accentColor,
     brightness: Brightness.dark,
   );

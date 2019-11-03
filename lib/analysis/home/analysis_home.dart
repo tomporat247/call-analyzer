@@ -86,8 +86,7 @@ class _AnalysisHomeState extends State<AnalysisHome> {
       elevation: 8.0,
       child: Icon(
         FontAwesomeIcons.filter,
-        color:
-            _analysisService.isFilteringByDate ? Colors.deepPurple[700] : null,
+        color: _analysisService.isFilteringByDate ? Colors.deepPurple : null,
       ),
       children: <SpeedDialChild>[
         _getSpeedDialChildWrapper(
@@ -169,7 +168,7 @@ class _AnalysisHomeState extends State<AnalysisHome> {
       lastDate: lastDate,
       builder: (BuildContext context, Widget child) {
         return Theme(
-          data: ThemeData.dark(),
+          data: getAppTheme(context),
           child: child,
         );
       },
