@@ -59,7 +59,7 @@ class Attributions extends StatelessWidget {
                 text: 'solomon babatunde',
                 onTap: () => launchURL(
                     'https://www.2dimensions.com/a/solomon23/files/recent/all')),
-            TextSpan(text: '\n Used under '),
+            TextSpan(text: '\nUsed under '),
             _getTappableTextSpan(
                 text: 'CC BY',
                 onTap: () =>
@@ -83,7 +83,7 @@ class Attributions extends StatelessWidget {
                 text: 'Mahen Gandhi',
                 onTap: () => launchURL(
                     'https://www.2dimensions.com/a/imlegend19/files/recent/all')),
-            TextSpan(text: '\n Used under '),
+            TextSpan(text: '\nUsed under '),
             _getTappableTextSpan(
                 text: 'CC BY',
                 onTap: () =>
@@ -107,7 +107,7 @@ class Attributions extends StatelessWidget {
                 text: 'Gaston',
                 onTap: () => launchURL(
                     'https://www.2dimensions.com/a/budindepan/files/recent/all')),
-            TextSpan(text: '\n Used Under '),
+            TextSpan(text: '\nUsed Under '),
             _getTappableTextSpan(
                 text: 'CC BY',
                 onTap: () =>
