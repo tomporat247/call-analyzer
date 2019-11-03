@@ -85,6 +85,11 @@ class AnalysisService {
         _callLogs, amount, AsyncExtractor.getMostCallsInADayData);
   }
 
+  Duration getTotalTalkDurationWith(Contact contact) {
+    return Duration(
+        seconds: _contactIdToCallDurationInSeconds[contact.identifier]);
+  }
+
   int getContactAmount() {
     return _contacts.length;
   }

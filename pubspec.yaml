@@ -61,6 +61,7 @@ flutter:
     - assets/animations/phone_call.flr
     - assets/animations/trophy.flr
     - assets/animations/ticking_clock.flr
+    - assets/animations/long_call_with.flr
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

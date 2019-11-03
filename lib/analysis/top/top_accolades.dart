@@ -29,14 +29,14 @@ class _TopAccoladesState extends State<TopAccolades> {
   final String _mostCallsInADayId = 'mostCallsInADay';
   final String _mostCallsWithId = 'mostCallsWith';
   final String _longestCallId = 'longestCall';
+  final String _longestTalkTimeWithId = 'longestTalkTimeWith';
   final int _topAmount = 10;
   Map<String, FlareAnimation> _nameToFlare;
   Contact _mostCallWith;
   CallLogInfo _longestCallCallLog;
   Map _mostCallsInADayData;
   bool _fetchedData = false;
-
-  // TODO: Add a slide for longest total call duration with
+  Contact _longestTalkTimeWith;
 
   @override
   void initState() {
@@ -47,7 +47,10 @@ class _TopAccoladesState extends State<TopAccolades> {
           fileName: 'assets/animations/trophy.flr', animationName: 'trophy'),
       _longestCallId: FlareAnimation(
           fileName: 'assets/animations/ticking_clock.flr',
-          animationName: 'tick')
+          animationName: 'tick'),
+      _longestTalkTimeWithId: FlareAnimation(
+          fileName: 'assets/animations/long_call_with.flr',
+          animationName: 'Record2')
     };
     _setup();
     widget._lifeEvent$.takeWhile((e) => mounted).listen((LifeEvent event) {
@@ -68,7 +71,8 @@ class _TopAccoladesState extends State<TopAccolades> {
             )
           : SlideShow(slides: <Slide>[
               _getMostCallsWithSlide(),
-              _getLongestCallWithSlide(),
+              _getLongestTalkTimeWithSlide(),
+              _getLongestCallSlide(),
               _getMostCallsADaySlide(),
             ]),
     );
@@ -86,11 +90,13 @@ class _TopAccoladesState extends State<TopAccolades> {
     List results = await Future.wait([
       _analysisService.getTopContact(SortOption.CALL_AMOUNT),
       _analysisService.getLongestCallLog(),
-      _analysisService.getMostCallsInADayData()
+      _analysisService.getMostCallsInADayData(),
+      _analysisService.getTopContact(SortOption.CALL_DURATION)
     ]);
     _mostCallWith = results[0];
     _longestCallCallLog = results[1];
     _mostCallsInADayData = results[2];
+    _longestTalkTimeWith = results[3];
 
     if (mounted) {
       setState(() {
@@ -126,7 +132,7 @@ class _TopAccoladesState extends State<TopAccolades> {
     );
   }
 
-  Slide _getLongestCallWithSlide() {
+  Slide _getLongestCallSlide() {
     return Slide(
       title: 'Longest Call',
       content: _getSlideContent(
@@ -172,6 +178,34 @@ class _TopAccoladesState extends State<TopAccolades> {
                       subtitle: Text('on ${stringifyDateTime(data['date'])}'),
                     ));
           }),
+      gradient: appGradient,
+    );
+  }
+
+  Slide _getLongestTalkTimeWithSlide() {
+    return Slide(
+      title: 'Longest Talk Time With',
+      content: _getSlideContent(
+        bottomContent: ContactTile(
+          _longestTalkTimeWith,
+          trailingText: stringifyDuration(
+              _analysisService.getTotalCallDurationFor(_longestTalkTimeWith)),
+        ),
+        flareAnimation: _nameToFlare[_longestTalkTimeWithId],
+        onFlareTapped: () {
+          _showTopDialogFor<Contact>(
+              context: context,
+              title: 'Top $_topAmount Longest Talk Time With',
+              future: _analysisService.getTopContacts(
+                  sortOption: SortOption.CALL_DURATION, amount: _topAmount),
+              itemBuilder: (BuildContext context, Contact contact) =>
+                  ContactTile(
+                    contact,
+                    trailingText: stringifyDuration(
+                        _analysisService.getTotalCallDurationFor(contact)),
+                  ));
+        },
+      ),
       gradient: appGradient,
     );
   }
