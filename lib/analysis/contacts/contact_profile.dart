@@ -85,51 +85,54 @@ class _ContactProfileState extends State<ContactProfile> {
     _missedCallsPerDay = new List<DataPoint<DateTime>>();
     _rejectedCallsPerDay = new List<DataPoint<DateTime>>();
     _callDurationPerDay = new List<DataPoint<DateTime>>();
-    int incomingToday = 0;
-    int outgoingToday = 0;
-    int missedToday = 0;
-    int rejectedToday = 0;
-    int callDurationInSecondsToday = 0;
-    DateTime prev = _callLogs.first.dateTime;
-    _callLogs.forEach((CallLogInfo callLog) {
-      switch (callLog.callType) {
-        case CallType.incoming:
-        case CallType.answeredExternally:
-          _totalIncomingCallAmount++;
-          incomingToday++;
-          break;
-        case CallType.outgoing:
-          _totalOutgoingCallAmount++;
-          outgoingToday++;
-          break;
-        case CallType.missed:
-          _totalMissedCallAmount++;
-          missedToday++;
-          break;
-        case CallType.rejected:
-          _totalRejectedCallAmount++;
-          rejectedToday++;
-          break;
-        default:
-          break;
-      }
-      callDurationInSecondsToday += callLog.duration.inSeconds;
 
-      DateTime curr = callLog.dateTime;
-      if (curr.day != prev.day) {
-        _addToCounters(prev, incomingToday, outgoingToday, missedToday,
-            rejectedToday, callDurationInSecondsToday);
+    if (_callLogs.isNotEmpty) {
+      int incomingToday = 0;
+      int outgoingToday = 0;
+      int missedToday = 0;
+      int rejectedToday = 0;
+      int callDurationInSecondsToday = 0;
+      DateTime prev = _callLogs.first.dateTime;
+      _callLogs.forEach((CallLogInfo callLog) {
+        switch (callLog.callType) {
+          case CallType.incoming:
+          case CallType.answeredExternally:
+            _totalIncomingCallAmount++;
+            incomingToday++;
+            break;
+          case CallType.outgoing:
+            _totalOutgoingCallAmount++;
+            outgoingToday++;
+            break;
+          case CallType.missed:
+            _totalMissedCallAmount++;
+            missedToday++;
+            break;
+          case CallType.rejected:
+            _totalRejectedCallAmount++;
+            rejectedToday++;
+            break;
+          default:
+            break;
+        }
+        callDurationInSecondsToday += callLog.duration.inSeconds;
 
-        incomingToday = 0;
-        outgoingToday = 0;
-        missedToday = 0;
-        rejectedToday = 0;
-        callDurationInSecondsToday = 0;
-      }
-      prev = curr;
-    });
-    _addToCounters(prev, incomingToday, outgoingToday, missedToday,
-        rejectedToday, callDurationInSecondsToday);
+        DateTime curr = callLog.dateTime;
+        if (curr.day != prev.day) {
+          _addToCounters(prev, incomingToday, outgoingToday, missedToday,
+              rejectedToday, callDurationInSecondsToday);
+
+          incomingToday = 0;
+          outgoingToday = 0;
+          missedToday = 0;
+          rejectedToday = 0;
+          callDurationInSecondsToday = 0;
+        }
+        prev = curr;
+      });
+      _addToCounters(prev, incomingToday, outgoingToday, missedToday,
+          rejectedToday, callDurationInSecondsToday);
+    }
   }
 
   _addToCounters(

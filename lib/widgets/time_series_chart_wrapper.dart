@@ -15,12 +15,22 @@ class TimeSeriesChartWrapper extends StatelessWidget {
       @required this.colors,
       @required this.labels,
       this.allowPinchAndZoom = true}) {
-    _fromDate = dataPointLines
-        .map((List<DataPoint<DateTime>> line) => line.first.xAxis)
-        .reduce((DateTime one, DateTime two) => one.isBefore(two) ? one : two);
-    _toDate = dataPointLines
-        .map((List<DataPoint<DateTime>> line) => line.last.xAxis)
-        .reduce((DateTime one, DateTime two) => one.isAfter(two) ? one : two);
+    dataPointLines
+        .removeWhere((List<DataPoint<DateTime>> line) => line.isEmpty);
+
+    if (dataPointLines.isNotEmpty) {
+      _fromDate = dataPointLines
+          .map((List<DataPoint<DateTime>> line) => line.first.xAxis)
+          .reduce(
+              (DateTime one, DateTime two) => one.isBefore(two) ? one : two);
+      _toDate = dataPointLines
+          .map((List<DataPoint<DateTime>> line) => line.last.xAxis)
+          .reduce((DateTime one, DateTime two) => one.isAfter(two) ? one : two);
+    } else {
+      _fromDate = DateTime.now();
+      _toDate = _fromDate;
+    }
+
     if (_fromDate == _toDate) {
       _toDate = _toDate.add(Duration(hours: 1));
     }
@@ -39,13 +49,15 @@ class TimeSeriesChartWrapper extends StatelessWidget {
             bezierChartScale: BezierChartScale.MONTHLY,
             fromDate: _fromDate,
             toDate: _toDate,
-            series: [
-              for (int i = 0; i < dataPointLines.length; i++)
-                BezierLine(
-                    data: dataPointLines[i],
-                    lineColor: colors[i],
-                    label: labels[i]),
-            ],
+            series: dataPointLines.isEmpty
+                ? [_getDefaultEmptyLine()]
+                : [
+                    for (int i = 0; i < dataPointLines.length; i++)
+                      BezierLine(
+                          data: dataPointLines[i],
+                          lineColor: colors[i],
+                          label: labels[i]),
+                  ],
             config: BezierChartConfig(
               displayYAxis: true,
               pinchZoom: allowPinchAndZoom,
@@ -58,5 +70,9 @@ class TimeSeriesChartWrapper extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  BezierLine _getDefaultEmptyLine() {
+    return BezierLine(data: []);
   }
 }
