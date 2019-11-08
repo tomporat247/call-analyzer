@@ -10,6 +10,7 @@ class Attributions extends StatelessWidget {
   Attributions() {
     _attributionTiles = [
       _getAppIconAttribution(),
+      _getAppLoadAnimationAttribution(),
       _getTrophyAnimationAttribution(),
       _getCallAnimationAttribution(),
       _getPhoneAnimationAttribution(),
@@ -72,6 +73,31 @@ class Attributions extends StatelessWidget {
         trailing: _getFlareTrailing(
             fileName: 'assets/animations/phone_call.flr',
             animationName: 'call'));
+  }
+
+  Widget _getAppLoadAnimationAttribution() {
+    return _getAttributionTile(
+        title: RichText(
+          text: TextSpan(children: [
+            TextSpan(
+                text: 'A derivitive of The original flare animation made by '),
+            _getTappableTextSpan(
+                text: 'Guido Rosso',
+                onTap: () => launchURL(
+                    'https://www.2dimensions.com/a/pollux/files/recent/all')),
+            TextSpan(text: '\nUsed under '),
+            _getTappableTextSpan(
+                text: 'CC BY',
+                onTap: () =>
+                    launchURL('https://creativecommons.org/licenses/by/4.0/')),
+            TextSpan(text: '\n'),
+            _getOriginalLink(
+                'https://www.2dimensions.com/a/pollux/files/flare/trim/preview')
+          ]),
+        ),
+        trailing: _getFlareTrailing(
+            fileName: 'assets/animations/load-trim.flr',
+            animationName: 'load-trim'));
   }
 
   Widget _getCallAnimationAttribution() {
