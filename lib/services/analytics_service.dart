@@ -14,7 +14,7 @@ class AnalyticsService {
   }
 
   logEvent({String name, Map<String, dynamic> parameters}) {
-    _analytics.logEvent(name: null, parameters: parameters);
+    _analytics.logEvent(name: name, parameters: parameters);
   }
 
   logCurrentScreen(String screenName) {
