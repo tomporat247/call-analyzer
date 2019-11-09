@@ -36,6 +36,8 @@ _registerServices() {
   GetIt.instance.registerSingleton(AnalysisService(ContactService()));
 }
 
+// TODO: Extract the life event stream to a global scope, if filter is not active => recall the analysis service init and the RELOAD life event
+
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
