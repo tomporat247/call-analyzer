@@ -59,7 +59,6 @@ class _MyAppState extends State<MyApp> {
     _setupBackgroundFetch();
     _admobService.showBanner();
     _analyticsService.logAppOpen();
-    _analyticsService.logEvent(name: 'test_event');
     super.initState();
   }
 
@@ -68,6 +67,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: appTitle,
       theme: getAppTheme(context),
+      navigatorObservers: [_analyticsService.observer],
       home: Material(
         child: BannerAdPadder(AnimatedSwitcher(
           child: _pageToDisplay,

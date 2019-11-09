@@ -12,9 +12,11 @@ import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/models/life_event.dart';
 import 'package:call_analyzer/permissions/permission_request.dart';
+import 'package:call_analyzer/services/analytics_service.dart';
 import 'package:call_analyzer/services/permission_service.dart';
 import 'package:call_analyzer/widgets/banner_ad_padder.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -26,57 +28,106 @@ class AnalysisHome extends StatefulWidget {
   _AnalysisHomeState createState() => _AnalysisHomeState();
 }
 
-class _AnalysisHomeState extends State<AnalysisHome> {
+class _AnalysisHomeState extends State<AnalysisHome>
+    with SingleTickerProviderStateMixin, RouteAware {
   AnalysisService _analysisService = GetIt.instance<AnalysisService>();
+  FirebaseAnalyticsObserver _observer =
+      GetIt.instance<AnalyticsService>().observer;
   PermissionService _permissionService = GetIt.instance<PermissionService>();
   StreamController<LifeEvent> _lifeEvent$;
+  TabController _controller;
+  int _selectedTabIndex = 1;
+  final List<Tab> _tabs = [
+    Tab(text: 'General', icon: Icon(FontAwesomeIcons.chartPie)),
+    Tab(text: 'Top', icon: Icon(FontAwesomeIcons.medal)),
+    Tab(text: 'Contacts', icon: Icon(FontAwesomeIcons.userFriends)),
+    Tab(text: 'Calls', icon: Icon(FontAwesomeIcons.history))
+  ];
 
   @override
   initState() {
     _lifeEvent$ = new StreamController.broadcast();
+    _setupTabController();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-        initialIndex: 1,
-        length: 4,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(appTitle),
-            bottom: TabBar(
-              tabs: <Widget>[
-                Tab(text: 'General', icon: Icon(FontAwesomeIcons.chartPie)),
-                Tab(text: 'Top', icon: Icon(FontAwesomeIcons.medal)),
-                Tab(text: 'Contacts', icon: Icon(FontAwesomeIcons.userFriends)),
-                Tab(text: 'Calls', icon: Icon(FontAwesomeIcons.history)),
-              ],
-            ),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.search),
-                onPressed: () =>
-                    showSearch(context: context, delegate: ContactSearch())
-                        .then((Contact contact) {
-                  if (contact != null) {
-                    _openContactPageFor(contact);
-                  }
-                }),
-              ),
-              _getPopupMenu(),
-            ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(appTitle),
+        bottom: TabBar(
+          controller: _controller,
+          tabs: _tabs,
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () =>
+                showSearch(context: context, delegate: ContactSearch())
+                    .then((Contact contact) {
+              if (contact != null) {
+                _openContactPageFor(contact);
+              }
+            }),
           ),
-          body: TabBarView(
-            children: <Widget>[
-              GeneralDetails(_lifeEvent$.stream),
-              TopAccolades(_lifeEvent$.stream),
-              AllContacts(_lifeEvent$.stream),
-              AllCalls(_lifeEvent$.stream)
-            ],
-          ),
-          floatingActionButton: _getDateFilter(),
-        ));
+          _getPopupMenu(),
+        ],
+      ),
+      body: TabBarView(
+        controller: _controller,
+        children: <Widget>[
+          GeneralDetails(_lifeEvent$.stream),
+          TopAccolades(_lifeEvent$.stream),
+          AllContacts(_lifeEvent$.stream),
+          AllCalls(_lifeEvent$.stream)
+        ],
+      ),
+      floatingActionButton: _getDateFilter(),
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _observer.subscribe(this, ModalRoute.of(context));
+  }
+
+  @override
+  void dispose() {
+    _observer.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPush() {
+    _sendCurrentTabToAnalytics();
+  }
+
+  @override
+  void didPopNext() {
+    _sendCurrentTabToAnalytics();
+  }
+
+  _setupTabController() {
+    _controller = TabController(
+      vsync: this,
+      length: _tabs.length,
+      initialIndex: _selectedTabIndex,
+    );
+    _controller.addListener(() {
+      setState(() {
+        if (_selectedTabIndex != _controller.index) {
+          _selectedTabIndex = _controller.index;
+          _sendCurrentTabToAnalytics();
+        }
+      });
+    });
+  }
+
+  _sendCurrentTabToAnalytics() {
+    _observer.analytics
+        .setCurrentScreen(screenName: '/tabs/${_tabs[_selectedTabIndex].text}');
   }
 
   Widget _getDateFilter() {
@@ -191,6 +242,7 @@ class _AnalysisHomeState extends State<AnalysisHome> {
                 List<PermissionGroup> grantedPermissions =
                     await _permissionService.getGrantedPermissions();
                 Navigator.of(context).push(MaterialPageRoute(
+                    settings: const RouteSettings(name: '/permissions'),
                     builder: (context) => BannerAdPadder(PermissionRequest(
                         grantedPermissions: grantedPermissions))));
               } else {
@@ -202,6 +254,7 @@ class _AnalysisHomeState extends State<AnalysisHome> {
               break;
             case attributionsOption:
               Navigator.of(context).push(MaterialPageRoute(
+                  settings: const RouteSettings(name: '/attributions'),
                   builder: (context) => BannerAdPadder(Attributions())));
               break;
             default:

@@ -24,6 +24,7 @@ class ContactTile extends StatelessWidget {
       onTap: !tapToOpenContactProfile
           ? null
           : () => Navigator.of(context).push(MaterialPageRoute(
+              settings: const RouteSettings(name: '/contact_profile'),
               builder: (context) => BannerAdPadder(ContactProfile(_contact)))),
       leading: ContactImage(contact: _contact),
       title: Text(

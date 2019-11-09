@@ -6,7 +6,7 @@ class AnalyticsService {
 
   FirebaseAnalytics get analytics => _analytics;
 
-  FirebaseAnalyticsObserver get analyticsObserver =>
+  FirebaseAnalyticsObserver get observer =>
       FirebaseAnalyticsObserver(analytics: analytics);
 
   logAppOpen() {
@@ -15,9 +15,5 @@ class AnalyticsService {
 
   logEvent({String name, Map<String, dynamic> parameters}) {
     _analytics.logEvent(name: name, parameters: parameters);
-  }
-
-  logCurrentScreen(String screenName) {
-    _analytics.setCurrentScreen(screenName: screenName);
   }
 }
