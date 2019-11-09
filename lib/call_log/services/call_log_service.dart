@@ -11,6 +11,7 @@ class CallLogService {
   final CallLogParserService _parserService;
   final PermissionService _permissionService;
   final String callLogFileName = 'callLogs.json';
+  final Duration _deviceCallLogRequestDelta = Duration(days: 1);
 
   CallLogService(
       this._storageService, this._parserService, this._permissionService);
@@ -34,13 +35,43 @@ class CallLogService {
   }
 
   Future<List<CallLogEntry>> _getCallLogsFromAllSources() async {
-    List<CallLogEntry> callLogs = new List<CallLogEntry>();
     DateTime lastModified =
         await _storageService.getLastModified(callLogFileName);
-    List<List<CallLogEntry>> callLogsFromAllSources = await Future.wait(
-        [_getDeviceCallLogsFromDate(lastModified), _getCallLogsFromFile()]);
-    callLogsFromAllSources.forEach((calls) => callLogs.addAll(calls));
-    return callLogs;
+
+    List<List<CallLogEntry>> callLogsFromAllSources = await Future.wait([
+      _getDeviceCallLogsFromDate(
+          lastModified.subtract(_deviceCallLogRequestDelta)),
+      _getCallLogsFromFile()
+    ]);
+
+    return _mergeDeviceAndStorageCallLogs(
+        callLogsFromAllSources[0], callLogsFromAllSources[1]);
+  }
+
+  List<CallLogEntry> _mergeDeviceAndStorageCallLogs(
+      List<CallLogEntry> deviceCallLogs, List<CallLogEntry> storageCallLogs) {
+    List<CallLogEntry> mergedCallLogs = new List<CallLogEntry>();
+
+    int oldestDeviceCallLogTimestamp = deviceCallLogs.last.timestamp;
+    int oldestDeviceCallLogIndexInStorageCallLogs = storageCallLogs.indexWhere(
+        (CallLogEntry callLog) =>
+            callLog.timestamp == oldestDeviceCallLogTimestamp);
+
+    for (int i = 0; i <= oldestDeviceCallLogIndexInStorageCallLogs; i++) {
+      CallLogEntry currCallLog = storageCallLogs[i];
+      CallLogEntry matchingDeviceCallLog = deviceCallLogs.firstWhere(
+          (CallLogEntry callLog) => callLog.timestamp == currCallLog.timestamp,
+          orElse: () => null);
+      if (matchingDeviceCallLog != null) {
+        storageCallLogs[i] = matchingDeviceCallLog;
+        deviceCallLogs.remove(matchingDeviceCallLog);
+      }
+    }
+
+    mergedCallLogs.addAll(deviceCallLogs);
+    mergedCallLogs.addAll(storageCallLogs);
+
+    return mergedCallLogs;
   }
 
   Future<List<CallLogEntry>> _getAllDeviceCallLogs() async {
