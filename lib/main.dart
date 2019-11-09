@@ -1,3 +1,4 @@
+import 'package:background_fetch/background_fetch.dart';
 import 'package:call_analyzer/analysis/home/analysis_home.dart';
 import 'package:call_analyzer/call_log/services/call_log_parser_service.dart';
 import 'package:call_analyzer/call_log/services/call_log_service.dart';
@@ -13,11 +14,21 @@ import 'package:get_it/get_it.dart';
 
 import 'analysis/services/analysis_service/analysis_service.dart';
 
+// TODO: Fix the bug of opening app while mid call
+
+_onBackgroundFetch() async {
+  print('[BackgroundFetch] Event received');
+  String toWrite = '';
+  StorageService _storageService = StorageService();
+  BackgroundFetch.finish();
+}
+
 void main() {
   _registerServices();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
     runApp(new MyApp());
+    BackgroundFetch.registerHeadlessTask(_onBackgroundFetch);
   });
 }
 
@@ -39,6 +50,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     _pageToDisplay = Container();
     _determineInitialPageToDisplay();
+    _setupBackgroundFetch();
     super.initState();
   }
 
@@ -55,6 +67,26 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+
+  _setupBackgroundFetch() async {
+    BackgroundFetch.configure(
+            BackgroundFetchConfig(
+                minimumFetchInterval: 15,
+                stopOnTerminate: false,
+                startOnBoot: true,
+                enableHeadless: true,
+                requiresBatteryNotLow: false,
+                requiresCharging: false,
+                requiresStorageNotLow: false,
+                requiresDeviceIdle: false,
+                requiredNetworkType: BackgroundFetchConfig.NETWORK_TYPE_NONE),
+            _onBackgroundFetch)
+        .then((int status) {
+      print('[BackgroundFetch] configure success: $status');
+    }).catchError((e) {
+      print('[BackgroundFetch] configure ERROR: $e');
+    });
   }
 
   _determineInitialPageToDisplay() async {
