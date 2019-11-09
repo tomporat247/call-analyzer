@@ -1,6 +1,7 @@
 import 'package:background_fetch/background_fetch.dart';
 import 'package:call_analyzer/services/admob_service.dart';
 import 'package:call_analyzer/analysis/home/analysis_home.dart';
+import 'package:call_analyzer/services/analytics_service.dart';
 import 'package:call_analyzer/services/call_log/call_log_parser_service.dart';
 import 'package:call_analyzer/services/call_log/call_log_service.dart';
 import 'package:call_analyzer/config.dart';
@@ -35,6 +36,7 @@ void main() {
 _registerServices() {
   GetIt.instance.registerSingleton(PermissionService());
   GetIt.instance.registerSingleton(AnalysisService(ContactService()));
+  GetIt.instance.registerSingleton(AnalyticsService());
 }
 
 // TODO: Extract the life event stream to a global scope, if filter is not active => recall the analysis service init and the RELOAD life event
@@ -47,6 +49,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   Widget _pageToDisplay;
   PermissionService _permissionService = GetIt.instance<PermissionService>();
+  AnalyticsService _analyticsService = GetIt.instance<AnalyticsService>();
   AdmobService _admobService = AdmobService();
 
   @override
@@ -55,6 +58,7 @@ class _MyAppState extends State<MyApp> {
     _determineInitialPageToDisplay();
     _setupBackgroundFetch();
     _admobService.showBanner();
+    _analyticsService.logAppOpen();
     super.initState();
   }
 

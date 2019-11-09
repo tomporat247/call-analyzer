@@ -8,4 +8,16 @@ class AnalyticsService {
 
   FirebaseAnalyticsObserver get analyticsObserver =>
       FirebaseAnalyticsObserver(analytics: analytics);
+
+  logAppOpen() {
+    _analytics.logAppOpen();
+  }
+
+  logEvent({String name, Map<String, dynamic> parameters}) {
+    _analytics.logEvent(name: null, parameters: parameters);
+  }
+
+  logCurrentScreen(String screenName) {
+    _analytics.setCurrentScreen(screenName: screenName);
+  }
 }

@@ -104,17 +104,18 @@ class _GeneralDetailsState extends State<GeneralDetails> {
 
   _setupCallDurationData() async {
     List<Color> colors = [
-      Colors.blue[700],
+      Colors.blue,
+      Colors.teal[700],
+      Colors.lightBlue[100],
       Colors.green[300],
-      Colors.grey,
-      Colors.brown[400],
-      Colors.yellow,
-      Colors.deepOrange,
-      Colors.brown[700],
-      Colors.green[700],
-      Colors.lightBlue,
-      Colors.red[700],
-    ];
+      Colors.cyan[600],
+      Colors.deepPurple,
+      Colors.purple,
+      Colors.indigo,
+      Colors.blueGrey,
+      Colors.green
+      ];
+    Color otherColor = Colors.grey[900];
     _totalCallDuration = _analysisService.getTotalCallDuration();
     _topCallDurationData = new List<ChartData<num>>();
     List<Contact> topContacts =
@@ -141,7 +142,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
           "",
           'Other',
           double.parse(stringifyNumber(100 - sum)),
-          Colors.black,
+          otherColor,
           suffix: ' %',
           limitCaption: true,
         ));
