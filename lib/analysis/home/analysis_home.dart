@@ -12,7 +12,7 @@ import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/models/life_event.dart';
 import 'package:call_analyzer/permissions/permission_request.dart';
-import 'package:call_analyzer/permissions/services/permission_service.dart';
+import 'package:call_analyzer/services/permission_service.dart';
 import 'package:call_analyzer/widgets/banner_ad_padder.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';

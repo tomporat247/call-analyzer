@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 
 import '../config.dart';
 
-class ChartTopTitle extends StatelessWidget {
+class SlideTopTitle extends StatelessWidget {
   final String _title;
 
-  ChartTopTitle(this._title);
+  SlideTopTitle(this._title);
 
   @override
   Widget build(BuildContext context) {

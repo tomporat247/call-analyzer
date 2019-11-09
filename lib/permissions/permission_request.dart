@@ -1,6 +1,6 @@
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/models/permission_details.dart';
-import 'package:call_analyzer/permissions/services/permission_service.dart';
+import 'package:call_analyzer/services/permission_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';

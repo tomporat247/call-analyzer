@@ -1,4 +1,4 @@
-import 'package:call_analyzer/admob/admob_service.dart';
+import 'package:call_analyzer/services/admob_service.dart';
 import 'package:flutter/material.dart';
 
 class BannerAdPadder extends Material {

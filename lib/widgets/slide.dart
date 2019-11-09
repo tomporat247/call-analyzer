@@ -1,7 +1,7 @@
 import 'package:call_analyzer/config.dart';
 import 'package:flutter/material.dart';
 
-import 'chart_top_title.dart';
+import 'slide_top_title.dart';
 
 class Slide extends StatelessWidget {
   final String title;
@@ -25,7 +25,7 @@ class Slide extends StatelessWidget {
         children: <Widget>[
           Expanded(
             flex: 2,
-            child: ChartTopTitle(title),
+            child: SlideTopTitle(title),
           ),
           Expanded(flex: 13, child: showContent ? content : Container()),
         ],

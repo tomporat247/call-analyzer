@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:call_analyzer/call_log/services/call_log_parser_service.dart';
-import 'package:call_analyzer/permissions/services/permission_service.dart';
-import 'package:call_analyzer/storage/services/storage_service.dart';
+import 'package:call_analyzer/services/call_log/call_log_parser_service.dart';
+import 'package:call_analyzer/services/permission_service.dart';
+import 'package:call_analyzer/services/storage_service.dart';
 import 'package:call_log/call_log.dart';
 import 'package:permission_handler/permission_handler.dart';
 

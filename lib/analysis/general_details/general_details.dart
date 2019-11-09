@@ -5,10 +5,10 @@ import 'package:call_analyzer/analysis/services/analysis_service/analysis_servic
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/models/life_event.dart';
-import 'package:call_analyzer/widgets/pie_chart_wrapper.dart';
+import 'package:call_analyzer/widgets/charts/pie_chart_wrapper.dart';
 import 'package:call_analyzer/widgets/slide.dart';
 import 'package:call_analyzer/widgets/slide_show.dart';
-import 'package:call_analyzer/widgets/time_series_chart_wrapper.dart';
+import 'package:call_analyzer/widgets/charts/time_series_chart_wrapper.dart';
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';

@@ -2,7 +2,7 @@ import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_e
 import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_filter.dart';
 import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_mapper.dart';
 import 'package:call_analyzer/analysis/services/analysis_service/helpers/async_sorter.dart';
-import 'package:call_analyzer/contacts/services/contact_service.dart';
+import 'package:call_analyzer/services/contact_service.dart';
 import 'package:call_analyzer/models/call_log_info.dart';
 import 'package:call_analyzer/models/sort_option.dart';
 import 'package:call_log/call_log.dart';
