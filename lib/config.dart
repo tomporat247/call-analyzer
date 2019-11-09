@@ -38,3 +38,5 @@ const Duration defaultChartAnimationDuration = Duration(milliseconds: 800);
 const Duration normalSwitchDuration = Duration(seconds: 1);
 
 const Duration fastSwitchDuration = Duration(milliseconds: 500);
+
+const Duration backgroundFetchInterval = Duration(hours: 12);
