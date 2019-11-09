@@ -1,3 +1,4 @@
+import 'package:call_analyzer/widgets/banner_ad_padder.dart';
 import 'package:call_analyzer/widgets/contact_image.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class ContactTile extends StatelessWidget {
       onTap: !tapToOpenContactProfile
           ? null
           : () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => ContactProfile(_contact))),
+              builder: (context) => BannerAdPadder(ContactProfile(_contact)))),
       leading: ContactImage(contact: _contact),
       title: Text(
         _contact.displayName,

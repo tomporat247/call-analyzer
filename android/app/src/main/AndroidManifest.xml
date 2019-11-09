@@ -17,6 +17,9 @@
         android:name=".Application"
         android:label="Call Analyzer"
         android:icon="@mipmap/launcher_icon">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-6746638404168860~7228354184"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

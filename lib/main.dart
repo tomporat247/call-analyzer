@@ -1,4 +1,5 @@
 import 'package:background_fetch/background_fetch.dart';
+import 'package:call_analyzer/admob/admob_service.dart';
 import 'package:call_analyzer/analysis/home/analysis_home.dart';
 import 'package:call_analyzer/call_log/services/call_log_parser_service.dart';
 import 'package:call_analyzer/call_log/services/call_log_service.dart';
@@ -8,10 +9,10 @@ import 'package:call_analyzer/permissions/permission_request.dart';
 import 'package:call_analyzer/permissions/services/permission_service.dart';
 import 'package:call_analyzer/splash_screen/splash_screen.dart';
 import 'package:call_analyzer/storage/services/storage_service.dart';
+import 'package:call_analyzer/widgets/banner_ad_padder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-
 import 'analysis/services/analysis_service/analysis_service.dart';
 
 _headlessUpdateCallLogs() async {
@@ -46,12 +47,14 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   Widget _pageToDisplay;
   PermissionService _permissionService = GetIt.instance<PermissionService>();
+  AdmobService _admobService = AdmobService();
 
   @override
   void initState() {
     _pageToDisplay = Container();
     _determineInitialPageToDisplay();
     _setupBackgroundFetch();
+    _admobService.showBanner();
     super.initState();
   }
 
@@ -61,11 +64,11 @@ class _MyAppState extends State<MyApp> {
       title: appTitle,
       theme: getAppTheme(context),
       home: Material(
-        child: AnimatedSwitcher(
+        child: BannerAdPadder(AnimatedSwitcher(
           child: _pageToDisplay,
           duration: normalSwitchDuration,
           switchInCurve: Curves.easeInOut,
-        ),
+        )),
       ),
     );
   }
