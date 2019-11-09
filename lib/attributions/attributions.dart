@@ -55,7 +55,7 @@ class Attributions extends StatelessWidget {
         title: RichText(
           text: TextSpan(children: [
             TextSpan(
-                text: 'A derivitive of The original flare animation made by '),
+                text: 'A derivitive of the original flare animation made by '),
             _getTappableTextSpan(
                 text: 'solomon babatunde',
                 onTap: () => launchURL(
@@ -80,7 +80,7 @@ class Attributions extends StatelessWidget {
         title: RichText(
           text: TextSpan(children: [
             TextSpan(
-                text: 'A derivitive of The original flare animation made by '),
+                text: 'A derivitive of the original flare animation made by '),
             _getTappableTextSpan(
                 text: 'Guido Rosso',
                 onTap: () => launchURL(
