@@ -11,7 +11,7 @@ class PermissionService {
       icon: FontAwesomeIcons.phoneAlt,
       name: 'Call Logs',
       description:
-          'Allow this app to access device call logs to view and analuze your calls',
+          'Allow Call Analyzer to access device call logs to view and analyze your calls',
       isOptional: false,
     ),
     PermissionDetails(
@@ -19,7 +19,7 @@ class PermissionService {
       name: 'Contacts',
       icon: FontAwesomeIcons.addressBook,
       description:
-          'Allow this app to access your contacts to view and compare your calls with them',
+          'Allow Call Analyzer to access your contacts to determine which calls are associated with each of your contacts and view your call analysis',
       isOptional: false,
     ),
     PermissionDetails(
@@ -27,7 +27,7 @@ class PermissionService {
       icon: FontAwesomeIcons.archive,
       name: 'Storage',
       description:
-          'Allow this app to access device storage to store all call logs and quickly load them',
+          'Keep your data true and persistent!\nAllow Call Analyzer to access device storage to store all your call logs since all phones delete old call logs after a certain amount',
       isOptional: true,
     ),
   ];

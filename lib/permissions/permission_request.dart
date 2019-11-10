@@ -57,8 +57,9 @@ class _PermissionRequestState extends State<PermissionRequest> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 4 * defaultPadding),
               child: LiquidLinearProgressIndicator(
-                value: (_grantedPermissions.length + _deniedPermissions.length) /
-                    _permissionsToRequire.length,
+                value:
+                    (_grantedPermissions.length + _deniedPermissions.length) /
+                        _permissionsToRequire.length,
                 backgroundColor: Colors.white.withOpacity(0.1),
                 borderColor: Colors.transparent,
                 borderWidth: 0,
@@ -98,30 +99,7 @@ class _PermissionRequestState extends State<PermissionRequest> {
         }
       },
       onStepTapped: (index) => _updateCurrentStep(index),
-      controlsBuilder: (BuildContext context,
-              {VoidCallback onStepContinue, VoidCallback onStepCancel}) =>
-          Padding(
-        padding: EdgeInsets.only(top: defaultPadding),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(right: 2 * defaultPadding),
-              child: RaisedButton.icon(
-                  onPressed: onStepContinue,
-                  icon: Icon(FontAwesomeIcons.checkCircle),
-                  label: Text('Allow')),
-            ),
-            Padding(
-              padding: EdgeInsets.only(right: 2 * defaultPadding),
-              child: RaisedButton.icon(
-                  onPressed: onStepCancel,
-                  icon: Icon(FontAwesomeIcons.timesCircle),
-                  label: Text('Deny')),
-            ),
-          ],
-        ),
-      ),
+      controlsBuilder: _buildControls,
       steps: [
         for (PermissionDetails permissionDetails in _permissionsToRequire)
           Step(
@@ -142,6 +120,34 @@ class _PermissionRequestState extends State<PermissionRequest> {
             state: _getStepStateFor(permissionDetails.permissionGroup),
           )
       ],
+    );
+  }
+
+  Widget _buildControls(BuildContext context,
+      {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
+    return Padding(
+      padding: EdgeInsets.only(top: defaultPadding),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(right: 2 * defaultPadding),
+            child: RaisedButton.icon(
+                onPressed: onStepContinue,
+                icon: Icon(FontAwesomeIcons.checkCircle),
+                label: Text('Allow')),
+          ),
+          if (_permissionsToRequire[_currentStep].isOptional)
+            Padding(
+              padding: EdgeInsets.only(right: 2 * defaultPadding),
+              child: RaisedButton.icon(
+                  onPressed: onStepCancel,
+                  color: Colors.grey[700],
+                  icon: Icon(FontAwesomeIcons.timesCircle),
+                  label: Text('Deny')),
+            ),
+        ],
+      ),
     );
   }
 

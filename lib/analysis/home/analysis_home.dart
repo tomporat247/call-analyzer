@@ -246,11 +246,13 @@ class _AnalysisHomeState extends State<AnalysisHome>
                 Navigator.of(context).push(MaterialPageRoute(
                     settings: const RouteSettings(name: '/permissions'),
                     builder: (context) => BannerAdPadder(PermissionRequest(
-                        grantedPermissions: grantedPermissions))));
+                          grantedPermissions: grantedPermissions,
+                          onAllPermissionsGranted: Navigator.of(context).pop,
+                        ))));
               } else {
                 Scaffold.of(context).showSnackBar(SnackBar(
                   content: Text(
-                      'All permissions granted (Contacts, Call logs & Storage)'),
+                      'All permissions granted (contacts, call logs & storage)'),
                 ));
               }
               break;
