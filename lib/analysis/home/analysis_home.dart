@@ -37,16 +37,17 @@ class _AnalysisHomeState extends State<AnalysisHome>
   StreamController<LifeEvent> _lifeEvent$;
   TabController _controller;
   int _selectedTabIndex = 1;
-  final List<Tab> _tabs = [
-    Tab(text: 'General', icon: Icon(FontAwesomeIcons.chartPie)),
-    Tab(text: 'Top', icon: Icon(FontAwesomeIcons.medal)),
-    Tab(text: 'Contacts', icon: Icon(FontAwesomeIcons.userFriends)),
-    Tab(text: 'Calls', icon: Icon(FontAwesomeIcons.history))
-  ];
+  List<Widget> _tabWidgets;
 
   @override
   initState() {
     _lifeEvent$ = new StreamController.broadcast();
+    _tabWidgets = [
+      GeneralDetails(_lifeEvent$.stream),
+      TopAccolades(_lifeEvent$.stream),
+      AllContacts(_lifeEvent$.stream),
+      AllCalls(_lifeEvent$.stream)
+    ];
     _setupTabController();
     super.initState();
   }
@@ -58,7 +59,12 @@ class _AnalysisHomeState extends State<AnalysisHome>
         title: Text(appTitle),
         bottom: TabBar(
           controller: _controller,
-          tabs: _tabs,
+          tabs: [
+            Tab(text: 'General', icon: Icon(FontAwesomeIcons.chartPie)),
+            Tab(text: 'Top', icon: Icon(FontAwesomeIcons.medal)),
+            Tab(text: 'Contacts', icon: Icon(FontAwesomeIcons.userFriends)),
+            Tab(text: 'Calls', icon: Icon(FontAwesomeIcons.history))
+          ],
         ),
         actions: <Widget>[
           IconButton(
@@ -76,12 +82,7 @@ class _AnalysisHomeState extends State<AnalysisHome>
       ),
       body: TabBarView(
         controller: _controller,
-        children: <Widget>[
-          GeneralDetails(_lifeEvent$.stream),
-          TopAccolades(_lifeEvent$.stream),
-          AllContacts(_lifeEvent$.stream),
-          AllCalls(_lifeEvent$.stream)
-        ],
+        children: _tabWidgets,
       ),
       floatingActionButton: _getDateFilter(),
     );
@@ -112,7 +113,7 @@ class _AnalysisHomeState extends State<AnalysisHome>
   _setupTabController() {
     _controller = TabController(
       vsync: this,
-      length: _tabs.length,
+      length: _tabWidgets.length,
       initialIndex: _selectedTabIndex,
     );
     _controller.addListener(() {
@@ -126,8 +127,9 @@ class _AnalysisHomeState extends State<AnalysisHome>
   }
 
   _sendCurrentTabToAnalytics() {
-    _observer.analytics
-        .setCurrentScreen(screenName: '/tabs/${_tabs[_selectedTabIndex].text}');
+    String tabName = _tabWidgets[_selectedTabIndex].runtimeType.toString();
+    _observer.analytics.setCurrentScreen(
+        screenName: '/tabs/$tabName', screenClassOverride: tabName);
   }
 
   Widget _getDateFilter() {
@@ -273,7 +275,7 @@ class _AnalysisHomeState extends State<AnalysisHome>
   }
 
   _openContactPageFor(Contact contact) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => ContactProfile(contact)));
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => BannerAdPadder(ContactProfile(contact))));
   }
 }
