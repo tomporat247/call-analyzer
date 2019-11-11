@@ -105,15 +105,15 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   _setupCallDurationData() async {
     List<Color> colors = [
       Colors.blue,
+      Colors.lightBlue[200],
+      Colors.green,
       Colors.teal[700],
-      Colors.lightBlue[100],
       Colors.green[300],
       Colors.cyan[600],
       Colors.deepPurple,
       Colors.purple,
-      Colors.indigo,
+      Colors.deepPurple[300],
       Colors.blueGrey,
-      Colors.green
       ];
     Color otherColor = Colors.grey[900];
     _totalCallDuration = _analysisService.getTotalCallDuration();
