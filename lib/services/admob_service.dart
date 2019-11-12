@@ -3,7 +3,15 @@ import 'package:firebase_admob/firebase_admob.dart';
 class AdmobService {
   final String _bannerAdUnitID = 'ca-app-pub-6746638404168860/5335374936';
   MobileAdTargetingInfo _targetingInfo = MobileAdTargetingInfo(
-    keywords: <String>['call', 'analyze', 'phone', 'friend'],
+    keywords: <String>[
+      'call',
+      'analyze',
+      'phone',
+      'friend',
+      'chart',
+      'graph',
+      'contact'
+    ],
     childDirected: false,
     testDevices: <String>[],
   );
