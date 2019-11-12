@@ -28,6 +28,9 @@ void main() {
   _registerServices();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        systemNavigationBarColor:
+            SystemUiOverlayStyle.dark.systemNavigationBarColor));
     runApp(new MyApp());
     BackgroundFetch.registerHeadlessTask(_headlessUpdateCallLogs);
   });
