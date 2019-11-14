@@ -1,6 +1,7 @@
 import 'package:bezier_chart/bezier_chart.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:flutter/material.dart';
+import 'chart_helper.dart';
 
 class TimeSeriesChartWrapper extends StatelessWidget {
   final List<List<DataPoint<DateTime>>> dataPointLines;
@@ -9,11 +10,14 @@ class TimeSeriesChartWrapper extends StatelessWidget {
   final bool allowPinchAndZoom;
   DateTime _fromDate;
   DateTime _toDate;
+  int _yAxisStep;
+  final BatchBy yStepCalculationBatchBy;
 
   TimeSeriesChartWrapper(
       {@required this.dataPointLines,
       @required this.colors,
       @required this.labels,
+      this.yStepCalculationBatchBy,
       this.allowPinchAndZoom = true}) {
     dataPointLines
         .removeWhere((List<DataPoint<DateTime>> line) => line.isEmpty);
@@ -34,6 +38,8 @@ class TimeSeriesChartWrapper extends StatelessWidget {
     if (_fromDate == _toDate) {
       _toDate = _toDate.add(Duration(hours: 1));
     }
+
+    _calculateYAxisStep();
   }
 
   @override
@@ -60,6 +66,7 @@ class TimeSeriesChartWrapper extends StatelessWidget {
                   ],
             config: BezierChartConfig(
               displayYAxis: true,
+              stepsYAxis: _yAxisStep,
               pinchZoom: allowPinchAndZoom,
               verticalIndicatorStrokeWidth: 3.0,
               verticalIndicatorColor: Colors.black26,
@@ -74,5 +81,11 @@ class TimeSeriesChartWrapper extends StatelessWidget {
 
   BezierLine _getDefaultEmptyLine() {
     return BezierLine(data: []);
+  }
+
+  _calculateYAxisStep() {
+    double maxValue = getMaxValueFromChartLines(
+        lines: dataPointLines, batchBy: yStepCalculationBatchBy);
+    _yAxisStep = 10 * (maxValue / 40).floor();
   }
 }

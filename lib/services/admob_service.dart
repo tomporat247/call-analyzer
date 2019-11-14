@@ -13,7 +13,6 @@ class AdmobService {
       'contact'
     ],
     childDirected: false,
-    testDevices: <String>[],
   );
   BannerAd _banner;
 

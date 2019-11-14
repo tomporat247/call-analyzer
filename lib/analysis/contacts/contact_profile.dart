@@ -3,6 +3,7 @@ import 'package:call_analyzer/analysis/services/analysis_service/analysis_servic
 import 'package:call_analyzer/helper/helper.dart';
 import 'package:call_analyzer/models/call_log_info.dart';
 import 'package:call_analyzer/widgets/call_icon.dart';
+import 'package:call_analyzer/widgets/charts/chart_helper.dart';
 import 'package:call_analyzer/widgets/contact_image.dart';
 import 'package:call_analyzer/widgets/charts/time_series_chart_wrapper.dart';
 import 'package:call_log/call_log.dart';
@@ -234,6 +235,7 @@ class _ContactProfileState extends State<ContactProfile> {
         SizedBox(
             height: MediaQuery.of(context).size.height * 0.5,
             child: TimeSeriesChartWrapper(
+              yStepCalculationBatchBy: BatchBy.MONTH,
               dataPointLines: [
                 _incomingCallsPerDay,
                 _outgoingCallsPerDay,
@@ -254,6 +256,7 @@ class _ContactProfileState extends State<ContactProfile> {
         SizedBox(
             height: MediaQuery.of(context).size.height * 0.5,
             child: TimeSeriesChartWrapper(
+              yStepCalculationBatchBy: BatchBy.MONTH,
               dataPointLines: [_callDurationPerDay],
               colors: [lineChartLineColor],
               labels: ['Talk Time in minutes'],

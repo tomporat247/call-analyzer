@@ -1,14 +1,14 @@
 import 'package:bezier_chart/bezier_chart.dart';
-import 'package:call_analyzer/models/call_log_info.dart';
-import 'package:call_analyzer/models/chart_data.dart';
 import 'package:call_analyzer/analysis/services/analysis_service/analysis_service.dart';
 import 'package:call_analyzer/config.dart';
 import 'package:call_analyzer/helper/helper.dart';
+import 'package:call_analyzer/models/call_log_info.dart';
+import 'package:call_analyzer/models/chart_data.dart';
 import 'package:call_analyzer/models/life_event.dart';
 import 'package:call_analyzer/widgets/charts/pie_chart_wrapper.dart';
+import 'package:call_analyzer/widgets/charts/time_series_chart_wrapper.dart';
 import 'package:call_analyzer/widgets/slide.dart';
 import 'package:call_analyzer/widgets/slide_show.dart';
-import 'package:call_analyzer/widgets/charts/time_series_chart_wrapper.dart';
 import 'package:call_log/call_log.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
