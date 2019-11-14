@@ -15,6 +15,7 @@ class AdmobService {
     childDirected: false,
   );
   BannerAd _banner;
+  bool _loadedBannerAd = true;
 
   AdmobService() {
     _banner = BannerAd(
@@ -23,16 +24,19 @@ class AdmobService {
         targetingInfo: _targetingInfo,
         listener: (MobileAdEvent event) {
           print("BannerAd event is $event");
+          if (event == MobileAdEvent.failedToLoad) {
+            _loadedBannerAd = false;
+          }
         });
   }
 
-  showBanner() {
+  showBanner() async {
     _banner
       ..load()
       ..show(anchorType: AnchorType.bottom);
   }
 
   int getBannerAdHeight() {
-    return AdSize.banner.height;
+    return _loadedBannerAd ? AdSize.banner.height : 0;
   }
 }

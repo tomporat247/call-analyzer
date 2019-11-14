@@ -40,6 +40,7 @@ _registerServices() {
   GetIt.instance.registerSingleton(PermissionService());
   GetIt.instance.registerSingleton(AnalysisService(ContactService()));
   GetIt.instance.registerSingleton(AnalyticsService());
+  GetIt.instance.registerSingleton(AdmobService());
 }
 
 // TODO: Extract the life event stream to a global scope, if filter is not active => recall the analysis service init and the RELOAD life event
@@ -53,7 +54,7 @@ class _MyAppState extends State<MyApp> {
   Widget _pageToDisplay;
   PermissionService _permissionService = GetIt.instance<PermissionService>();
   AnalyticsService _analyticsService = GetIt.instance<AnalyticsService>();
-  AdmobService _admobService = AdmobService();
+  AdmobService _admobService = GetIt.instance<AdmobService>();
 
   @override
   void initState() {
