@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_admob/firebase_admob.dart';
 
 class AdmobService {
@@ -15,28 +17,30 @@ class AdmobService {
     childDirected: false,
   );
   BannerAd _banner;
-  bool _loadedBannerAd = true;
+  bool _bannerAdDisplayed;
+  Completer<bool> _loadedAd;
 
   AdmobService() {
+    _loadedAd = new Completer();
     _banner = BannerAd(
         adUnitId: _bannerAdUnitID,
         size: AdSize.banner,
         targetingInfo: _targetingInfo,
         listener: (MobileAdEvent event) {
           print("BannerAd event is $event");
-          if (event == MobileAdEvent.failedToLoad) {
-            _loadedBannerAd = false;
+          if (!_loadedAd.isCompleted) {
+            _loadedAd.complete(event != MobileAdEvent.failedToLoad);
           }
         });
   }
 
-  showBanner() async {
-    _banner
-      ..load()
-      ..show(anchorType: AnchorType.bottom);
+  Future<void> showBanner() async {
+    await _banner.load();
+    await _banner.show(anchorType: AnchorType.bottom);
+    _bannerAdDisplayed = await _loadedAd.future;
   }
 
   int getBannerAdHeight() {
-    return _loadedBannerAd ? AdSize.banner.height : 0;
+    return _bannerAdDisplayed ? AdSize.banner.height : 0;
   }
 }

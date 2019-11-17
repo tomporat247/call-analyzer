@@ -59,9 +59,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     _pageToDisplay = Container();
-    _determineInitialPageToDisplay();
+    _setupPageToDisplay();
     _setupBackgroundFetch();
-    _admobService.showBanner();
     _analyticsService.logAppOpen();
     super.initState();
   }
@@ -73,11 +72,11 @@ class _MyAppState extends State<MyApp> {
       theme: getAppTheme(context),
       navigatorObservers: [_analyticsService.observer],
       home: Material(
-        child: BannerAdPadder(AnimatedSwitcher(
+        child: AnimatedSwitcher(
           child: _pageToDisplay,
           duration: normalSwitchDuration,
           switchInCurve: Curves.easeInOut,
-        )),
+        ),
       ),
     );
   }
@@ -106,7 +105,8 @@ class _MyAppState extends State<MyApp> {
     _headlessUpdateCallLogs();
   }
 
-  _determineInitialPageToDisplay() async {
+  _setupPageToDisplay() async {
+    await _admobService.showBanner();
     if (await _permissionService.hasRequiredPermissions()) {
       _loadCallLogsAndContacts();
     } else {
@@ -115,10 +115,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   _requestPermissions() async {
-    _setPageToDisplay(PermissionRequest(
+    _setPageToDisplay(BannerAdPadder(PermissionRequest(
       grantedPermissions: await _permissionService.getGrantedPermissions(),
       onAllPermissionsGranted: () => _loadCallLogsAndContacts(),
-    ));
+    )));
   }
 
   _loadCallLogsAndContacts() async {
@@ -130,7 +130,7 @@ class _MyAppState extends State<MyApp> {
           .getUpdatedCallLogs()
     ]);
     await GetIt.instance<AnalysisService>().init(answers[0], answers[1]);
-    _setPageToDisplay(AnalysisHome());
+    _setPageToDisplay(BannerAdPadder(AnalysisHome()));
   }
 
   _setPageToDisplay(Widget page) {
