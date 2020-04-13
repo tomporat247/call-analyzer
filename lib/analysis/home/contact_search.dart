@@ -65,34 +65,41 @@ class ContactSearch extends SearchDelegate<Contact> {
         ? _topContacts
         : _analysisService.contacts
             .where((Contact contact) =>
-                contact.displayName.toLowerCase().contains(query.toLowerCase()))
+                contact?.displayName
+                    ?.toLowerCase()
+                    ?.contains(query.toLowerCase()) ??
+                false)
             .toList();
 
     return ListView.builder(
       itemBuilder: (BuildContext context, int index) {
         Contact contact = suggestedContacts[index];
-        int boldStartIndex =
-            contact.displayName.toLowerCase().indexOf(query.toLowerCase());
+        bool isValid = contact.displayName != null;
+        int boldStartIndex = isValid
+            ? contact.displayName.toLowerCase().indexOf(query.toLowerCase())
+            : 0;
         int boldEndIndex = boldStartIndex + query.length;
 
         return ListTile(
           onTap: () => close(context, contact),
           leading: ContactImage(contact: contact),
-          title: RichText(
-            text: TextSpan(children: [
-              TextSpan(
-                  text: contact.displayName.substring(0, boldStartIndex),
-                  style: contactNameTextStyle),
-              TextSpan(
-                  text: contact.displayName
-                      .substring(boldStartIndex, boldEndIndex),
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white)),
-              TextSpan(
-                  text: contact.displayName.substring(boldEndIndex),
-                  style: contactNameTextStyle),
-            ]),
-          ),
+          title: isValid
+              ? RichText(
+                  text: TextSpan(children: [
+                    TextSpan(
+                        text: contact.displayName.substring(0, boldStartIndex),
+                        style: contactNameTextStyle),
+                    TextSpan(
+                        text: contact.displayName
+                            .substring(boldStartIndex, boldEndIndex),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.white)),
+                    TextSpan(
+                        text: contact.displayName.substring(boldEndIndex),
+                        style: contactNameTextStyle),
+                  ]),
+                )
+              : Text('Unkown'),
         );
       },
       itemCount: suggestedContacts.length,
