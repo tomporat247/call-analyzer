@@ -26,6 +26,7 @@ _headlessUpdateCallLogs() async {
 
 void main() {
   _registerServices();
+  WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
